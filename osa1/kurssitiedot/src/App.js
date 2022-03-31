@@ -69,7 +69,7 @@ const App= () => {
     ]
   }
   const parts=course.parts
-  
+
   return (
     <div>
       <Header course={course}/>
