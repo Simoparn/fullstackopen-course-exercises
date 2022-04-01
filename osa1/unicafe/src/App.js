@@ -77,10 +77,10 @@ const App = () => {
   const [average, updateAverage] = useState(0)
   const [positive, updatePositive] = useState(0)
 
-  const handleClicks = () => {
+  
 
 
-  }
+  
 
   
   return (
