@@ -1,7 +1,7 @@
 import Person from "./Person"
 
-const Persons = ({key, persons, filteredPersons}) => {
-    //console.log("Filtered data list in Persons: ", filteredPersons)
+const Persons = ({key, persons, filteredPersons, handleDeletePerson}) => {
+  
     if(filteredPersons.length !== 0){
       console.log("Filtered search data not empty in Persons, showing only the filtered data.")
       return (
@@ -9,7 +9,7 @@ const Persons = ({key, persons, filteredPersons}) => {
         <ul>
             <h3>Filter results, found the following</h3>
             {filteredPersons.map( person =>
-            <Person key={person.name} name={person.name} phonenumber={person.phonenumber}/>
+            <Person key={person.name} name={person.name} phonenumber={person.phonenumber} handleDeletePerson={handleDeletePerson}/>
             )}
         </ul>
         )
@@ -20,7 +20,7 @@ const Persons = ({key, persons, filteredPersons}) => {
       <ul>
         <h3>Full list</h3>
         {persons.map(person => 
-          <Person key={person.name} name={person.name} phonenumber={person.phonenumber}/>
+          <Person key={person.name} name={person.name} phonenumber={person.phonenumber} handleDeletePerson={handleDeletePerson}/>
         )}
         </ul>
       )
