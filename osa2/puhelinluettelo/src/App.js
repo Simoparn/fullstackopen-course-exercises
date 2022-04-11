@@ -5,6 +5,34 @@ import PersonForm from "./components/PersonForm"
 //DB requests module (axios)
 import personRequestServices from "./services/requests" 
 
+
+const Notification = ({ message }) => {
+  console.log("Notification props: ", message)
+  if (message === null) {
+    return null
+  }
+  else if(message.toLowerCase().includes('error') ||  message.toLowerCase().includes('fail')){
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+  }
+  else {
+    return (
+      <div className="success">
+        {message}
+      </div>
+    )
+    }
+
+}
+
+
+
+
+
+
 const App= () => {
   
   const [persons, setPersons] = useState([]) 
@@ -12,6 +40,8 @@ const App= () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [searchPerson, setSearchPerson] = useState('')
   const [filteredPersons, setFilteredPersons]= useState([])
+  const [notificationMessage, setNotificationMessage] = useState('some error happened...')
+  
 
   const handleNameChange = (event) => {    
     //console.log(event.target.value)    
@@ -42,7 +72,7 @@ const App= () => {
 
   }
 
-  //Problem with re-rendering updates
+  //Problem with re-rendering updates, shows only the updated person as if filtered with search
   const addPerson = (event) => {    
     event.preventDefault()    
     const personObject = {
@@ -71,11 +101,27 @@ const App= () => {
               //Update shown list
               setPersons(updatedPersons)
               //Update filtered list aswell
-              const updatedFilteredPersons=filteredPersons
-              
+              const updatedFilteredPersons=filteredPersons 
               updatedFilteredPersons[persontoupdateindex]=updatedPerson
               console.log("Filtered persons after updating and before re-rendering the list: ", updatedFilteredPersons)
-              setFilteredPersons(updatedFilteredPersons)                      
+              setFilteredPersons(updatedFilteredPersons) 
+              //Notification message
+              setNotificationMessage(         
+                `Modified '${personToUpdate[0].name}' successfully`
+                )        
+                setTimeout(() => {          
+                  setNotificationMessage(null)        
+                }, 6000)
+              
+          })
+          .catch(error => {      
+            setNotificationMessage(         
+              `Error. Person '${personToUpdate[0].name}' is already removed from the server.`
+              )        
+              setTimeout(() => {          
+                setNotificationMessage(null)        
+              }, 6000)
+              
           })
       }
     }
@@ -89,7 +135,21 @@ const App= () => {
           setPersons(persons.concat(returnedPerson))        
           setNewName('') 
           setNewPhoneNumber('') 
+          //Notification message
+          setNotificationMessage(         
+            `Added '${personObject.name}' successfully`
+            )        
+            setTimeout(() => {          
+              setNotificationMessage(null)        
+            }, 6000)
 
+        }).catch(error => {      
+          setNotificationMessage(         
+            `Some error happened while trying to add a new person: '${personObject.name}' to server`
+            )        
+            setTimeout(() => {          
+              setNotificationMessage(null)        
+            }, 6000)   
         })
     }
 }
@@ -119,8 +179,24 @@ const App= () => {
                   setPersons(updatedPersons)
                   //Update filtered list aswell
                   const updatedFilteredPersons=filteredPersons.filter(filteredlistperson => !(filteredlistperson.name.toLowerCase().includes(personToDelete[0].name.toLowerCase())))
-                  setFilteredPersons(updatedFilteredPersons)                           
+                  setFilteredPersons(updatedFilteredPersons)   
+                  //Notification message
+                  setNotificationMessage(         
+                  `Deleted '${personToDelete[0].name}' successfully`
+                  )        
+                  setTimeout(() => {          
+                  setNotificationMessage(null)        
+                  }, 5000)              
                 })
+                  .catch(error => {      
+                    setNotificationMessage(         
+                      `Some error happened while trying to delete '${personToDelete[0].name}' from server`
+                      )        
+                      setTimeout(() => {          
+                        setNotificationMessage(null)        
+                      }, 5000)
+                    
+                  })
           } 
 
   }
@@ -153,6 +229,7 @@ const App= () => {
 
       
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage}/>
       <NameFilter searchPerson={searchPerson} onChange={handleSearch}/>
       <br/>
       <br/>
