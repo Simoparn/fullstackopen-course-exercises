@@ -6,6 +6,23 @@ import PersonForm from "./components/PersonForm"
 import personRequestServices from "./services/requests" 
 
 
+
+const Footer = () => {
+  const footerStyle = {
+    color: 'green',
+    fontStyle: 'italic',
+    fontSize: 16
+  }
+
+  return (
+    <div style={footerStyle}>
+      <br />
+      <em>Phonebook app, footer</em>
+    </div>
+  )
+}
+
+
 const Notification = ({ message }) => {
   console.log("Notification props: ", message)
   if (message === null) {
@@ -40,7 +57,7 @@ const App= () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [searchPerson, setSearchPerson] = useState('')
   const [filteredPersons, setFilteredPersons]= useState([])
-  const [notificationMessage, setNotificationMessage] = useState('some error happened...')
+  const [notificationMessage, setNotificationMessage] = useState('something happened')
   
 
   const handleNameChange = (event) => {    
@@ -74,7 +91,8 @@ const App= () => {
 
   //Problem with re-rendering updates, shows only the updated person as if filtered with search
   const addPerson = (event) => {    
-    event.preventDefault()    
+    event.preventDefault()
+       
     const personObject = {
       name: newName,
       phonenumber: newPhoneNumber,
@@ -237,6 +255,7 @@ const App= () => {
       <h2>Numbers</h2>
       
       <Persons persons={persons} filteredPersons={filteredPersons} handleDeletePerson={handleDeletePerson}/>
+      <Footer/>
     </div>
   )
 }
