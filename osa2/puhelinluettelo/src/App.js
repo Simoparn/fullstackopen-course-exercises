@@ -17,7 +17,7 @@ const Footer = () => {
   return (
     <div style={footerStyle}>
       <br />
-      <em>Phonebook app, footer</em>
+      <em>Phonebook app, Simo P.</em>
     </div>
   )
 }
@@ -98,7 +98,8 @@ const App= () => {
       phonenumber: newPhoneNumber,
       date: new Date().toISOString()
     }
-    
+    console.log("Input name in browser", newName)
+    console.log("All names in browser", persons)
     let personalreadyexists= persons.find(person => person.name.toLowerCase()===personObject.name.toLowerCase())
     
     if(personalreadyexists)
