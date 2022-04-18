@@ -1,3 +1,4 @@
 node_modules
+.env
 material_exercise
 material_exercise_express

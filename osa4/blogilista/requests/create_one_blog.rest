@@ -1,0 +1,12 @@
+POST http://localhost:3003/api/blogs/
+Content-Type: application/json
+
+{
+
+
+
+      "title": "even more blogs 2",
+      "author": "Moore Blogger",
+      "url": "https://nice-and-fine-example-blogs.com/MooreB_2",
+      "likes": "8"
+}

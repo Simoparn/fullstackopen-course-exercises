@@ -162,14 +162,25 @@ const App= () => {
               setNotificationMessage(null)        
             }, 6000)
 
-        }).catch(error => {      
-          setNotificationMessage(         
+        }).catch(error => {   
+	  console.log(error.response.data.error)   
+          if(error.response.data.error.toLowerCase().includes("validation")){
+		setNotificationMessage(error.response.data.error)
+		setTimeout(() => {          
+              setNotificationMessage(null)        
+            }, 10000) 	
+	  }
+	else {
+	  setNotificationMessage(         
             `Some error happened while trying to add a new person: '${personObject.name}' to server`
             )        
             setTimeout(() => {          
               setNotificationMessage(null)        
             }, 6000)   
-        })
+        
+	}
+	})
+	
     }
 }
 
