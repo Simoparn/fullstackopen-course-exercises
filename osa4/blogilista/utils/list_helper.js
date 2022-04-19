@@ -32,9 +32,29 @@ const favoriteBlog = (blogs) => {
 const mostBlogs = (blogs) => {
 
 
-  const blogs_per_author= lodash._.countBy(blogs, blog => function () { blog.author })
-  console.log("Blogs per author: ", blogs_per_author)
-  return blogs_per_author
+  const unique_authors_array= lodash._.uniqBy(blogs, function (blog) { return blog.author })
+  //console.log("Unique authors array: ", unique_authors_array)
+  let blogs_by_author_array=[]
+  blogs_by_author_array.length=unique_authors_array.length
+  blogs_by_author_array=blogs_by_author_array.fill(0,0,unique_authors_array.length)
+  //console.log("Blogs by author array at start: ", blogs_by_author_array)
+  for(let i=0; i< unique_authors_array.length; i++)
+  {
+    for(let blog of blogs)
+    {
+      //console.log("Current unique author to handle: ", unique_authors_array[i].author, "\tAuthor of "+(blogs.indexOf(blog)+1)+":th blog to handle: ", blog.author)
+      if(blog.author===unique_authors_array[i].author)
+      {
+        blogs_by_author_array[i] += 1
+      }
+    }
+
+
+  }
+  //console.log("Blogs by author array after counting: ", blogs_by_author_array)
+  let most_blogs_author=unique_authors_array[blogs_by_author_array.indexOf(Math.max(...blogs_by_author_array))]
+  console.log("Author with most blogs: ", {"author":most_blogs_author.author, "blogs":Math.max(...blogs_by_author_array)})
+  return {"author":most_blogs_author.author, "blogs":Math.max(...blogs_by_author_array)}
 
 }
 

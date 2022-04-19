@@ -176,6 +176,6 @@ describe('4.6, most blogs', () => {
   test('Person with most blogs', () => {
 
     const result = listHelper.mostBlogs(listWithBlogs)
-    expect(result).toBe(listWithBlogs[4])
+    expect(result).toEqual({"author":listWithBlogs[4].author, "blogs":4})
   })
 })
