@@ -48,10 +48,17 @@ blogsRouter.get('/info/moreinfo', (req, res) => {
 
 blogsRouter.post('/', (request, response, next) => {
   const body = request.body
-  
+
   if (!body) {
     return response.status(400).json({
       error: 'All content missing for a new blog'
+    })
+  }
+
+
+  else if (!body.title || !body.url ) {
+    return response.status(400).json({
+      error: 'title or URL or both missing for the new added blog'
     })
   }
 
