@@ -60,13 +60,13 @@ const mostBlogs = (blogs) => {
 
 
 const mostLikes = (blogs) => {
-  
+
   const unique_authors_array= lodash._.uniqBy(blogs, function (blog) { return blog.author })
-  
+
   let likes_by_author_array=[]
   likes_by_author_array.length=unique_authors_array.length
   likes_by_author_array=likes_by_author_array.fill(0,0,unique_authors_array.length)
-  console.log("Likes by author array at start: ", likes_by_author_array)
+  //console.log("Likes by author array at start: ", likes_by_author_array)
   for(let i=0; i< unique_authors_array.length; i++)
   {
     for(let blog of blogs)
@@ -82,8 +82,8 @@ const mostLikes = (blogs) => {
   }
 
   console.log("Likes by author array after counting: ", likes_by_author_array)
-  
-  
+
+
   let most_likes_author=unique_authors_array[likes_by_author_array.indexOf(Math.max(...likes_by_author_array))]
 
   return {"author":most_likes_author.author, "blogs":Math.max(...likes_by_author_array)}

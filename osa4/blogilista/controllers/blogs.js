@@ -34,19 +34,19 @@ blogsRouter.get('/:id', (request, response, next) => {
 })
 
 
-blogsRouter.get('/info/moreinfo', (req, res) => {
+blogsRouter.get('/info/moreinfo', async (req, res) => {
   let date=new Date()
   //console.log(date)
-  Blog.find({}).then(blogs => {
-    res.send('Blog app has info for '+blogs.length+' blogs from MongoDB Atlas. <br/>'+ date)
-  })
+  const blogs= await Blog.find({})
+  res.send('Blog app has info for '+blogs.length+' blogs from MongoDB Atlas. <br/>'+ date)
+
 
 })
 
 
 
 
-blogsRouter.post('/', (request, response, next) => {
+blogsRouter.post('/', async (request, response, next) => {
   const body = request.body
 
   if (!body) {
@@ -64,12 +64,14 @@ blogsRouter.post('/', (request, response, next) => {
 
   const blog = new Blog(request.body)
 
-  blog
-    .save()
-    .then(savedBlog => {
-      response.status(201).json(savedBlog)
-    })
-    .catch(error => next(error))
+  try {
+    const savedBlog = await blog.save()
+    response.status(201).json(savedBlog)
+  }
+  catch(exception)
+  {
+    next(exception)
+  }
 })
 
 
@@ -88,18 +90,35 @@ blogsRouter.put('/:id', (request, response, next) => {
 
 
 
-blogsRouter.delete('/:id', (request, response, next) => {
+blogsRouter.delete('/:id', async (request, response, next) => {
 //const id = Number(request.params.id)
 //console.log("Note to delete "+id)
 //notes = notes.filter(note => note.id !== id)
 //console.log(notes)
 //response.status(204).end()
 
-Blog.findByIdAndRemove(request.params.id)
-    .then(result => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))
+  try{
+    const result = await Blog.findByIdAndRemove(request.params.id)
+    response.status(204).end()
+  }
+  catch(exception)
+  {
+    next(exception)
+  }
+})
+
+
+blogsRouter.put('/:id', async (request, response, next) => {
+  const {title , author, url, likes } = request.body
+
+  try {
+    const updatedBlog= await Blog.findByIdAndUpdate(request.params.id,  {title, author, url, likes}, { new: true, runValidators: true, context: 'query' })
+    response.json(updatedBlog)
+  }
+
+  catch(exception){
+    next(exception)
+  }
 })
 
 
