@@ -1,21 +1,23 @@
 //const http = require('http')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/info', (req, res) => {
-  res.send('<h2>This is the backend for the part 4 blog list. See localhost:3003 for the front end.</h2><br/><h3>More info: /api/blogs/info/moreinfo <br/>All notes: api/blogs</h3>')
+  res.send('<h2>This is the backend for the part 4 blog list. See localhost:3003 for the front end.</h2><br/><h3>More info: /api/blogs/info/moreinfo <br/>All blogs: api/blogs</h3>')
 })
 
 
 
 
 
-blogsRouter.get('/', (request, response) => {
-  Blog.
-    find({}).
-    then(blogs => {
-      response.json(blogs)
-    })
+blogsRouter.get('/', async (request, response) => {
+  const user=request.user
+  //const blogs= await Blog.find({})
+  const blogs = await Blog
+    .find({}).populate('user', { username: 1, name: 1 })
+  response.json(blogs)
 
 
 })
@@ -43,63 +45,117 @@ blogsRouter.get('/info/moreinfo', async (req, res) => {
 
 })
 
+/*
+const getTokenFrom = request => {
+
+  const authorization = request.get('authorization')
+  console.log("authorization header in getTokenFrom:", authorization)
+  if (authorization && authorization.toLowerCase().startsWith('bearer '))
+  {
+    console.log("found authorization header")
+    return authorization.substring(7)
+  }
+  console.log("didn't find authorization header")
+  return null
+}
 
 
+*/
 
 blogsRouter.post('/', async (request, response, next) => {
-  const body = request.body
+  const {title, author, url, likes} = request.body
+  //const user = request.user
 
-  if (!body) {
+
+  //console.log("Request:", request)
+  //Option: get the token from the authorization header
+  //const token = getTokenFrom(request)
+  //get token directly with middleware
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  const blogUser = await User.findById(decodedToken.id)
+  //if token is false or id field is missing from the decodedToken result object, adding a blog is not allowed
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({
+      error: 'token missing or invalid, can\'t add a new blog' })
+  }
+
+
+  else if (!(title || author || url || likes)) {
     return response.status(400).json({
       error: 'All content missing for a new blog'
     })
   }
 
 
-  else if (!body.title || !body.url ) {
+  else if (!title || !url ) {
     return response.status(400).json({
       error: 'title or URL or both missing for the new added blog'
     })
   }
 
-  const blog = new Blog(request.body)
+
+
+
+
+  console.log("Blog user:", blogUser)
+  const blog = new Blog({title, author, user:blogUser, url, likes})
 
   try {
     const savedBlog = await blog.save()
+    console.log("Saved blog:", savedBlog)
+    
+    blogUser.blogs = blogUser.blogs.concat(savedBlog._id)
+    await blogUser.save()
     response.status(201).json(savedBlog)
+
   }
   catch(exception)
   {
     next(exception)
   }
+
 })
 
 
-blogsRouter.put('/:id', (request, response, next) => {
-  const { content, important } = request.body
 
-
-  Blog.findByIdAndUpdate(request.params.id,  { content, important },
-    { new: true, runValidators: true, context: 'query' }
-  )
-    .then(updatedBlog => {
-      response.json(updatedBlog)
-    })
-    .catch(error => next(error))
-})
 
 
 
 blogsRouter.delete('/:id', async (request, response, next) => {
-//const id = Number(request.params.id)
-//console.log("Note to delete "+id)
-//notes = notes.filter(note => note.id !== id)
-//console.log(notes)
-//response.status(204).end()
+
+  //const user = request.user
+
 
   try{
-    const result = await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
+
+    //object with user id, username and expire times for the token
+    //console.log("Request: ", request.token)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    //console.log("Request params id", request.params.id)
+    const blogToDelete = await Blog.findById(request.params.id)
+    //console.log("Blog to delete: ", blogToDelete)
+    const blogUser = blogToDelete.user
+    console.log("Blog user:", blogUser.toString())
+    console.log("Current user id with an active token:", decodedToken.id.toString())
+    if (!request.token){
+      return response.status(400).json({error: 'No token, cannot delete the blog'})
+    }
+
+    if (!(blogUser.toString() === decodedToken.id.toString())){
+
+      return response.status(400).json({ error: 'Deleter is not the current token holder, cannot delete the blog.'})
+    }
+
+
+    console.log("Deleting the blog is allowed")
+    const removedBlog = await Blog.findByIdAndRemove(request.params.id)
+    //TODO: old references are not deleted yet
+    //const removedReference = await User.findOneAndRemove({})
+    return response.status(204).end()
+
+
+
+
   }
   catch(exception)
   {
