@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     
-    "username":"exampleblogusername",
-    "password":"exampleblogpassword"
+    "username":"usernamehere",
+    "password":"passwordhere"
     
 }
