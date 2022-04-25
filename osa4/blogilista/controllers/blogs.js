@@ -103,7 +103,7 @@ blogsRouter.post('/', async (request, response, next) => {
   try {
     const savedBlog = await blog.save()
     console.log("Saved blog:", savedBlog)
-    
+
     blogUser.blogs = blogUser.blogs.concat(savedBlog._id)
     await blogUser.save()
     response.status(201).json(savedBlog)
