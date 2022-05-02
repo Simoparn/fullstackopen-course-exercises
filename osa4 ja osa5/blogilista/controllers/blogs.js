@@ -67,7 +67,7 @@ blogsRouter.post('/', async (request, response, next) => {
   //const user = request.user
 
 
-  //console.log("Request:", request)
+  console.log("Request:", request)
   //Option: get the token from the authorization header
   //const token = getTokenFrom(request)
   //get token directly with middleware

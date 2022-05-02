@@ -1,0 +1,68 @@
+h1 {
+    color: green;
+    font-style: italic;
+}
+
+li {
+    color: grey;
+    padding-top: 3px;
+    font-size: 15px;
+}  
+
+.note {
+    color: grey;
+    padding-top: 5px;
+    font-size: 15px;
+  }
+
+  .success {
+    color: green;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .error {
+    color: red;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+
+.blogform {
+
+    position:relative;
+    padding:7px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bloglist {
+
+    padding:2%;
+    display: flex;
+    flex-direction: column;
+    list-style:none;
+  }
+
+  .singleblog {
+
+    position: relative;
+    padding:1%;
+    margin-left:2%;
+    margin-right:2%;
+  }
+
+
+
+  .singleblogfield {
+
+    padding:1%;
+  }
