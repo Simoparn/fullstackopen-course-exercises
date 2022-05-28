@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from './components/Blogform'
+import Togglable from './components/Togglable'
 
 
 
@@ -50,14 +52,15 @@ const Notification = ({ message }) => {
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlogTitle, setNewBlogTitle] = useState(    'a new blog title...'  ) 
-  const [newBlogAuthor, setNewBlogAuthor] = useState(    'a new blog author...'  ) 
-  const [newBlogUrl, setNewBlogUrl] = useState(    'a new blog URL...'  ) 
-  const [newBlogLikes, setNewBlogLikes] = useState(    'a new blog likes...'  ) 
   const [username, setUsername] = useState('')   
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
+
+  //see components/Blogform
+  const blogFormRef = useRef()
+  const blogViewRef = useRef()
+  const blogRef = useRef()
 
   
   
@@ -74,7 +77,8 @@ const App = () => {
   //Empty array argument ensures that the effect is executed only upon the first rendering
   useEffect(() => {    
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')    
-    if (loggedUserJSON) {      const user = JSON.parse(loggedUserJSON)      
+    if (loggedUserJSON) {      
+      const user = JSON.parse(loggedUserJSON)      
       setUser(user)      
       blogService.setToken(user.token)    
     }  
@@ -139,37 +143,30 @@ const App = () => {
   }
 
   //Adding blog and promises  
-  const addBlog = (event) => {    
-    event.preventDefault()    
-    const blogObject = {
-      "title": newBlogTitle,
-      "author": newBlogAuthor,
-      "url": newBlogUrl,
-      "likes": newBlogLikes
-    }
-    console.log('button clicked', event.target) 
+  const addBlog = (blogObject) => {    
+    
+    console.log('Blog submit button clicked') 
     
   
 
-
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
         .then(returnedBlog => {        
           setBlogs(blogs.concat(returnedBlog))        
-          setNewBlogTitle('')
-          setNewBlogAuthor('')
-          setNewBlogUrl('')
-          setNewBlogLikes('')
-          setErrorMessage('New blog: '+ newBlogTitle+ ' added') 
+          setErrorMessage('New blog: '+ blogObject.title+ ' added') 
           setTimeout(() => {        
             setErrorMessage(null)      
             }, 3000)    
       }).catch(error => {
         setErrorMessage('Adding a new blog failed, check that the likes field is a number and does not contain letters')
+         
+        
+        console.log('Adding a new blog failed')
         setTimeout(() => {        
           setErrorMessage(null)      
           }, 3000)  
-        console.log('Adding a new blog failed')
+        
 
       })
       
@@ -187,24 +184,17 @@ const App = () => {
   
   }
 
-  const handleBlogTitleChange = (event) => {    
-    console.log(event.target.value)    
-    setNewBlogTitle(event.target.value)  
+  //TODO: For assignment 5.7, unimplemented
+  const viewBlog = () => { 
+    console.log('Showing or hiding full blog details depending on visibility status', blogViewRef.current.visible) 
+
   }
 
-  const handleBlogAuthorChange = (event) => {    
-    console.log(event.target.value)    
-    setNewBlogAuthor(event.target.value)  
-  }
+  
+  const addBlogLike = () => { 
+    console.log('Clicked blog like button')
+    blogRef.current.getId()
 
-  const handleBlogUrlChange = (event) => {    
-    console.log(event.target.value)    
-    setNewBlogUrl(event.target.value)  
-  }
-
-  const handleBlogLikesChange = (event) => {    
-    console.log(event.target.value)    
-    setNewBlogLikes(event.target.value)  
   }
 
 
@@ -233,46 +223,34 @@ const App = () => {
   )
     
     
-  const blogForm = () => (
-    <form onSubmit={addBlog} class="blogform">
-      <input
-        value={newBlogTitle}
-        onChange={handleBlogTitleChange}
-      />
-      <input
-        value={newBlogAuthor}
-        onChange={handleBlogAuthorChange}
-      />
-      <input
-        value={newBlogUrl}
-        onChange={handleBlogUrlChange}
-      />
-      <input
-        value={newBlogLikes}
-        onChange={handleBlogLikesChange}
-      />
-      <button type="submit">Create</button>
-    </form>  
-  )
+  
     
 
   return (
     <div>
       <h2>blogs</h2>
+      
       <Notification message={errorMessage} />
       {user === null ?
       loginForm() :
       <div>
-        <p>{user.name} logged in    <button onClick={handleLogout} type="button">logout</button>  </p>
-        {blogForm()}
+        <p>{user.name} logged in <span>
+          </span>  
+          <button onClick={handleLogout} type="button">logout</button>  
+        </p>
+      
+        <Togglable buttonLabel="new blog" ref={blogFormRef}>
+  		    <BlogForm createdBlog={addBlog}/>
+	      </Togglable>
+        <p>See localhost:backendport/api/blogs and localhost:backendport/api/users for details about current data and users </p>
         <p>All blogs shown regardless of the user, users can only create blogs for themselves</p>
        
-        <ul class="bloglist">
-        <li style={{margin:"4%"}}>
-        <h3><span style={{margin:"8%"}}>Title</span> <span style={{margin:"8%"}}>Author</span> <span style={{margin:"8%"}}>URL</span> <span style={{margin:"8%"}}>Likes</span></h3>
-        </li>
+        <ul className="bloglist">
+        
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Togglable buttonLabel="view" ref={blogViewRef}>
+          <Blog key={blog.id} blog={blog} ref={blogRef}/> 
+        </Togglable>
           )}
         </ul>
       </div>

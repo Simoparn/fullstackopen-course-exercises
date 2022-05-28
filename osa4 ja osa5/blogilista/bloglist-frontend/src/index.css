@@ -9,11 +9,6 @@ li {
     font-size: 15px;
 }  
 
-.note {
-    color: grey;
-    padding-top: 5px;
-    font-size: 15px;
-  }
 
   .success {
     color: green;
@@ -54,8 +49,10 @@ li {
 
   .singleblog {
 
+    border:'solid';
+    border-width: 5px;
     position: relative;
-    padding:1%;
+    padding:0.8%;
     margin-left:2%;
     margin-right:2%;
   }
@@ -64,5 +61,5 @@ li {
 
   .singleblogfield {
 
-    padding:1%;
+    padding:2%;
   }
