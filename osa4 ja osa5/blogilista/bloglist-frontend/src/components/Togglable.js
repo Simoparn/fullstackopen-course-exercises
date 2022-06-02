@@ -13,7 +13,8 @@ const Togglable = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => {    
     return { 
       visible,     
-      toggleVisibility    
+      toggleVisibility,
+       
     }  
 })
 

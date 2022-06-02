@@ -24,7 +24,7 @@ const Footer = () => {
 }
 
 const Notification = ({ message }) => {
-  console.log(typeof message)
+  console.log("Notification:", message)
   if (message === null || message === "") {
     return null
   }
@@ -71,8 +71,17 @@ const App = () => {
     
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+      
+    )
+    
   }, [])
+
+  /*Refs to blogs array
+  useEffect(() => {
+    
+    blogRef.current = blogRef.current.slice(0, blogs.length)
+      
+  }, [blogs])*/
 
   //Empty array argument ensures that the effect is executed only upon the first rendering
   useEffect(() => {    
@@ -159,7 +168,7 @@ const App = () => {
             setErrorMessage(null)      
             }, 3000)    
       }).catch(error => {
-        setErrorMessage('Adding a new blog failed, check that the likes field is a number and does not contain letters')
+        setErrorMessage('Adding a new blog failed, check that the likes field is a number and does not contain letters, if this doesnt work, try to relog in')
          
         
         console.log('Adding a new blog failed')
@@ -191,34 +200,97 @@ const App = () => {
   }
 
   
-  const addBlogLike = () => { 
-    console.log('Clicked blog like button')
-    blogRef.current.getId()
+  const handleUpdateBlog = (blogObject) => { 
+    
+    console.log('Clicked blog like button for the blog:', blogRef)
+    //TODO: blogId and thus blogToUpdate always refers to the last blog in the list regardless of what blog like button is pressed
+    //therefore it is replaced with updated likes, the old likes are left behind, adding async to callback didn't help
+    //Need blogRef as an array
+    const blogId = blogRef.current.blogid
+    console.log("Blog id in app.js:", blogId)
+    
+    const blogToUpdate=blogs.filter(listblog => listblog.id.toLowerCase()===blogId)
+    console.log("Blog before adding a like:", blogToUpdate)
+    
+    blogService
+      .update(blogToUpdate[0].id, blogObject)
+        .then(updatedBlog => {        
+          //setBlogs(blogs.concat(returnedBlog))
+          let blogtoupdateindex=blogs.indexOf(blogToUpdate[0])
+          const updatedBlogs=[...blogs]
+          updatedBlogs[blogtoupdateindex]=updatedBlog
+          console.log("Updated blog list after adding a like: ", updatedBlogs)
+          //Update shown list
+          setBlogs(updatedBlogs)        
+          setErrorMessage('Blog: '+ blogObject.title + ' like button pressed, likes increased') 
+          setTimeout(() => {        
+            setErrorMessage(null)      
+            }, 3000)    
+        }).catch(error => {
+            setErrorMessage('Liking the blog failed')        
+            console.log('Liking a new blog failed, error:', error)
+            setTimeout(() => {        
+              setErrorMessage(null)      
+            }, 3000)  
+        
 
+      })
+
+  }
+
+  //TODO: Unfinished and no button yet
+  const handleRemoveBlog = (blogObject) => {
+
+    const blogId = blogRef.current.blogid
+
+    const blogToRemove=blogs.filter(listblog => listblog.id.toLowerCase()===blogId)
+    console.log("Blog to remove:", blogToRemove)
+    let confirmRemove= window.confirm("Are you sure you want to remove the following blog?: ", blogToRemove.title)
+    if(confirmRemove){
+      blogService
+        .deleteBlog(blogToRemove[0].id, blogObject)
+          .then(returnedBlog => {        
+            const blogsAfterRemove=blogs.filter(listblog => listblog.id.toLowerCase()!==blogId)
+            console.log("Blog list after deleting, ", blogsAfterRemove.length, " blogs:", blogsAfterRemove)
+            //Update shown list after delete
+            setBlogs(blogsAfterRemove)        
+            setErrorMessage('Blog: '+ blogObject.title + ' removed successfully') 
+            setTimeout(() => {        
+              setErrorMessage(null)      
+              }, 3000)    
+          }).catch(error => {
+              setErrorMessage('Removing the blog failed')        
+              console.log('Removing the blog failed, error:', error)
+              setTimeout(() => {        
+                setErrorMessage(null)      
+              }, 3000)  
+      
+      })
+    }
   }
 
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
-      <div>
+      <div style={{paddingBottom:"0.4%"}}>
         username
-          <input
+          <input style={{marginLeft:"1%"}}
           type="text"
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
-      <div>
+      <div style={{paddingBottom:"1%"}}>
         password
-          <input
+          <input style={{marginLeft:"1%"}}
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <button type="submit" style={{fontSize:"20px"}}>login</button>
     </form>      
   )
     
@@ -227,33 +299,42 @@ const App = () => {
     
 
   return (
-    <div>
-      <h2>blogs</h2>
+    <div style={{marginLeft:"0.8%"}}>
+      <h2>Blogs</h2>
       
       <Notification message={errorMessage} />
       {user === null ?
       loginForm() :
       <div>
-        <p>{user.name} logged in <span>
-          </span>  
-          <button onClick={handleLogout} type="button">logout</button>  
+        <p style={{paddingBottom:"2%", fontSize:"25px"}}>{user.name} logged in <span style={{paddingTop:"1%"}}>
+          </span>
         </p>
-      
-        <Togglable buttonLabel="new blog" ref={blogFormRef}>
-  		    <BlogForm createdBlog={addBlog}/>
-	      </Togglable>
-        <p>See localhost:backendport/api/blogs and localhost:backendport/api/users for details about current data and users </p>
-        <p>All blogs shown regardless of the user, users can only create blogs for themselves</p>
-       
-        <ul className="bloglist">
+        <p style={{paddingBottom:"3%"}}>
+          <button onClick={handleLogout} type="button" style={{fontSize:"18px"}}>logout</button>  
+        </p>
         
-        {blogs.map(blog =>
-        <Togglable buttonLabel="view" ref={blogViewRef}>
-          <Blog key={blog.id} blog={blog} ref={blogRef}/> 
-        </Togglable>
-          )}
-        </ul>
-      </div>
+        <div style={{marginLeft:"0.8%"}}>
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+  		      <BlogForm createdBlog={addBlog}/>
+	        </Togglable>
+          <h4>INSTRUCTIONS:</h4>
+          <p>See localhost:backendport/api/blogs and localhost:backendport/api/users for details about current data and users </p>
+          <p>All blogs shown regardless of the user, users can only create blogs for themselves</p>
+          <h4>PROBLEMS:</h4> 
+          <p>Liking a blog will replace the last blog in the list with a new version of the liked blog</p>
+          <p>Deleting blog will always delete the last blog on the list</p>
+       
+          <ul className="bloglist">
+          <span style={{paddingBottom:"2%", fontSize:"25px"}}>{blogs.length} blogs in total</span>
+        
+          {blogs.map((blog, i) =>
+          <Togglable buttonLabel="view" ref={blogViewRef}>
+            <Blog key={blog.id} blog={blog} ref={blogRef}  updatedBlog={handleUpdateBlog} removedBlog={handleRemoveBlog}/> 
+          </Togglable>
+            ).sort(function(a, b){return a.likes > b.likes ? 1 : -1})}
+          </ul>
+          </div>
+        </div>    
       }
       
 
