@@ -60,7 +60,7 @@ const App = () => {
   //see components/Blogform
   const blogFormRef = useRef()
   const blogViewRef = useRef()
-  const blogRef = useRef()
+  const blogRef = useRef([])
 
   
   
@@ -76,12 +76,12 @@ const App = () => {
     
   }, [])
 
-  /*Refs to blogs array
+  //Refs to blogs array
   useEffect(() => {
     
     blogRef.current = blogRef.current.slice(0, blogs.length)
       
-  }, [blogs])*/
+  }, [blogs])
 
   //Empty array argument ensures that the effect is executed only upon the first rendering
   useEffect(() => {    
@@ -179,7 +179,7 @@ const App = () => {
 
       })
       
-    //Option without  addBlog etc imported from blogs.js
+    //Option without  using blogService imported from blogs.js
     //axios.post('http://localhost:3001/blogs', blogObject)    
     //.then(response => 
     //  {      
@@ -202,30 +202,30 @@ const App = () => {
   
   const handleUpdateBlog = (blogObject) => { 
     
-    console.log('Clicked blog like button for the blog:', blogRef)
+    console.log('Clicked blog like button for the blog:', blogRef.current)
     //TODO: blogId and thus blogToUpdate always refers to the last blog in the list regardless of what blog like button is pressed
     //therefore it is replaced with updated likes, the old likes are left behind, adding async to callback didn't help
     //Need blogRef as an array
-    const blogId = blogRef.current.blogid
+    const blogId = Object.values(blogRef.current.find(ref => ref.blogid === blogObject.id))
     console.log("Blog id in app.js:", blogId)
     
-    const blogToUpdate=blogs.filter(listblog => listblog.id.toLowerCase()===blogId)
+    const blogToUpdate=blogs.find(listblog => listblog.id.toLowerCase()===blogId[0])
     console.log("Blog before adding a like:", blogToUpdate)
     
     blogService
-      .update(blogToUpdate[0].id, blogObject)
+      .update(blogToUpdate.id, blogObject)
         .then(updatedBlog => {        
           //setBlogs(blogs.concat(returnedBlog))
           let blogtoupdateindex=blogs.indexOf(blogToUpdate[0])
           const updatedBlogs=[...blogs]
           updatedBlogs[blogtoupdateindex]=updatedBlog
-          console.log("Updated blog list after adding a like: ", updatedBlogs)
           //Update shown list
           setBlogs(updatedBlogs)        
           setErrorMessage('Blog: '+ blogObject.title + ' like button pressed, likes increased') 
           setTimeout(() => {        
             setErrorMessage(null)      
             }, 3000)    
+          console.log("Updated blog list after adding a like: ", updatedBlogs)
         }).catch(error => {
             setErrorMessage('Liking the blog failed')        
             console.log('Liking a new blog failed, error:', error)
@@ -241,26 +241,29 @@ const App = () => {
   //TODO: Unfinished and no button yet
   const handleRemoveBlog = (blogObject) => {
 
-    const blogId = blogRef.current.blogid
-
-    const blogToRemove=blogs.filter(listblog => listblog.id.toLowerCase()===blogId)
+    
+    //Didn't work by comparing object and string values with ===, so this was needed
+    const blogId = Object.values(blogRef.current.find(ref => ref.blogid === blogObject.id))
+    console.log("blog id of the blog to remove: ", blogId)
+    console.log("blogs before filtering: ", blogs)
+    const blogToRemove=blogs.find(listblog => listblog.id===blogId[0])
     console.log("Blog to remove:", blogToRemove)
-    let confirmRemove= window.confirm("Are you sure you want to remove the following blog?: ", blogToRemove.title)
+    let confirmRemove= window.confirm("Are you sure you want to remove the following blog?\n "+ blogToRemove.title)
     if(confirmRemove){
       blogService
-        .deleteBlog(blogToRemove[0].id, blogObject)
+        .deleteBlog(blogToRemove.id)
           .then(returnedBlog => {        
             const blogsAfterRemove=blogs.filter(listblog => listblog.id.toLowerCase()!==blogId)
-            console.log("Blog list after deleting, ", blogsAfterRemove.length, " blogs:", blogsAfterRemove)
             //Update shown list after delete
             setBlogs(blogsAfterRemove)        
             setErrorMessage('Blog: '+ blogObject.title + ' removed successfully') 
             setTimeout(() => {        
               setErrorMessage(null)      
               }, 3000)    
+              console.log("Blog list after deleting, ", blogsAfterRemove.length, " blogs:", blogsAfterRemove)
           }).catch(error => {
               setErrorMessage('Removing the blog failed')        
-              console.log('Removing the blog failed, error:', error)
+              console.log('Removing the blog failed', error)
               setTimeout(() => {        
                 setErrorMessage(null)      
               }, 3000)  
@@ -319,17 +322,18 @@ const App = () => {
 	        </Togglable>
           <h4>INSTRUCTIONS:</h4>
           <p>See localhost:backendport/api/blogs and localhost:backendport/api/users for details about current data and users </p>
-          <p>All blogs shown regardless of the user, users can only create blogs for themselves</p>
+          <p>All blogs shown regardless of the user, users can only create and delete blogs for themselves, refresh page after deleting a blog</p>
+          <p>The page must be refreshed to show the updated likes, the same blog can only be liked once before refreshing again</p>
           <h4>PROBLEMS:</h4> 
-          <p>Liking a blog will replace the last blog in the list with a new version of the liked blog</p>
-          <p>Deleting blog will always delete the last blog on the list</p>
+          <p>Page needs to be refreshed after deleting or liking a blog</p>
+          
        
           <ul className="bloglist">
           <span style={{paddingBottom:"2%", fontSize:"25px"}}>{blogs.length} blogs in total</span>
         
           {blogs.map((blog, i) =>
           <Togglable buttonLabel="view" ref={blogViewRef}>
-            <Blog key={blog.id} blog={blog} ref={blogRef}  updatedBlog={handleUpdateBlog} removedBlog={handleRemoveBlog}/> 
+            <Blog key={blog.id} blog={blog} ref={element=>blogRef.current[i]=element}  updatedBlog={handleUpdateBlog} removedBlog={handleRemoveBlog} currentUser={user}/> 
           </Togglable>
             ).sort(function(a, b){return a.likes > b.likes ? 1 : -1})}
           </ul>
