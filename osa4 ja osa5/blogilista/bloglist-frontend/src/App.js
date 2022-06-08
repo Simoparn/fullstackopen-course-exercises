@@ -318,7 +318,7 @@ const App = () => {
         
         <div style={{marginLeft:"0.8%"}}>
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
-  		      <BlogForm createdBlog={addBlog}/>
+  		      <BlogForm createBlog={addBlog}/>
 	        </Togglable>
           <h4>INSTRUCTIONS:</h4>
           <p>See localhost:backendport/api/blogs and localhost:backendport/api/users for details about current data and users </p>
@@ -333,7 +333,7 @@ const App = () => {
         
           {blogs.map((blog, i) =>
           <Togglable buttonLabel="view" ref={blogViewRef}>
-            <Blog key={blog.id} blog={blog} ref={element=>blogRef.current[i]=element}  updatedBlog={handleUpdateBlog} removedBlog={handleRemoveBlog} currentUser={user}/> 
+            <Blog key={blog.id} blog={blog} ref={element=>blogRef.current[i]=element}  updateBlog={handleUpdateBlog} removeBlog={handleRemoveBlog} currentUser={user}/> 
           </Togglable>
             ).sort(function(a, b){return a.likes > b.likes ? 1 : -1})}
           </ul>

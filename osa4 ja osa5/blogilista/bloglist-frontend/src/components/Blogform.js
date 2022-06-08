@@ -1,7 +1,7 @@
 import { useState } from 'react' 
 import PropTypes from 'prop-types'
 
-const BlogForm = ({createdBlog}) => {
+const BlogForm = ({createBlog}) => {
   
   
   const [newBlogTitle, setNewBlogTitle] = useState('a new blog title...') 
@@ -25,7 +25,7 @@ const BlogForm = ({createdBlog}) => {
   
   const addBlog = (event) => {
     event.preventDefault()
-    createdBlog({
+    createBlog({
       "title": newBlogTitle,
       "author": newBlogAuthor,
       "url": newBlogUrl,

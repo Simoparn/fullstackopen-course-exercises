@@ -30,6 +30,7 @@ describe('5.13-5.15, blog front end tests', () => {
 
   })
 
+  //TODO: view all function needs to be implemented first
   test('5.13, shows blog title and author, but not URL and likes by default', () => {
     
 
@@ -101,29 +102,46 @@ describe('5.13-5.15, blog front end tests', () => {
     
   })
 
-  //TODO: view all function needs to be implemented first
-  test('5.15 Check that event handler is called twice when view button for a blog is pressed twice', async () => {
+ 
+  test('5.15 Check that event handler is called twice when like button for a blog is pressed twice', async () => {
 
+
+    
+    const mockUpdateHandler = jest.fn()
+    const mockRemoveHandler = jest.fn()
+    const user = userEvent.setup()
 
     const { container }= render(
-      <Togglable buttonLabel="view">  
-        <Blog blog={blog} currentUser={testUser} />          
+      <Togglable buttonLabel="view" >  
+        <Blog blog={blog} currentUser={testUser} updateBlog={mockUpdateHandler} removeBlog={mockRemoveHandler} />          
       </Togglable>
     )
 
 
 
-    const mockHandler = jest.fn()
-
-    const user = userEvent.setup()
-
-
     
     const viewbutton = screen.getByText('view')
-    await user.click(viewbutton)
-    await user.click(viewbutton)
-    //Check event handler
-    expect(mockHandler.mock.calls).toHaveLength(2)
+    expect(viewbutton).toBeDefined()
+    
+        await user.click(viewbutton) 
+        console.log("Testing 5.15: If no error message, clicking view button succeeded")
+  
+
+    const likebutton  = screen.getByText('Like this blog')
+    expect(likebutton).toBeDefined()
+    try
+      {
+        await user.click(likebutton)
+        await user.click(likebutton)
+      
+      } catch (err) {
+        console.log("Testing 5.15: Error while trying to click the like button")
+      } finally {
+        console.log("Testing 5.15: If no error message, clicking like button succeeded")
+    }
+
+    //Check event handler calls
+    expect(mockUpdateHandler.mock.calls).toHaveLength(2)
 
 
   })

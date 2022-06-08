@@ -23,7 +23,7 @@ const Blog = forwardRef((props, ref) => {
   const addBlogLike = (event) => {
     event.preventDefault()
     console.log("Blog props in addBlogLike: ", props)
-    props.updatedBlog({
+    props.updateBlog({
       "title": props.blog.title,
       "author": props.blog.author,
       "url": props.blog.url,
@@ -41,7 +41,7 @@ const Blog = forwardRef((props, ref) => {
   const removeBlog = (event) => {
     event.preventDefault()
     console.log("Removing blog: ", props.blog.title)
-    props.removedBlog({
+    props.removeBlog({
       
       "title": props.blog.title,
       "author": props.blog.author,
