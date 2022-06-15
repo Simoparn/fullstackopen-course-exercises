@@ -274,7 +274,7 @@ const App = () => {
 
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <form id="login-form" onSubmit={handleLogin}>
       <div style={{paddingBottom:"0.4%"}}>
         username
           <input style={{marginLeft:"1%"}}

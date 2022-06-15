@@ -35,7 +35,12 @@ app.use('/api/login', loginRouter)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 
-
+//Only include testing router in test mode
+if (process.env.NODE_ENV === 'test') {
+  console.log("Test mode started successfully, test database in use")
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

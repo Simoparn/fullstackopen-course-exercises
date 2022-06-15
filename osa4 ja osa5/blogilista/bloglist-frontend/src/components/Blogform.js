@@ -48,18 +48,22 @@ const BlogForm = ({createBlog}) => {
 
       <form onSubmit={addBlog}>
         <input
+          id='new-blog-title'
           value={newBlogTitle}
           onChange={handleTitleChange}
         />
         <input
+          id='new-blog-author'
           value={newBlogAuthor}
           onChange={handleAuthorChange}
         />
         <input
+          id='new-blog-url'
           value={newBlogUrl}
           onChange={handleUrlChange}
         />
         <input
+          id='new-blog-likes'
           value={newBlogLikes}
           onChange={handleLikesChange}
         />
@@ -72,7 +76,7 @@ const BlogForm = ({createBlog}) => {
 
 
 BlogForm.propTypes = {
-  createdBlog: PropTypes.func.isRequired
+  createBlog: PropTypes.func.isRequired
 }
 
 BlogForm.displayName = 'Blogform'

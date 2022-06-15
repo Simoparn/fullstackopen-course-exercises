@@ -70,7 +70,7 @@ const Blog = forwardRef((props, ref) => {
       
       <li className="singleblog">
         <h3><span style={{margin:"8%"}}>Title</span> <span style={{margin:"8%"}}>Author</span> <span style={{margin:"8%"}}>URL</span> <span style={{margin:"8%"}}>Likes</span></h3>
-        <span className="singleblogfield">
+        <span className="singleblogfield" id="list-blog-title">
           {props.blog.title} 
         </span>
         <span style={{paddingTop:"30%"}}>
@@ -83,7 +83,7 @@ const Blog = forwardRef((props, ref) => {
 
   else
   {
-    //console.log("Current blog: ", props.blog, "\nCurrent user:", props.currentUser)
+    console.log("Current blog: ", props.blog, "\nCurrent user:", props.currentUser)
     
     if(props.currentUser.username === props.blog.user.username){
       blogid=props.blog.id
@@ -92,19 +92,19 @@ const Blog = forwardRef((props, ref) => {
       return (
       <li className="singleblog">
         <h3><span>Title</span></h3>
-        <span className="singleblogfield">
+        <span className="singleblogfield" id="list-blog-title">
           {props.blog.title} 
         </span>
         <h3><span>Author</span></h3>
-        <span className="singleblogfield">
+        <span className="singleblogfield" id="list-blog-author">
           {props.blog.author} 
         </span>
         <h3><span>URL</span></h3>
-        <span className="singleblogfield">
+        <span className="singleblogfield" id="list-blog-url">
           {props.blog.url}
         </span>
         <h3><span>Likes</span></h3>
-        <span className="singleblogfield">
+        <span className="singleblogfield" id="list-blog-likes">
           {props.blog.likes}
         </span>
         <span style={{paddingLeft:"30%"}}>
