@@ -9,6 +9,28 @@ const anecdotesAtStart = [
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
+export const createAnecdote = (content) => {  return {
+  type: 'NEW_ANECDOTE',
+  data: {
+    content,
+    important: false,
+    id: getId()
+  }
+}
+}
+
+export const voteAnecdote = (content) => { 
+  {console.log('voteAnecdote props:', content)}
+ return {
+  type: 'VOTE_ANECDOTE',
+  data: {
+    votes:votes+1,
+    id: id
+  }
+}
+}
+
+
 const asObject = (anecdote) => {
   return {
     content: anecdote,
@@ -20,10 +42,22 @@ const asObject = (anecdote) => {
 const initialState = anecdotesAtStart.map(asObject)
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
+  switch(action.type) {
+    case 'NEW_ANECDOTE':
+      console.log('state after attempting to create a new anecdote (and just before changing state): ', state)
+      console.log('action after attempting to create a new anecdote (and just before changing state): ', action)
+      return [...state, action.data]
+    case 'VOTE_ANECDOTE':
+      console.log('state after attempting to vote for an anecdote (and just before changing state): ', state)
+      console.log('action after attempting to vote for an anecdote (and just before changing state): ', action)
+      return [...state, action.data]
+    default:
+      console.log('default anecdote reducer state: ', state)
+      console.log('default anecdote reducer action: ', action)
+      return state
 
-  return state
+  }
 }
+
 
 export default reducer

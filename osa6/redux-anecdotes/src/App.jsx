@@ -1,30 +1,39 @@
+import Notification from './components/Notification'
+import Anecdotes from './components/Anecdotes'
+import NewAnecdote from './components/newAnecdote'
+import { createAnecdote, voteAnecdote} from './reducers/anecdoteReducer'
 import { useSelector, useDispatch } from 'react-redux'
 
 const App = () => {
 
-  const vote = (id) => {
-    console.log('vote', id)
+
+  
+  const addAnecdote = (event) => {
+    
+    event.preventDefault()
+
+    //New way with createNote function (action creators)
+    const content = event.target.anecdote.value
+    event.target.anecdote.value = ''
+    dispatch(createAnecdote(content)) 
+    
+
   }
+
+  const addAnecdoteVote = (id) => {
+
+    event.preventDefault()
+
+    dispatch(voteAnecdote(id)) 
+  }
+  
+  
 
   return (
     <div>
-      <h2>Anecdotes</h2>
-      {anecdotes.map(anecdote =>
-        <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
-          </div>
-        </div>
-      )}
-      <h2>create new</h2>
-      <form>
-        <div><input /></div>
-        <button>create</button>
-      </form>
+    
+      <Anecdotes />
+      <NewAnecdote />
     </div>
   )
 }
