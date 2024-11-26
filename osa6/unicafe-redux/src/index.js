@@ -57,6 +57,11 @@ const StatisticLine = (props) => {
 }
 
 const App = () => {
+  
+
+
+  
+
   const good = () => {
     store.dispatch({
       type: 'GOOD'
