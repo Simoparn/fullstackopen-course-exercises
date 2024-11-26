@@ -14,8 +14,7 @@ const Statistics = (props) => {
         <h2><p>statistics</p></h2>
         <table>
           <tbody> 
-              <StatisticLine text="all: " value ={props.total}/>
-              
+            <StatisticLine text="all: " value ={props.total}/>     
           </tbody>
         </table>
       </>
@@ -35,17 +34,23 @@ const Statistics = (props) => {
 
 const StatisticLine = (props) => {
 
-  //Jos rivi ei ole positiivisten prosenttia varten, palautetaan ilman prosenttimerkkiä
+  //If the line is not for percentage of positives, returned without percent character
   if(props.text != "positive")
     return(
       <>
-        <tr><td>{props.text}</td> <td>{props.value}</td></tr>
+        <tr>
+          <td>{props.text}</td>
+          <td>{props.value}</td>
+        </tr>
       </>
     )
   else
     return(
       <>
-        <tr><td>{props.text}</td>  <td>{props.value*100} %</td></tr>
+        <tr>
+          <td>{props.text}</td>
+          <td>{props.value*100} %</td>
+        </tr>
       </>
     )
 
@@ -56,11 +61,11 @@ const App = () => {
     store.dispatch({
       type: 'GOOD'
       /* if form data etc. is needed, handle the data field with action.data in reducer
-    data: {
-      good : 1,
-      ok : 0,
-      bad: 0
-    }*/
+      ,data: {
+        good : 1,
+        ok : 0,
+        bad: 0
+      }*/
     })
   }
 

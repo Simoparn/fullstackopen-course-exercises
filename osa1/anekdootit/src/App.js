@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 const Button = (props) => {
@@ -12,29 +12,38 @@ const Button = (props) => {
   )
 }
 
-//Not showing best votes properly
+
+const AnecdoteList = (props) => {
+
+  props.anecdotes.forEach(anecdote => {
+    console.log('\nAnecdote: ',anecdote,'\n Votes: ',props.votes[props.anecdotes.indexOf(anecdote)],'\n')
+  });
+  return(
+    <div>
+      <br></br>
+      <h2> Anecdote List</h2>
+      {props.anecdotes.map((anecdote, index)=>
+        <tr key={index}><td>{anecdote}</td><td>{props.votes[index]}</td></tr>)}
+        <br></br>
+    </div>
+  )
+  
+
+}
+
+
 const Mostvotes = (props) => {
+  
 
 
-  let anecdote="";
-  let anecdotevotes=0;
-  for(let i=0; i<props.votes.length-1; i++)
-  {
-    if(i>0){
-      if(props.votes[i]>props.votes[i-1]){
-        anecdotevotes=props.votes[i];
-        anecdote=props.anecdotes[i];
-      }
-    }
-  }
 
-  console.log("Highest voted anecdote: ", anecdote);
+  console.log("Highest voted anecdote: ", props.maxanecdote);
   return(
     <>
       <h2><p>Anecdote with most votes</p></h2><br/>
-      {anecdote}
+      {props.maxanecdote}
       <br/>
-      <h3>has {anecdotevotes} votes</h3>
+      <h3>has {props.maxanecdotevotes} votes</h3>
     </>
 
   )
@@ -52,9 +61,10 @@ const App = (props) => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when dianosing patients.'
   ]
 
-  const [selected, setSelected] = useState(0)
+  const [selectedanecdote, setSelectedAnecdote] = useState(0)
   const [votes, addVote] = useState(Array(7).fill(0))
-  
+  const [maxanecdote, setMaxAnecdote] = useState("")
+  const [maxanecdotevotes, setMaxAnecdoteVotes] = useState(0);
   
   
   
@@ -64,14 +74,15 @@ const App = (props) => {
     for(var i=0; i<=votes.length-1; i++)
     {
       //Kasvatetaan halutun anekdootin äänimäärää
-      if(i===selected)
+      if(i===selectedanecdote)
       {
         copy[i]+=1;
       }
     }
     addVote(copy);
-    console.log("Original vote array after assigning the copied value back:", votes);
+    //console.log("Original vote array after assigning the copied value back:", votes);
     
+
 
     
   
@@ -81,17 +92,37 @@ const App = (props) => {
   {
 
     let randomanecdote=Math.round(Math.random()*6); 
-    setSelected(randomanecdote);
+    setSelectedAnecdote(randomanecdote);
   }
+
+
+  useEffect(()=>{
+    //Tarkistetaan kaikkien anekdoottien äänimäärät
+    for(let i=0; i<votes.length; i++)
+    {
+      
+        if(votes[i]>maxanecdotevotes){
+          //console.log('\n ',anecdotes[i],':',votes[i],'\n has more votes than \n ',anecdotes[i-1],':',votes[i-1])
+          setMaxAnecdoteVotes(votes[i]);
+          setMaxAnecdote(anecdotes[i]);
+        }
+      
+    }},[votes]);
+
+
+  console.log("Highest voted anecdote: ", maxanecdote);
+
+
   
   return (
     <div className="App">    
       <h2>Anecdote of the day</h2><br/>
-      {anecdotes[selected]}<br/>
-      has {votes[selected]} votes<br/>
-      <Button handleClick = {handleVoteclick} votes={votes} text="vote"/>
-      <Button handleClick = {handleNextanecdoteclick}  text="next anecdote"/>
-      <Mostvotes anecdotes={anecdotes} votes={votes}/>
+      {anecdotes[selectedanecdote]}<br/>
+      has {votes[selectedanecdote]} votes<br/>
+      <Button handleClick = {handleVoteclick} votes={votes} anecdotes={anecdotes} text="vote"/>
+      <Button handleClick = {handleNextanecdoteclick}  text="next random anecdote"/>
+      <AnecdoteList anecdotes={anecdotes} votes={votes}/>
+      <Mostvotes anecdotes={anecdotes} votes={votes} maxanecdotevotes={maxanecdotevotes} maxanecdote={maxanecdote}/>
     </div>
   );
 }

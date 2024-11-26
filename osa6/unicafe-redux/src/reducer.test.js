@@ -1,4 +1,4 @@
-import { createStore } from 'redux'
+
 import deepFreeze from 'deep-freeze'
 import counterReducer from './reducer'
 
@@ -22,6 +22,7 @@ describe('unicafe reducer', () => {
   test('good is incremented', () => {
     const action = {
       type: 'GOOD',
+      //data field for action is useful for more complex applications
       data: {
         good: 0,
         ok: 0,
@@ -32,14 +33,7 @@ describe('unicafe reducer', () => {
 
     deepFreeze(state)
     const newState = counterReducer(state, action)
-    //const store = createStore(counterReducer)
-    //store.dispatch({type: 'GOOD',
-    //data: {
-    //  good: 'the app state is in redux store',
-    //  ok: true,
-    //  bad: 1
-    //}
-    //})
+
     expect(newState).toEqual({
       good: 1,
       ok: 0,
@@ -51,8 +45,9 @@ describe('unicafe reducer', () => {
 
     const action = {
       type: 'GOOD',
+      //data field for action is useful for more complex applications
       data: {
-        good: 1,
+        good: 2,
         ok: 0,
         bad: 0
       }
@@ -60,16 +55,21 @@ describe('unicafe reducer', () => {
     
     const state=initialState
 
+    //Incrementing and checking for pure function with deep-freeze
     deepFreeze(state)
     const newState = counterReducer(state, action)
     deepFreeze(newState)
-    //Check that good increments again to 2 when good:1 is passed as action
-    expect(newState).toHaveProperty('good', 2)
-    expect(newState).toHaveProperty('ok', 0)
-    expect(newState).toHaveProperty('bad', 0)
-    //expect(newState).toContainEqual(action.data)
+    const lastState = counterReducer(newState, action)
+    deepFreeze(lastState)
+    
+    //Check that good increments again to 2 when GOOD is passed again as action
+    expect(lastState).toHaveProperty('good', 2)
+    expect(lastState).toHaveProperty('ok', 0)
+    expect(lastState).toHaveProperty('bad', 0)
+    expect(lastState).toEqual(action.data)
+    
     //Alternative for toHaveProperty
-    expect(newState).toEqual({...initialState, good: 2})
+    expect(lastState).toEqual({...newState, good: 2})
 
   
 

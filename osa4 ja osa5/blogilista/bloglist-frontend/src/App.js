@@ -105,7 +105,7 @@ const App = () => {
         window.localStorage.setItem(
           'loggedBlogappUser', JSON.stringify(user)
         ) 
-        console.log("User credentials browser cache after login in handleLogout:")
+        console.log("User credentials browser cache after login in handleLogin:")
         console.log(window.localStorage.getItem('loggedBlogappUser'))
         blogService.setToken(user.token)
         setUser(user)      
