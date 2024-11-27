@@ -1,7 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { voteAnecdote, sortAnecdotes } from '../reducers/anecdoteReducer'
+import { voteAnecdote } from '../reducers/anecdoteReducer'
+import { filterChange } from '../reducers/anecdoteFilterReducer'
 
 const Anecdote = ({ anecdote, handleClick }) => {
+  console.log('single Anecdote:', anecdote)
   return(
   <div key={anecdote.id}>
     <div>
@@ -17,14 +19,27 @@ const Anecdote = ({ anecdote, handleClick }) => {
 
 const AnecdoteList = () => {
   const dispatch = useDispatch()  
-  const anecdotes = useSelector(state => state)
-  console.log('anecdotes right before rendering:', anecdotes)
+  const anecdotes = useSelector(({ anecdotes, filter }) => {
+    if ( filter === '' ) {
+      console.log('filter empty, anecdotes: ', anecdotes, ', filter:', filter)
+      return anecdotes
+    }
+    console.log('filter not empty, anecdotes: ', anecdotes, ', filter:', filter)
+    console.log('anecdotes map:', anecdotes.map(anecdote => anecdote.content))
+    /*return anecdotes*/
+    return anecdotes.filter(anecdote => anecdote.content.includes(filter))
+    
+  })
+
+console.log('anecdotes right before rendering:', anecdotes)
+console.log('anecdote list length:', anecdotes.length)
   return(
     <>
     <h2>Anecdotes</h2>
-    {/*console.log('sorted anecdotes state in reducer right before return:', 
+    {/*console.log('a:', 
     anecdotes.sort())*/}
-    {anecdotes.map(anecdote =>
+    {
+    anecdotes.map(anecdote =>
       <Anecdote key={anecdote.id}
       anecdote={anecdote}
       handleClick={() => {

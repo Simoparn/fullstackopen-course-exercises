@@ -51,7 +51,7 @@ export const sortAnecdotes = (anecdotes) => {
 const initialState = anecdotesAtStart.map(asObject)
 console.log('Initial anecdote state after conversion to object:', initialState)
 
-const reducer = (state = initialState, action) => {
+const anecdoteReducer = (state = initialState, action) => {
   switch(action.type) {
     case 'NEW_ANECDOTE':
       console.log('state after attempting to create a new anecdote (and just before changing state): ', state)
@@ -94,4 +94,4 @@ const reducer = (state = initialState, action) => {
 }
 
 
-export default reducer
+export default anecdoteReducer
