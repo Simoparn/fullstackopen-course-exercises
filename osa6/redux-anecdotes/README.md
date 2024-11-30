@@ -1,4 +1,25 @@
-# React + Vite
+# TABLE OF CONTENTS
+ABOUT
+TODO
+  28.11.2024
+Installation instructions
+  React + Vite
+
+
+
+# ABOUT
+Exercise project for the chapter 6 of Full Stack Open course (2024)
+
+# TODO
+
+## 28.11.2024
+
+-anecdoteRadioFilterReducer: unneeded at the moment
+-anecdoteReducer.js: the method sortAnecdotes is unneeded at the moment
+
+# Installation instructions
+
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

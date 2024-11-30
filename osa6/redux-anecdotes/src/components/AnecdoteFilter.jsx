@@ -2,12 +2,12 @@ import { filterChange } from '../reducers/anecdoteFilterReducer.js'
 import { useDispatch } from 'react-redux'
 
 
-const Filter = () => {
+const AnecdoteFilter = () => {
     const dispatch = useDispatch()
     const handleChange = (event) => {
-              // input-kentän arvo muuttujassa event.target.value
+        // input field value is in event.target.value
         const filter = event.target.value
-        /*console.log('text filter value just before dispatch in event handler:', filter)*/
+        console.log('text filter value just before dispatch in event handler:', filter)
         dispatch(filterChange(filter))
 
     }
@@ -22,6 +22,6 @@ const Filter = () => {
     )
   }
   
-  export default Filter
+  export default AnecdoteFilter
 
   

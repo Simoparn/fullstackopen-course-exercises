@@ -1,23 +1,23 @@
+import { createSlice } from '@reduxjs/toolkit'
+
+//const anecdoteFilterAtStart = ""
 const anecdoteFilterAtStart = ""
+const initialState=anecdoteFilterAtStart
 
 
-
-const anecdoteFilterReducer = (state = anecdoteFilterAtStart, action) => {
-    console.log('ACTION IN ANECDOTEFILTEREDUCER: ', action)
+//Old way to define reducers without @reduxjs/toolkit, see below and above comments
+/*
+const anecdoteFilterReducer = (state = initialState, action) => {
+    //console.log('ACTION IN ANECDOTEFILTEREDUCER: ', action)
     switch (action.type) {
       case 'SET_FILTER':
-      /*  const id = action.data.id
-        const anecdoteVoteToChange = state.find(n => n.id === id)
-        const changedAnecdote = {
-          ... anecdoteVoteToChange,
-          votes:  anecdoteVoteToChange.votes+1
-        }
-      */
         return action.payload
       default:
         return state
     }
   }
+
+
 
   export const filterChange = filter => {
     return {
@@ -25,5 +25,26 @@ const anecdoteFilterReducer = (state = anecdoteFilterAtStart, action) => {
       payload: filter,
     }
   }
+*/
 
-  export default anecdoteFilterReducer
+/*Better way to define reducers with @reduxjs/toolkit, see above and below comments*/
+  const anecdoteFilterSlice = createSlice({  
+    name: 'anecdotefilter',  
+    initialState,  
+    reducers: {    
+      filterChange(state, action) {  
+        console.log('action in filterChange:', action.payload)    
+        const filter = action.payload   
+        const changedFilterState=filter     
+        return changedFilterState
+    
+      }
+
+    },
+  })
+
+
+////Old way to define reducers without "@reduxjs/toolkit", see above comments
+//export default anecdoteFilterReducer
+export const {filterChange} = anecdoteFilterSlice.actions
+export default anecdoteFilterSlice.reducer

@@ -1,4 +1,5 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
 //import { reducer } from '../reducers/anecdoteReducer'
 
 
@@ -24,6 +25,11 @@ import { useDispatch, useSelector } from 'react-redux'
 }*/
 
 const Notification = () => {
+  const notification = useSelector(({notification}) => {
+    return notification
+  })
+  //const dispatch = useDispatch()
+ 
 
   const style = {
     border: 'solid',
@@ -32,7 +38,9 @@ const Notification = () => {
   }
   return (
     <div style={style}>
-      render here notification...
+      <b>NOTIFICATION:</b>
+      <br/>
+      You voted for the anecdote '{notification}'
     </div>
   )
 }

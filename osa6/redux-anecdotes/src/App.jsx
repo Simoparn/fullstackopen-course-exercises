@@ -1,10 +1,9 @@
 import Notification from './components/Notification'
-import Filter from './components/filter.jsx'
+import AnecdoteFilter from './components/AnecdoteFilter.jsx'
 /*import VisibilityRadioFilter from './components/VisibilityRadioFilter'*/
 import AnecdoteList from './components/AnecdoteList'
 import AnecdoteForm from './components/AnecdoteForm'
-/*import { createAnecdote, voteAnecdote} from './reducers/anecdoteReducer'
-import { useSelector, useDispatch } from 'react-redux'*/
+/*import { createAnecdote, voteAnecdote} from './reducers/anecdoteReducer'*/
 
 const App = () => {
 
@@ -16,8 +15,8 @@ const App = () => {
 
   return (
     <div>
-      <Filter />
-      {/*<VisibilityRadioFilter />*/}
+      <AnecdoteFilter />
+      <Notification />
       <AnecdoteList />
       <AnecdoteForm />
     </div>

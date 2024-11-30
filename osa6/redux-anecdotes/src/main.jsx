@@ -1,32 +1,39 @@
 import ReactDOM from 'react-dom/client'
-import { createStore, combineReducers } from 'redux'
+//Without @reduxjs/toolkit
+//import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
 
 import App from './App'
+import notificationReducer from './reducers/notificationReducer'
 import anecdoteReducer from './reducers/anecdoteReducer'
 import anecdoteFilterReducer from './reducers/anecdoteFilterReducer'
 /*import anecdoteRadioFilterReducer from './reducers/anecdoteRadioFilterReducer'*/
-import { createAnecdote } from './reducers/anecdoteReducer'
 import { filterChange } from './reducers/anecdoteFilterReducer'
 /*import { radioFilterChange } from './reducers/anecdoteRadioFilterReducer'*/
 
 
 
-//store.subscribe(() => console.log(store.getState()))
-//store.dispatch(filterChange(''))
-//store.dispatch(createAnecdote('combineReducers forms one reducer from many simple reducers'))
-
-
-const combinedReducer = combineReducers({  
+//Without @reduxjs/toolkit, see also comment above
+/*const combinedReducer = combineReducers({  
   anecdotes: anecdoteReducer,  
   filter: anecdoteFilterReducer
 })
 
-const store = createStore(combinedReducer)
+const store = createStore(combinedReducer)*/
+
+const store = configureStore({  
+  reducer: {    
+    notification: notificationReducer,
+    anecdotes: anecdoteReducer,    
+    filter: anecdoteFilterReducer  
+  }
+})
+
 
 store.subscribe(() => console.log('state store at beginning:', store.getState()))
 store.dispatch(filterChange(''))
-store.dispatch(createAnecdote('combineReducers forms one reducer from many simple reducers'))
+//store.dispatch(createAnecdote('combineReducers forms one reducer from many simple reducers'))
 
 
 
