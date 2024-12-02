@@ -40,7 +40,7 @@ const Notification = () => {
     <div style={style}>
       <b>NOTIFICATION:</b>
       <br/>
-      You voted for the anecdote '{notification}'
+       {notification}
     </div>
   )
 }

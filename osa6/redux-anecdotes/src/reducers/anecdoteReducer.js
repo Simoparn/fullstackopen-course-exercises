@@ -1,7 +1,9 @@
 import { useDispatch } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
 import { setNotification } from '../reducers/notificationReducer'
-
+import anecdoteService from '../services/anecdotesService'
+//Needed without json-server/axios database
+/*
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -10,6 +12,8 @@ const anecdotesAtStart = [
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 ]
+
+*/
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
@@ -22,10 +26,11 @@ const asObject = (anecdote) => {
   }
 }
 
-
+//Needed without json-server/axios database
+/*
 const initialState = anecdotesAtStart.map(asObject)
 console.log('Initial anecdote state after conversion to object:', initialState)
-
+*/
 
 
 
@@ -113,23 +118,36 @@ const anecdoteReducer = (state = initialState, action) => {
 
 const anecdoteSlice = createSlice({  
   name: 'anecdotes',  
-  initialState,  
+  //initialState,
+  //Anecdotes left empty here for json-server database/axios experiment 
+  initialState:[],
   reducers: {    
-    createAnecdote(state, action) {      
+    //When not using Redux Thunk for anecdote creation with an asynchronous action creator, see also comments above and below
+    /*createAnecdote(state, action) {      
       const content = action.payload      
-      state.push({        
+      /*state.push({        
         content,        
-        important: false,
         votes:0,        
-        id: getId(),      
+        id: getId(),
       })
-  
-    },    
+     //Anecdotes with json-server/axios database experiment
+      const id=getId()
+      anecdoteService.createNew(content, id).then(
+        state.push({
+          content,
+          votes:0,
+          id:id})
+      ).catch((error)=>{
+          console.log('Problem with creating a new anecdote to the database:', error)
+      }) 
+      //state.push(action.payload)      
+    },*/   
     voteAnecdote(state, action) {    
       console.log('id in voteAnecdote:', action.payload)  
       
       const id = action.payload     
-      const anecdoteVoteToChange = state.find(n => n.id === id)   
+      const anecdoteVoteToChange = state.find(n => n.id === id)  
+      console.log('voteAnecdote, anecdoteVoteToChange:', anecdoteVoteToChange) 
       const changedAnecdote = {
         ... anecdoteVoteToChange,
         votes:  anecdoteVoteToChange.votes+1
@@ -148,12 +166,56 @@ const anecdoteSlice = createSlice({
         
 
         return changedAnecdotes
-      }  
+    }  
+    ,
+    appendAnecdote(state, action) {
+      state.push(action.payload)
     },
-  })
+    setAnecdotes(state, action) { 
+      console.log('setting all anecdotes in front-end:', action.payload)     
+      return action.payload    
+    }
+  }
+})
 
 
 //Old way to define reducers without "@reduxjs/toolkit", see above comments
 //export default anecdoteReducer
-export const {createAnecdote, voteAnecdote} = anecdoteSlice.actions
+
+//When using @reduxjs/toolkit, see above comments
+//export const {createAnecdote, voteAnecdote, appendAnecdote, setAnecdotes} = anecdoteSlice.actions
+
+//When also using @reduxjs/toolkit and Redux Thunk for async, see commens above and below
+export const { voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+
+
+//using React Thunk/asynchronous action creators
+export const initializeAnecdotes = () => {  
+  return async dispatch => {    
+    const anecdotes = await anecdoteService.getAll()    
+    dispatch(setAnecdotes(anecdotes))
+  }
+}
+
+//using React Thunk/asynchronous action creators
+export const createAnecdote = content => {  
+  return async dispatch => {    
+    const newAnecdote = await anecdoteService.createNew(content)    
+    dispatch(appendAnecdote(newAnecdote))  
+  }
+}
+
+//using React Thunk/asynchronous action creators
+export const saveAnecdoteVoteToDatabase = id => {
+  console.log('saveAnecdoteVoteToDatabase, id:', id)
+  return async dispatch => {    
+    const updatedAnecdote = await anecdoteService.saveVote(id)
+    console.log('anecdote vote saved in database, attempting to update this anecdote in front-end:', updatedAnecdote)    
+    dispatch(voteAnecdote(updatedAnecdote.id))  
+  }
+
+}
+
+
+
 export default anecdoteSlice.reducer

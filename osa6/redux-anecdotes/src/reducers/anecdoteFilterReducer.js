@@ -17,8 +17,6 @@ const anecdoteFilterReducer = (state = initialState, action) => {
     }
   }
 
-
-
   export const filterChange = filter => {
     return {
       type: 'SET_FILTER',
@@ -26,6 +24,7 @@ const anecdoteFilterReducer = (state = initialState, action) => {
     }
   }
 */
+
 
 /*Better way to define reducers with @reduxjs/toolkit, see above and below comments*/
   const anecdoteFilterSlice = createSlice({  
