@@ -8,7 +8,8 @@ Installation instructions
 
 
 # ABOUT
-Exercise project for the chapter 6 of Full Stack Open course (2024)
+Exercise project for the chapter 6 of Full Stack Open course (2024). 
+Uses Redux for state management.
 
 # TODO
 
@@ -16,6 +17,10 @@ Exercise project for the chapter 6 of Full Stack Open course (2024)
 
 -anecdoteRadioFilterReducer: unneeded at the moment
 -anecdoteReducer.js: the method sortAnecdotes is unneeded at the moment
+
+## 09.12.2024
+
+-Sorting anecdotes by votes only works when a vote is given, not when the database is first loaded.
 
 # Installation instructions
 

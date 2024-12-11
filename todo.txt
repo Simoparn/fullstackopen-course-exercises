@@ -1,3 +1,4 @@
-7.1-7.2
-    check a better alternative for retrieving the current anecdote id (useMatch doesn't 
-    work any more starting from react-router-dom v6)? 
+August 2022
+    7.1-7.2
+        check a better alternative for retrieving the current anecdote id (useMatch doesn't 
+        work any more starting from react-router-dom v6)? 

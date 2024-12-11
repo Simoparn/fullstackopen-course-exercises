@@ -14,7 +14,7 @@ const App = () => {
   const dispatch = useDispatch()  
   
   useEffect(() => {    
-      //Without Redux Thunk in the reducer      
+      //Without Redux Thunk/async approach in the reducer      
       //noteService
       //  .getAll().then(anecdotes => dispatch(setAnecotes(anecdotes)))  
       dispatch(initializeAnecdotes())

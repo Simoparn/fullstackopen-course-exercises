@@ -1,0 +1,129 @@
+{
+  "anecdotes": [
+    {
+      "content": "If it hurts, do it more often",
+      "id": "47145",
+      "votes": 6
+    },
+    {
+      "content": "Adding manpower to a late software project makes it later!",
+      "id": "21149",
+      "votes": 5
+    },
+    {
+      "content": "The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
+      "id": "69581",
+      "votes": 6
+    },
+    {
+      "content": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+      "id": "36975",
+      "votes": 5
+    },
+    {
+      "content": "Premature optimization is the root of all evil.",
+      "id": "25170",
+      "votes": 5
+    },
+    {
+      "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+      "id": "98312",
+      "votes": 5
+    },
+    {
+      "content": "7th in database",
+      "votes": 5,
+      "id": "080Pbwi"
+    },
+    {
+      "content": "8th in database",
+      "votes": 7,
+      "id": "yFKLMGQ"
+    },
+    {
+      "content": "9th in database",
+      "votes": 5,
+      "id": "TKj2H-9"
+    },
+    {
+      "content": "10th in database",
+      "votes": 5,
+      "id": "S9iZeCg"
+    },
+    {
+      "content": "11th in database",
+      "votes": 5,
+      "id": "ZEJz6L9"
+    },
+    {
+      "content": "12th in database",
+      "votes": 5,
+      "id": "-sCmkwN"
+    },
+    {
+      "content": "13th in database",
+      "votes": 14,
+      "id": "Z0Kk8Hf"
+    },
+    {
+      "content": "14th in database",
+      "votes": 4,
+      "id": "y8Ce7tq"
+    },
+    {
+      "content": "15th in database",
+      "votes": 8,
+      "id": "AzpfnBU"
+    },
+    {
+      "content": "16th in database",
+      "votes": 5,
+      "id": "9Pkq6WG"
+    },
+    {
+      "content": "17th in database",
+      "votes": 5,
+      "id": "4SCYaIN"
+    },
+    {
+      "content": "18th in database",
+      "votes": 5,
+      "id": "Uf9Jj4y"
+    },
+    {
+      "content": "19th in database",
+      "votes": 5,
+      "id": "MXJUp52"
+    },
+    {
+      "content": "20th in database",
+      "votes": 4,
+      "id": "r2PG03q"
+    },
+    {
+      "content": "21st in database",
+      "votes": 5,
+      "id": "1euO3pv"
+    },
+    {
+      "content": "22nd in database",
+      "votes": 21,
+      "id": "54U0svL"
+    },
+    {
+      "content": "23rd in database",
+      "votes": 19,
+      "id": "yYsIJBs"
+    },
+    {
+      "content": "24th try",
+      "votes": 5,
+      "id": "jwGjpkI"
+    },
+    {
+      "content": "25th try",
+      "votes": 0,
+      "id": "puK9LcK"
+    }
+  ]
+}
