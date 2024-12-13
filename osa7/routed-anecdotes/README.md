@@ -1,3 +1,13 @@
+# ABOUT
+
+-Anecdote app with React Router
+-Doesn't use Redux for state management
+
+
+# TODO 
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

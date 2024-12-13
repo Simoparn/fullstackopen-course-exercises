@@ -13,7 +13,7 @@ const Menu = () => {
 
       
       <Link style={padding} to="/anecdotes">anecdotes</Link>
-      <Link style={padding} to="/create new">create new</Link>
+      <Link style={padding} to="/createnew">create new</Link>
       <Link style={padding} to="/about">about</Link>
     </div>
   )
@@ -186,18 +186,15 @@ const App = () => {
     <div>
 
       <h1>Software anecdotes</h1>
-
-      
-      
-        <div>
-          <Routes>   
-            <Route path="/" element={<About />} />  
-            <Route path="/anecdotes" element={<AnecdoteList anecdotes={anecdotes} />} />   
-            <Route path="/anecdotes/:id" element={<Anecdote anecdote={currentanecdote} />} />  
-            <Route path="create new" element={<CreateNew addNew={addNew} anecdotes={anecdotes} notification={notification} setNotification={setNotification}/>} />
-            <Route path="about" element={<About />} />       
-          </Routes>
-        </div>  
+            
+      <Routes>   
+        <Route path="/" element={<About />} />  
+        <Route path="/anecdotes" element={<AnecdoteList anecdotes={anecdotes} />} />   
+        <Route path="/anecdotes/:id" element={<Anecdote anecdote={currentanecdote} />} />  
+        <Route path="/createnew" element={<CreateNew addNew={addNew} anecdotes={anecdotes} notification={notification} setNotification={setNotification}/>} />
+        <Route path="/about" element={<About />} />       
+      </Routes>
+        
       <Menu />
       <p>{notification}</p>
       <Footer />
