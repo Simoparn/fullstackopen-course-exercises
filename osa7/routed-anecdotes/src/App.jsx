@@ -61,7 +61,7 @@ const Footer = () => (
     <br /><br /><br /><br />
     Anecdote app,  exercise 7 for <a href='https://fullstackopen.com/'>Full Stack Open</a>.
     <br/>Simo P.
-    <br/>See <a href='https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js'>https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js</a> for the template code.
+    <br/>See <a href='https://github.com/fullstack-hy2020/routed-anecdotes'>https://github.com/fullstack-hy2020/routed-anecdotes</a> for the template code.
   </div>
 )
 
@@ -72,7 +72,10 @@ const CreateNew = (props) => {
   const navigate=useNavigate()
 
   const handleSubmit = (e) => {
+    console.log('handleSbumit, props:', props)
+
     e.preventDefault()
+    
     props.addNew({
       content,
       author,
@@ -82,10 +85,11 @@ const CreateNew = (props) => {
     setContent('')
     setAuthor('')
     setInfo('')
-    navigate('/')
-    //console.log('anecdotes in createnew:', props.anecdotes)
-    props.setNotification('New anecdote,', props.anecdotes[1] ,'added')
+    navigate('/anecdotes')
+
     
+    
+    props.setNotification('New anecdote: \''+content+'\' added')
     setTimeout(()=>{props.setNotification('')},5000)
   }
 
@@ -196,7 +200,7 @@ const App = () => {
       </Routes>
         
       <Menu />
-      <p>{notification}</p>
+      <p><b>{notification}</b></p>
       <Footer />
     </div>
   )

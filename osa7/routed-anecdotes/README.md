@@ -3,6 +3,9 @@
 -Anecdote app with React Router
 -Doesn't use Redux for state management
 
+# INSTRUCTIONS
+
+-Remember to add the proper index.html to the project root with a link to index.jsx.
 
 # TODO 
 
