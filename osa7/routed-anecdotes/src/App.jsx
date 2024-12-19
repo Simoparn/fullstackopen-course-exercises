@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import {
 Routes, Route, Link, Navigate, useNavigate, useParams, useLocation
 } from "react-router-dom"
+import { useField } from './hooks/index.js'
 
 const Menu = () => {
   const padding = {
@@ -66,31 +67,63 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('content')
+  const author = useField('author')
+  const info = useField('info')
+  //const [content, setContent] = useState('')
+  //const [author, setAuthor] = useState('')
+  //const [info, setInfo] = useState('')
   const navigate=useNavigate()
 
+  
+  
   const handleSubmit = (e) => {
-    console.log('handleSbumit, props:', props)
-
+    //console.log('handleSbumit, props:', props)
+    //console.log('handleSubmit: button clicked:', e.nativeEvent.submitter.name)
+    
+    const buttonClicked = e.nativeEvent.submitter.name
     e.preventDefault()
     
-    props.addNew({
-      content,
-      author,
-      info,
-      votes: 0
-    })
-    setContent('')
-    setAuthor('')
-    setInfo('')
-    navigate('/anecdotes')
+    if(buttonClicked === "create"){
+      //Without using custom hook
+      /*props.addNew({
+        content,
+        author,
+        info,
+        votes: 0
+      })*/
+      
+      //With custom hook
+      props.addNew({
+        content:content.value,
+        author:author.value,
+        info:info.value,
+        votes: 0
+      })
 
-    
-    
-    props.setNotification('New anecdote: \''+content+'\' added')
-    setTimeout(()=>{props.setNotification('')},5000)
+      //Without using custom hook
+      //setContent('')
+      //setAuthor('')
+      //setInfo('')
+      navigate('/anecdotes')
+
+      console.log('content:', content)
+      console.log('author:', author)
+      console.log('info:', info)
+      
+      props.setNotification('New anecdote: \''+content.value+'\' added')
+      setTimeout(()=>{props.setNotification('')},5000)
+    }
+    else if(buttonClicked === "reset"){
+      
+      content.resetField()
+      author.resetField()
+      info.resetField()
+
+      console.log('content after resetting:', content)
+      console.log('author after resetting:', author)
+      console.log('info after resetting:', info)
+    }
   }
 
 
@@ -99,25 +132,41 @@ const CreateNew = (props) => {
   return (
     <div>
       <h2>create a new anecdote</h2>
+      
+      {/*Spread syntax is used here in the case of custom hooks */}
       <form onSubmit={handleSubmit}>
+      
+      
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          {/*<input name='content' value={content} onChange={(e) => setContent(e.target.value)} />*/}
+          <input {...content}/>
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          {/*<input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />*/}
+          <input {...author}/>
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+           {/*<input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />*/}
+          <input {...info}/>
         </div>
-        <button>create</button>
+        <button name="create">create</button>
+        <button name="reset">reset</button>
       </form>
     </div>
   )
 
 }
+
+
+
+
+
+
+
+
 
 
 

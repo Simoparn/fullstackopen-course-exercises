@@ -1,6 +1,6 @@
 # ABOUT
 
--Anecdote app with React Router
+-Anecdote app with React Router and custom for simplifying the passing of props to child components
 -Doesn't use Redux for state management
 
 # INSTRUCTIONS
