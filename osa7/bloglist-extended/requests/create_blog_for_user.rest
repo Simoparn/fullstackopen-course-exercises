@@ -1,0 +1,14 @@
+POST http://localhost:3003/api/blogs/
+Content-Type: application/json
+Authorization: bearer tokenhere
+
+{
+
+
+
+      "title": "first user, more user info testing 2",
+      "author": "Second blogger",
+      "url": "https://nice-and-fine-example-blogs.com/First_2",
+      "likes": 33
+      
+}

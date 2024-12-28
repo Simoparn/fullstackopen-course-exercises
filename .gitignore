@@ -3,11 +3,13 @@ node_modules
 create_user
 login
 
-material_exercise
+material_exercise_notes
 material_exercise_express
 material_exercise_osa6-2_note_redux
 material_exercise_osa6-1-6-3_redux_counter
 material_exercise_osa6-3_query_notes
-material_exercise_osa7_1
+material_exercise_osa7_1-7_3
 material_exercise_osa7_2
+material_exercise_osa7_4_webpack
+material_exercise_osa7-5_old_react_anecdotes
 todo

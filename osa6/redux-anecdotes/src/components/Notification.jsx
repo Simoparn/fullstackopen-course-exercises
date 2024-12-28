@@ -26,6 +26,7 @@ import { setNotification } from '../reducers/notificationReducer'
 
 const Notification = () => {
   const notification = useSelector(({notification}) => {
+    console.log('Notification component, useSelector:', notification)
     return notification
   })
   //const dispatch = useDispatch()

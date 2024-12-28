@@ -45,6 +45,8 @@ const useCountry = (name) => {
   return country
 }
 
+
+
 const Country = ({ country,  name } ) => {
   console.log('Country component, country:', country)
   console.log('Country component, setted name:', name)

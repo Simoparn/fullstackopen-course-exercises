@@ -1,0 +1,49 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom-hooks are awesome!"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "Trying 3rd note",
+      "id": 3
+    },
+    {
+      "content": "Trying 4th note",
+      "id": 4
+    },
+    {
+      "content": "Trying 5th note",
+      "id": 5
+    },
+    {
+      "content": "Trying 6th note",
+      "id": 6
+    },
+    {
+      "content": "Trying 7th note",
+      "id": 7
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": 2,
+      "name": "hellas",
+      "number": "012-123123"
+    },
+    {
+      "name": "esimerkkilä",
+      "number": "010-32123212321",
+      "id": 3
+    }
+  ]
+}
