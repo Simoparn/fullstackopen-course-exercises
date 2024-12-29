@@ -6,8 +6,9 @@ import loginService from './services/login'
 import BlogForm from './components/Blogform'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+import { /*initializeUser,*/ loginUser, logoutUser } from './reducers/userReducer' 
 import { setNotification, setNotificationWithTimeout } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog, updateBlog } from './reducers/blogReducer'
+import { /*getUserBlogs,*/ initializeBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
 
 const Footer = () => {
   const footerStyle = {
@@ -40,15 +41,19 @@ const Footer = () => {
 
 const App = () => {
   
+  const wholestate=useSelector(state=>state)
   //const [blogs, setBlogs] = useState([])
   const blogs=useSelector(({ blogs })=>{
     console.log('blogs retrieved from Redux store with useSelector:', blogs)
     return blogs
   })
-  const wholestate=useSelector(state=>state)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [usernameInput, setUsernameInput] = useState('')
+  const [passwordInput, setPasswordInput] = useState('')
+  //const [user, setUser] = useState(null)
+  const user=useSelector(( { user } )=>{
+    console.log('user retrieved from Redux store with useSelector:', user)
+    return user
+  })
   //const [errorMessage, setErrorMessage] = useState('')
 
   //see components/Blogform
@@ -60,134 +65,65 @@ const App = () => {
 
   //Empty array argument ensures that the effect is executed only upon the first rendering
   useEffect(() => {
-    //blogService.getAll().then((blogs) => setBlogs(blogs))
-    dispatch(initializeBlogs())
+    console.log('useEffect, initializing user and blogs in front-end')
+    //blogService.getUserBlogs().then((blogs) => setBlogs(blogs))
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      console.log('credentials found in local storage:', loggedUserJSON)
+      const loggedUser = JSON.parse(loggedUserJSON)
+      //blogService.setToken(user.token)
+      dispatch(loginUser(loggedUser.username, loggedUser.password))
+      //setUser(user)
+  
+      //dispatch(getUserBlogs())
+    }
+    else{
+      console.log('credentials not found in local storage:', loggedUserJSON)
+      dispatch(initializeBlogs())
+    }
   }, [])
+  
+  
 
   //Refs to blogs array
   useEffect(() => {
     
-    console.log('useEffect for adding refs to blogs array, whole state retrieved from Redux store with useSelector:', wholestate)
-    console.log('useEffect for adding refs to blogs array, blogs retrieved from Redux store with useSelector:', blogs)
+    console.log('useEffect, adding refs to changed blogs array, whole state retrieved from Redux store with useSelector:', wholestate)
+    console.log('useEffect, adding refs to changed blogs array, blogs retrieved from Redux store with useSelector:', blogs)
     blogRef.current = blogRef.current.slice(0, blogs.length)
   }, [blogs])
+  
 
   //Empty array argument ensures that the effect is executed only upon the first rendering
-  useEffect(() => {
+  /*useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      loginUser(user.username, user.password)
+      //setUser(user)
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [])*/
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
-
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      })
-      console.log('User after login in handleLogin:', user)
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      console.log('User credentials browser cache after login in handleLogin:')
-      console.log(window.localStorage.getItem('loggedBlogappUser'))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      /*setErrorMessage('logged in successfully')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 4000)*/
-      dispatch(setNotificationWithTimeout(`'${user.username}' logged in successfully`, 5000))
-    } catch (error) {
-      //console.log('Exception', exception)
-      /*setErrorMessage('login failed, wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)*/
-      dispatch(setNotificationWithTimeout("login failed, wrong credentials", 5000))
-      console.log("login failed, wrong credentials:", error)
-    }
+    console.log('logging in with', usernameInput, passwordInput)  
+    dispatch(loginUser(usernameInput, passwordInput))
+    
   }
 
   const handleLogout = async (event) => {
     event.preventDefault()
-    console.log('logging out with', username, password)
-
-    try {
-      //const user = await loginService.logout({username, password})
-      window.localStorage.removeItem('loggedBlogappUser')
-      console.log(
-        'User credentials browser cache after logout in handleLogout:'
-      )
-      console.log(window.localStorage.getItem('loggedBlogappUser'))
-
-      blogService.setToken(user.token)
-      setUser(null)
-      setUsername('')
-      setPassword('')
-      //setErrorMessage('logged out')¨
-      dispatch(setNotificationWithTimeout(`logged out successfully`, 5000))
-    } catch (exception) {
-      console.log('Logout exception', exception)
-      /*setErrorMessage('Error while logging out')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)*/
-      dispatch(setNotificationWithTimeout(`Error while logging out`, 5000))
-    }
+    console.log('logging out:', user.username)
+    dispatch(logoutUser(user.username))
   }
 
   //Adding blog and promises
   const handleAddBlog = (blogObject) => {
     console.log('Blog submit button clicked, blog to handle:', blogObject)
-
     blogFormRef.current.toggleVisibility()
-    
     //action creator in reducers for back-end and front-end saving functionality
-    dispatch(createBlog(blogObject))
-
-    //back-end and front-end saving moved to action creator
-    /*blogService
-      .create(blogObject)
-      .then((returnedBlog) => {
-        setBlogs(blogs.concat(returnedBlog))
-        //setErrorMessage('New blog: ' + blogObject.title + ' added')
-        //setTimeout(() => {
-        //  setErrorMessage(null)
-        //}, 3000)
-        dispatch(setNotificationWithTimeout("New blog: " + blogObject.title + " added", 5000))
-      })
-      .catch((error) => {
-        //setErrorMessage(
-        //  'Adding a new blog failed, check that the likes field is a number and does not contain letters, if this doesnt work, try to relog in'
-        //)
-        //
-        //console.log('Adding a new blog failed')
-        //setTimeout(() => {
-        //  setErrorMessage(null)
-        //}, 3000)
-        console.log('Adding a new blog failed:', error)
-        dispatch(setNotificationWithTimeout(`Adding a new blog failed, check that the likes field is a number and does not contain letters, if this doesnt work, try to relog in`, 5000))
-        
-      })*/
-
-    //Option without using blogService imported from blogs.js
-    //axios.post('http://localhost:3001/blogs', blogObject)
-    //.then(response =>
-    //  {
-    //    console.log(response)
-    //    setBlogs(blogs.concat(blogObject))
-    //    setNewBlog('')
-    //  })
-    //.catch(error => {
-    //console.log('fail')
-    //})
+    dispatch(createBlog(blogObject)) 
   }
 
   //TODO: see also course assignment 5.7, unimplemented
@@ -217,51 +153,26 @@ const App = () => {
     //reducer action creator for back-end and front-end updating
     dispatch(updateBlog(blogToUpdate.id, blogObject))
 
-    // back-end and front-end blog updating moved to action creator
-    /*blogService
-      .update(blogToUpdate.id, blogObject)
-      .then((updatedBlog) => {
-        setBlogs(blogs.concat(returnedBlog))
-        let blogtoupdateindex = blogs.indexOf(blogToUpdate[0])
-        const updatedBlogs = [...blogs]
-        updatedBlogs[blogtoupdateindex] = updatedBlog
-        //Update shown list
-        setBlogs(updatedBlogs)
-        //setErrorMessage(
-        //  'Blog: ' + blogObject.title + ' like button pressed, likes increased'
-        //)
-        //setTimeout(() => {
-        //  setErrorMessage(null)
-        //}, 3000)
-        dispatch(setNotificationWithTimeout("Blog" + blogObject.title + " like button pressed, likes increased", 5000))
-        console.log('Updated blog list after adding a like: ', updatedBlogs)
-      })
-      .catch((error) => {
-        //setErrorMessage('Liking the blog failed')
-        //console.log('Liking a new blog failed, error:', error)
-        //setTimeout(() => {
-        //  setErrorMessage(null)
-        //}, 3000)
-        console.log('Liking a new blog failed, error:', error)
-        dispatch(setNotificationWithTimeout(`Liking the blog failed`, 5000))
-      })*/
   }
 
-  ////TODO: Unfinished and no button yet
-  //const handleRemoveBlog = (blogObject) => {
-  //  //Didn't work by comparing object and string values with ===, so this was needed
-  //  const blogId = Object.values(
-  //    blogRef.current.find((ref) => ref.blogid === blogObject.id)
-  //  )
-  //  console.log('blog id of the blog to remove: ', blogId)
-  //  console.log('blogs before filtering: ', blogs)
-  //  const blogToRemove = blogs.find((listblog) => listblog.id === blogId[0])
-  //  console.log('Blog to remove:', blogToRemove)
-  //  let confirmRemove = window.confirm(
-  //    'Are you sure you want to remove the following blog?\n ' +
-  //      blogToRemove.title
-  //  )
-  //  if (confirmRemove) {
+  
+  //TODO: Unfinished and no button yet
+  const handleRemoveBlog = (blogObject) => {
+    //Didn't work by comparing object and string values with ===, so this was needed
+    const blogId = Object.values(
+      blogRef.current.find((ref) => ref.blogid === blogObject.id)
+    )
+    console.log('blog id of the blog to remove: ', blogId)
+    console.log('blogs before filtering: ', blogs)
+    const blogToRemove = blogs.find((listblog) => listblog.id === blogId[0])
+    console.log('Blog to remove:', blogToRemove)
+    let confirmRemove = window.confirm(
+      'Are you sure you want to remove the following blog?\n ' +
+        blogToRemove.title
+    )
+    if (confirmRemove) {
+      dispatch(removeBlog(blogId))
+  // Front-end and back-end deletion moved to action creator
   //    blogService
   //      .deleteBlog(blogToRemove.id)
   //      .then((returnedBlog) => {
@@ -292,8 +203,8 @@ const App = () => {
   //        console.log('Removing the blog failed', error)
   //        
   //      })
-  //  }
-  //}
+    }
+  }
 
   const loginForm = () => (
     <form id="login-form" onSubmit={handleLogin}>
@@ -302,9 +213,9 @@ const App = () => {
         <input
           style={{ marginLeft: '1%' }}
           type="text"
-          value={username}
+          value={usernameInput}
           name="Username"
-          onChange={({ target }) => setUsername(target.value)}
+          onChange={({ target }) => setUsernameInput(target.value)}
         />
       </div>
       <div style={{ paddingBottom: '1%' }}>
@@ -312,9 +223,9 @@ const App = () => {
         <input
           style={{ marginLeft: '1%' }}
           type="password"
-          value={password}
+          value={passwordInput}
           name="Password"
-          onChange={({ target }) => setPassword(target.value)}
+          onChange={({ target }) => setPasswordInput(target.value)}
         />
       </div>
       <button type="submit" style={{ fontSize: '20px' }}>
@@ -323,13 +234,15 @@ const App = () => {
     </form>
   )
 
+
+
   return (
     <div style={{ marginLeft: '0.8%' }}>
       <h2>Blogs</h2>
 
       {/*<Notification message={errorMessage} />*/}
       <Notification />
-      {user === null ? (
+      {user.username === null ? (
         loginForm()
       ) : (
         <div>
@@ -397,7 +310,7 @@ const App = () => {
                       blog={blog}
                       ref={(element) => (blogRef.current[i] = element)}
                       handleUpdateBlog={handleUpdateBlog}
-                      /*removeBlog={handleRemoveBlog}*/
+                      handleRemoveBlog={handleRemoveBlog}
                       currentUser={user}
                     />
                   </Togglable>

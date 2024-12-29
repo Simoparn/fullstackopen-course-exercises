@@ -201,9 +201,19 @@ export const { likeBlog, appendBlog, setBlogs } = blogSlice.actions
 //using React Thunk/asynchronous action creators
 export const initializeBlogs = () => {  
   return async dispatch => {    
-    const blogs = await blogService.getAll()    
+    dispatch(setBlogs([]))
+  }
+}
+
+
+export const getUserBlogs = () => {
+
+  return async dispatch => {    
+    const blogs = await blogService.getUserBlogs()    
     dispatch(setBlogs(blogs))
   }
+
+
 }
 
 //using React Thunk/asynchronous action creators
@@ -215,7 +225,7 @@ export const createBlog = (blogObject) => {
       console.log('createBlog, returned blog to be added to front-end after creating in back-end:', returnedBlog)
 
       try{
-        const allBlogs = await blogService.getAll()
+        const allBlogs = await blogService.getUserBlogs()
         console.log('createBlog, retrieving updated blogs after saving a new blog to back-end succeeded, attempting to update the list in front-end:', allBlogs)
         setBlogs(allBlogs.concat(returnedBlog))
         /*setErrorMessage('New blog: ' + blogObject.title + ' added')
@@ -233,14 +243,14 @@ export const createBlog = (blogObject) => {
       dispatch(appendBlog(returnedBlog))  
     } catch (error){
       console.log('Creating a new blog in back-end failed:', error)
-      dispatch(setNotificationWithTimeout(`Adding a new blog failed, check that the likes field is a number and does not contain letters, if this doesnt work, try to relog in`, 5000))
+      dispatch(setNotificationWithTimeout(`Adding a new blog failed, check that 1) the likes field is a number and does not contain letters 2) the URL field is not empty.`, 5000))
     }
 
     /*blogService
       .create(blogObject)
       .then((returnedBlog) => {
         console.log('createBlog, returned blog to be added to front-end after creating in back-end')
-        blogService.getAll()
+        blogService.getUserBlogs()
           .then((allBlogs) => { 
             console.log('createBlog, retrieving updated blogs after saving a new blog to back-end succeeded, attempting to update the list in front-end')
             setBlogs(allBlogs.concat(returnedBlog))
@@ -258,7 +268,7 @@ export const createBlog = (blogObject) => {
       })
       .catch((error) => {
         //setErrorMessage(
-        //  'Adding a new blog failed, check that the likes field is a number and does not contain letters, if this doesnt work, try to relog in'
+        //  'Adding a new blog failed, check that 1) the likes field is a number and does not contain letters 2) the URL field is not empty.'
         //)
         //
         //console.log('Adding a new blog failed')
@@ -266,7 +276,7 @@ export const createBlog = (blogObject) => {
         //  setErrorMessage(null)
         //}, 3000)
         console.log('Creating a new blog in back-end failed:', error)
-        dispatch(setNotificationWithTimeout(`Adding a new blog failed, check that the likes field is a number and does not contain letters, if this doesnt work, try to relog in`, 5000))
+        dispatch(setNotificationWithTimeout(`Adding a new blog failed, check that 1) the likes field is a number and does not contain letters 2) the URL field is not empty.`, 5000))
         
       })
     console.log('Created a new blog in database, attempting to add this blog to the list in front-end:', Blog)
@@ -279,37 +289,7 @@ export const updateBlog = (id, blogToUpdate) => {
   console.log('updateBlog, blog id:', id)
   console.log('updateBlog, blogToUpdate:', blogToUpdate)
 
-  //TODO: this is just for reference, don't use promise syntax with async
-  /*blogService
-    .update(blogToUpdate.id, blogObject)
-    .then((updatedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
-      let blogtoupdateindex = blogs.indexOf(blogToUpdate[0])
-      const updatedBlogs = [...blogs]
-      updatedBlogs[blogtoupdateindex] = updatedBlog
-      //Update shown list
-      setBlogs(updatedBlogs)
-      //setErrorMessage(
-      //  'Blog: ' + blogObject.title + ' like button pressed, likes increased'
-      //)
-      //setTimeout(() => {
-      //  setErrorMessage(null)
-      //}, 3000)
-      dispatch(setNotificationWithTimeout("Blog" + blogObject.title + " like button pressed, likes increased", 5000))
-      console.log('Updated blog list after adding a like: ', updatedBlogs)
-    })
-    .catch((error) => {
-      //setErrorMessage('Liking the blog failed')
-      //console.log('Liking a new blog failed, error:', error)
-      //setTimeout(() => {
-      //  setErrorMessage(null)
-      //}, 3000)
-      console.log('Liking a new blog failed, error:', error)
-      dispatch(setNotificationWithTimeout(`Liking the blog failed`, 5000))
-      })*/
   
-  
-
     return async dispatch => {   
       try{ 
       const updatedBlog = await blogService.update(id, blogToUpdate)
@@ -327,6 +307,42 @@ export const updateBlog = (id, blogToUpdate) => {
     
   }
 }
+
+export const removeBlog = (id) => {
+
+  return async dispatch => {
+    try {
+      const deletedBlog=blogService.deleteBlog(id)
+      const allBlogs = await blogService.getUserBlogs()
+      const blogsAfterRemove = allBlogs.filter(
+        (listblog) => listblog.id.toLowerCase() !== id
+      )
+      //Update shown list after delete
+      setBlogs(blogsAfterRemove)
+      /*setErrorMessage('Blog: ' + blogObject.title + ' removed successfully')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)*/
+      dispatch(setNotificationWithTimeout("Blog: " + deletedBlog + "removed successfully", 5000))
+      /*console.log(
+        'Blog list after deleting, ',
+        blogsAfterRemove.length,
+        ' blogs:',
+        blogsAfterRemove
+      )*/      
+    }catch(error){
+      /*setErrorMessage('Removing the blog failed')
+      console.log('Removing the blog failed', error)
+      setTimeout(() => {
+      setErrorMessage(null)
+      }, 3000)*/
+      dispatch(setNotificationWithTimeout("Removing the blog failed", 5000))
+      console.log('Removing the blog failed', error)
+    }
+  }
+}
+  
+
 
 
 

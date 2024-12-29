@@ -5,7 +5,7 @@ import App from './App'
 import './index.css'
 import store from './store'
 
-store.subscribe(() => console.log('state store at beginning:', store.getState()))
+store.subscribe(() => console.log('index.js, state store at beginning before rendering components:', store.getState()))
 
 
 

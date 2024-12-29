@@ -18,6 +18,14 @@ const create = async (newBlog) => {
   //return request.then(response => response.data)
 }
 
+const getUserBlogs = async () => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request=axios.get(baseUrl, config)
+  return request.then(response => response.data)
+}
+
 const update = async (id, updatedBlog) => {
   console.log('blogServices, update, id:', id)
   console.log('blogServices, update, blog to update:', updatedBlog)
@@ -47,6 +55,7 @@ const getAll = () => {
 
 export default {
   getAll,
+  getUserBlogs,
   create: create,
   setToken: setToken,
   update: update,

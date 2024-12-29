@@ -11,13 +11,32 @@ blogsRouter.get('/info', (req, res) => {
 })
 
 blogsRouter.get('/', async (request, response) => {
-  const user = request.user
+  //const user = request
+  
+  //console.log("user in backend when retrieving blogs for an user:", user)
   //const blogs= await Blog.find({})
+  
+  console.log('token found while retrieving notes for user')
+
+
+  if (!request.token){
+    console.log('No user token, cannot retrieve notes for the user')
+    return response.status(400).json({error: 'No user token, cannot retrieve notes for the user'})
+  }
+  
+ const decodedToken = jwt.verify(request.token, process.env.SECRET)
+ console.log('decoding token succeeded while retrieving notes for user')
+  
   const blogs = await Blog.find({}).populate('user', {
     username: 1,
     name: 1,
   })
-  response.json(blogs)
+
+  userBlogs=blogs.filter(blog => blog.user.id.toString() === decodedToken.id.toString())
+
+  console.log('filtered blogs for logged-in user:', userBlogs)
+
+  response.json(userBlogs)
 })
 
 blogsRouter.get('/:id', (request, response, next) => {
@@ -45,6 +64,7 @@ blogsRouter.get('/info/moreinfo', async (req, res) => {
 })
 
 /*
+//unnecessary with tokenExtractor and userExtractor middlewares, use request.token
 const getTokenFrom = request => {
 
   const authorization = request.get('authorization')

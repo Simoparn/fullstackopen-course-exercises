@@ -6,6 +6,11 @@ Frontend is in the following directory: bloglist-extended-frontend
 -Uses Redux for React state management
 -Uses prettier instead of ESlint for linting / code formatting
 
+# USAGE
+
+## Blog list
+Blogs are sorted automatically in
+
 # INSTRUCTIONS
 
 ## DATABASE CONFIGURATION
@@ -45,8 +50,9 @@ npm run test
 
 # TODO
 
--remember to replace any "state.push(action.payload)" with "state.concat(action.payload)" in reducers
--likes for a blog are not updated without refreshing the page
+-remember to replace any "state.push(action.payload)" with "return state.concat(action.payload)" or similar in reducers, reducer state should not be changed directly
+-blog list view is still not updated in front-end when removing a blog
 -manual sorting for blogs is still unfinished (see blogReducer.js comments)
 -user blogs are still not removed from the front-end Redux state store after logging out
 -blog input form fields need headers or permanent placeholders
+-Considering forbidding empty author input field (now only empty URL and likes)
