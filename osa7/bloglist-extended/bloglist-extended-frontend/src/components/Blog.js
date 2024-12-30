@@ -69,12 +69,7 @@ const Blog = forwardRef((props, ref) => {
       </li>
     )
   } else {
-    console.log(
-      'Current blog: ',
-      props.blog,
-      '\nCurrent user:',
-      props.currentUser
-    )
+    //console.log('Current blog: ',props.blog,'\nCurrent user: ',props.currentUser)
 
     if (props.currentUser.username === props.blog.user.username) {
       blogid = props.blog.id

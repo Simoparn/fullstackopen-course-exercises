@@ -177,10 +177,12 @@ const blogSlice = createSlice({
     }  
     ,
     appendBlog(state, action) {
-      state.push(action.payload)
+      const newBlogListAfterAppend=state.concat(action.payload)
+      return newBlogListAfterAppend
+      //state.push(action.payload)
     },
     setBlogs(state, action) { 
-      console.log('setting all blogs in front-end:', action.payload)
+      console.log('setBlogs, setting all blogs in front-end:', action.payload)
       //state.push(action.payload)     
       return action.payload    
     }
@@ -207,14 +209,38 @@ export const initializeBlogs = () => {
 
 
 export const getUserBlogs = () => {
+  
+    return async dispatch => {  
+      
+      const blogs = await blogService.getUserBlogs()    
+      
+      
+      //This is needed if the returned value is the status error caused by empty tokens 
+      if(!(blogs === 400 )){
+        dispatch(setBlogs(blogs))
+      }
+      else{
+        dispatch(setBlogs([]))
+      }
 
-  return async dispatch => {    
-    const blogs = await blogService.getUserBlogs()    
-    dispatch(setBlogs(blogs))
-  }
-
+      console.log('getUserBlogs, blogs or HTTP status:', blogs)
+      
+    }
+    
 
 }
+
+
+//Needed for Userinfo component
+export const getBlogsByUserId = () => {
+
+}
+
+
+
+
+
+
 
 //using React Thunk/asynchronous action creators
 export const createBlog = (blogObject) => {  

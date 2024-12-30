@@ -45,7 +45,7 @@ const notificationSlice = createSlice({
   export const setNotificationWithTimeout = (content, timeout) => {  
     return async dispatch => {    
         console.log('notification set for the blog:', content)
-        console.log('notification timeout set:', timeout)          
+        //console.log('notification timeout set:', timeout)          
         dispatch(setNotification(content))
         setTimeout(() => { 
           dispatch(setNotification(''))

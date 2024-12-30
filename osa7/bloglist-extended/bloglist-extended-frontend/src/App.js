@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import LoggedIn from './components/LoggedIn'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/Blogform'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
-import { /*initializeUser,*/ loginUser, logoutUser } from './reducers/userReducer' 
+import { setUser, /*initializeUser,*/ loginUser, logoutUser } from './reducers/userReducer' 
 import { setNotification, setNotificationWithTimeout } from './reducers/notificationReducer'
-import { /*getUserBlogs,*/ initializeBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
+import { getUserBlogs, initializeBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
+import { getAllUsers } from './reducers/allUsersInfoReducer'
 
 const Footer = () => {
   const footerStyle = {
@@ -70,12 +72,14 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       console.log('credentials found in local storage:', loggedUserJSON)
+      
       const loggedUser = JSON.parse(loggedUserJSON)
-      //blogService.setToken(user.token)
-      dispatch(loginUser(loggedUser.username, loggedUser.password))
-      //setUser(user)
-  
+      blogService.setToken(loggedUser.token)
+      dispatch(setUser(loggedUser))
+
+
       //dispatch(getUserBlogs())
+      //console.log('useEffect, user blogs after dispatch(getUserBlogs())', blogs)
     }
     else{
       console.log('credentials not found in local storage:', loggedUserJSON)
@@ -83,7 +87,10 @@ const App = () => {
     }
   }, [])
   
-  
+  useEffect(()=>{
+    dispatch(getUserBlogs())
+    console.log('useEffect, user blogs after dispatch(getUserBlogs())', blogs)
+  }, [user])
 
   //Refs to blogs array
   useEffect(() => {
@@ -244,84 +251,7 @@ const App = () => {
       <Notification />
       {user.username === null ? (
         loginForm()
-      ) : (
-        <div>
-          <p
-            style={{
-              paddingBottom: '2%',
-              fontSize: '25px',
-            }}
-          >
-            {user.name} logged in{' '}
-            <span
-              style={{
-                paddingTop: '1%',
-              }}
-            ></span>
-          </p>
-          <p style={{ paddingBottom: '3%' }}>
-            <button
-              onClick={handleLogout}
-              type="button"
-              style={{
-                fontSize: '18px',
-              }}
-            >
-              logout
-            </button>
-          </p>
-
-          <div style={{ marginLeft: '0.8%' }}>
-            <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <BlogForm createBlog={handleAddBlog} />
-            </Togglable>
-            <h4>INSTRUCTIONS:</h4>
-            <p>
-              See localhost:backendport/api/blogs and
-              localhost:backendport/api/users for details about current data and
-              users{' '}
-            </p>
-            <p>
-              All blogs shown regardless of the user, users can only create and
-              delete blogs for themselves, refresh page after deleting a blog
-            </p>
-            <p>
-              The page must be refreshed to show the updated likes, the same
-              blog can only be liked once before refreshing again
-            </p>
-            <h4>PROBLEMS:</h4>
-            <p>Page needs to be refreshed after deleting or liking a blog</p>
-
-            <ul className="bloglist">
-              <span
-                style={{
-                  paddingBottom: '2%',
-                  fontSize: '25px',
-                }}
-              >
-                {blogs.length} blogs in total
-              </span>
-
-              {blogs
-                .map((blog, i) => (
-                  <Togglable buttonLabel="view" ref={blogViewRef}>
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      ref={(element) => (blogRef.current[i] = element)}
-                      handleUpdateBlog={handleUpdateBlog}
-                      handleRemoveBlog={handleRemoveBlog}
-                      currentUser={user}
-                    />
-                  </Togglable>
-                ))
-                .sort(function (a, b) {
-                  return a.likes > b.likes ? 1 : -1
-                })}
-            </ul>
-          </div>
-        </div>
-      )}
+      ) : ( <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />)}
 
       <Footer />
     </div>
