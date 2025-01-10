@@ -1,7 +1,9 @@
 import { useDispatch } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
+import { logoutUser } from './userReducer'
 import { setNotificationWithTimeout } from './notificationReducer'
 import blogService from '../services/blogs'
+
 
 //Needed without an actual database (MongoDB, json-server/axios, etc. )
 /*
@@ -214,21 +216,50 @@ export const getUserBlogs = () => {
       
       const blogs = await blogService.getUserBlogs()    
       
+      console.log('geTUserBlogs, blogs response:', blogs)
       
-      //This is needed if the returned value is the status error caused by empty tokens 
-      if(!(blogs === 400 )){
+      //This is needed if the returned value is the status error caused by empty tokens (status code 400) or the 
+      // cached browser token has been expired (jwt.verify -> TokenExpiredError -> status code 500), which
+      //cause an errorMessage field to be sent in the response
+      
+      if(blogs instanceof Array){
+        console.log('user blogs (response data) is an array, error message not found, it is safe to set the blog state with response')
         dispatch(setBlogs(blogs))
       }
       else{
+        console.log('user blogs (response data) is not an array, blog state must be left empty')
+        
+        //No error message should be shown in the browser if the token was empty, which is always the case when using the application first the time and no valid token is cached     
+        
+        if(blogs==='No user token, cannot retrieve blogs for the user'){
+            console.log("No user token, cannot retrieve blogs for the user")
+         }   
+        
+        else if(blogs==='Error while retrieving blogs for the user, token expired or invalid token'){
+        
+          console.log('expired or invalid token, cannot retrieve blogs for the user')
+          dispatch(logoutUser())
+          dispatch(setNotificationWithTimeout('Error while retrieving blogs for the user, token expired or invalid token', 5000))
+        }
         dispatch(setBlogs([]))
       }
-
-      console.log('getUserBlogs, blogs or HTTP status:', blogs)
+      
       
     }
     
 
 }
+
+
+//Needed for Userssummary component
+
+export const getAllBlogs = () => {
+  
+  return async dispatch => {
+    const allBlogs = await blogService.getAll()
+  }
+}
+
 
 
 //Needed for Userinfo component
@@ -338,24 +369,46 @@ export const removeBlog = (id) => {
 
   return async dispatch => {
     try {
+
+      console.log("removeBlog, removed blog id:", id)
+
+ 
+
+
+
       const deletedBlog=blogService.deleteBlog(id)
       const allBlogs = await blogService.getUserBlogs()
       const blogsAfterRemove = allBlogs.filter(
         (listblog) => listblog.id.toLowerCase() !== id
       )
+
+      /*allBlogs.forEach(
+        (listblog)=>console.log("removeBlog blog in original list:", listblog)
+      )*/
+
+      const deletableBlogObject = allBlogs.find(
+        (listblog) => listblog.id.toLowerCase() === id 
+      )
+
+      console.log("removeBlog, blog object for front-end removal:", deletableBlogObject)
+      
+      const deletedBlogName = deletableBlogObject.title
+      
+      console.log("removeBlog, blog name for front-end removal:", deletableBlogObject.title)
+
       //Update shown list after delete
-      setBlogs(blogsAfterRemove)
-      /*setErrorMessage('Blog: ' + blogObject.title + ' removed successfully')
+      dispatch(setBlogs(blogsAfterRemove))
+      /*setNotificationWithTimeoutMessage('Blog: ' + blogObject.title + ' removed successfully')
       setTimeout(() => {
         setErrorMessage(null)
       }, 3000)*/
-      dispatch(setNotificationWithTimeout("Blog: " + deletedBlog + "removed successfully", 5000))
-      /*console.log(
+      dispatch(setNotificationWithTimeout("Blog: " + deletedBlogName + " removed successfully", 5000))
+      console.log(
         'Blog list after deleting, ',
         blogsAfterRemove.length,
         ' blogs:',
         blogsAfterRemove
-      )*/      
+      )     
     }catch(error){
       /*setErrorMessage('Removing the blog failed')
       console.log('Removing the blog failed', error)

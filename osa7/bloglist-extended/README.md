@@ -8,10 +8,13 @@ Frontend is in the following directory: bloglist-extended-frontend
 
 # USAGE
 
-## Blog list
-Blogs are sorted automatically in
+## USAGE, BLOG LIST
+Blogs are sorted automatically in ascending order or likes
 
-# INSTRUCTIONS
+## USAGE, NOTIFICATIONS
+-Error notification are shown for failed logins, when an old authentication token has expired or the token was invalid
+
+# DEVELOPMENT, INSTRUCTIONS
 
 ## DATABASE CONFIGURATION
 
@@ -50,9 +53,22 @@ npm run test
 
 # TODO
 
--remember to replace any "state.push(action.payload)" with "return state.concat(action.payload)" or similar in reducers, reducer state should not be changed directly
--blog list view is still not updated in front-end when removing a blog
--manual sorting for blogs is still unfinished (see blogReducer.js comments)
--user blogs are still not removed from the front-end Redux state store after logging out
+## TODO, URGENT
+-Remember to replace any "state.push(action.payload)" with "return state.concat(action.payload)" or similar in reducers, reducer state should not be changed directly
+-App seems to freeze after a while
+
+## TODO, ROUTING
+Consider adding a component for nonexisting routes
+
+## TODO, ERROR HANDLING
+-Consider separate notification messages for expired and invalid authentication tokens in front-end (when getting user blogs upon rerenderings). 
+-Consider simply sending error status codes upon back-end request failures to avoid the need for checking response data type in front-end.
+
+## TODO, BLOG FORM AND LIST 
 -blog input form fields need headers or permanent placeholders
+-manual sorting for blogs is still unfinished (see blogReducer.js comments)
 -Considering forbidding empty author input field (now only empty URL and likes)
+
+## TODO, HTTP REQUESTS
+-Consider moving setToken for HTTP requests from to an appropriate action creator, instead of using it directly in rerenders (useEffect).
+

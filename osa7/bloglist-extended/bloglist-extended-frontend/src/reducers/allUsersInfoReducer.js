@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
 import { setNotificationWithTimeout } from './notificationReducer'
 import { initializeBlogs, getUserBlogs } from './blogReducer'
-import userService from '../services/login'
+import userService from '../services/users'
 import blogService from '../services/blogs'
 
 
@@ -68,7 +68,7 @@ const userReducer = (state = initialState, action) => {
 
 
 const allUsersInfoSlice = createSlice({  
-  name: 'users',  
+  name: 'allUsersInfo',  
   initialState,
   //users left empty below for json-server database/axios experiment 
   //initialState:[],
@@ -135,7 +135,7 @@ export const { setAllUsersInfo } = allUsersInfoSlice.actions
 export const getAllUsers = () => {
   return async dispatch => { 
     const allUsers = await userService.getAll()
-    console.log("userReducer, getAllUsers, all users:", allUsers)
+    console.log("allUsersInfoReducer, getAllUsers, all users:", allUsers)
     dispatch(setAllUsersInfo(allUsers))
   }  
 }

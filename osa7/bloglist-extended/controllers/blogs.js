@@ -6,27 +6,30 @@ const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/info', (req, res) => {
   res.send(
-    '<h2>This is the backend for the part 4 blog list. See localhost:3003 for the front end.</h2><br/><h3>More info: /api/blogs/info/moreinfo <br/>All blogs: api/blogs</h3>'
+    '<h2>This is the backend for the part 7 extended blog list. See localhost:3003 for the front end.</h2><br/><h3>More info: /api/blogs/info/moreinfo <br/>All blogs: api/blogs</h3>'
   )
 })
 
 blogsRouter.get('/', async (request, response) => {
-  //const user = request
-  
-  //console.log("user in backend when retrieving blogs for an user:", user)
-  //const blogs= await Blog.find({})
-  
-  console.log('token found while retrieving notes for user')
+  try{
+    //const user = request
+    
+    //console.log("user in backend when retrieving blogs for an user:", user)
+    //const blogs= await Blog.find({})
+    
+    
 
 
   if (!request.token){
-    console.log('No user token, cannot retrieve notes for the user')
-    return response.status(400).json({error: 'No user token, cannot retrieve notes for the user'})
+      console.log('No user token, cannot retrieve blogs for the user')
+      return response.status(400).json({errorMessage: 'No user token, cannot retrieve blogs for the user'})
   }
   
- const decodedToken = jwt.verify(request.token, process.env.SECRET)
- console.log('decoding token succeeded while retrieving notes for user')
-  
+  console.log('token found while retrieving blogs for the user')
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  console.log('decoding token succeeded while retrieving blogs for user')
+    
   const blogs = await Blog.find({}).populate('user', {
     username: 1,
     name: 1,
@@ -35,8 +38,20 @@ blogsRouter.get('/', async (request, response) => {
   userBlogs=blogs.filter(blog => blog.user.id.toString() === decodedToken.id.toString())
 
   console.log('filtered blogs for logged-in user:', userBlogs)
-
   response.json(userBlogs)
+
+  }catch(error){
+    if (error instanceof jwt.TokenExpiredError){
+      console.log("error while retrieving blogs for the user, token expired:", error)
+      return response.status(500).json({errorMessage: 'Error while retrieving blogs for the user, token expired or invalid token'})
+      
+    } 
+    else if (error instanceof jwt.JsonWebTokenError) {
+      console.log("error while retrieving blogs for the user, token is invalid:", error)
+      return response.status(500).json({errorMessage: 'Error while retrieving blogs for the user, token expired or invalid token'})
+    }
+    
+  }
 })
 
 blogsRouter.get('/:id', (request, response, next) => {

@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
 import { setNotificationWithTimeout } from './notificationReducer'
 import { initializeBlogs, getUserBlogs } from './blogReducer'
-import userService from '../services/login'
+import loginService from '../services/login'
 import blogService from '../services/blogs'
 
 
@@ -67,7 +67,7 @@ const userReducer = (state = initialState, action) => {
 /*Better way to define reducers with @reduxjs/toolkit, see above and below comments*/
 
 const userSlice = createSlice({  
-  name: 'users',  
+  name: 'user',  
   initialState,
   //users left empty below for json-server database/axios experiment 
   //initialState:[],
@@ -148,7 +148,7 @@ export const loginUser = (username, password) => {
   return async dispatch => { 
     try{  
       
-      const user = await userService.login({
+      const user = await loginService.login({
         username,
         password,
       })
@@ -201,16 +201,17 @@ export const loginUser = (username, password) => {
 }
 
 //using React Thunk/asynchronous action creators
-export const logoutUser = (username) => {
+export const logoutUser = () => {
 
   return async ( dispatch, getState ) => {
     try {
       console.log('logoutUser, getState:', getState)
       
-    
+      console.log(
+        'User credentials browser cache after logout in logoutUser just before emptying front-end state:', window.localStorage.getItem('loggedBlogappUser')) 
       window.localStorage.removeItem('loggedBlogappUser')
       console.log(
-        'User credentials browser cache after logout in logoutUser:', window.localStorage.getItem('loggedBlogappUser'))
+        'Removed user credentials browser cache after logout in logoutUser just before emptying front-end state:', window.localStorage.getItem('loggedBlogappUser'))
 
       blogService.setToken("")
       dispatch(setUser({token:null, user:null, username:null}))
@@ -218,7 +219,9 @@ export const logoutUser = (username) => {
       //setUsername('')
       //setPassword('')
       //setErrorMessage('logged out')¨
-      dispatch(setNotificationWithTimeout(`logged out successfully`, 5000))
+      if(window.localStorage.getItem('loggedBlogappUser')){
+        dispatch(setNotificationWithTimeout(`logged out successfully`, 5000))
+      }
       
     }catch(error){
       console.log('Logout error', error)

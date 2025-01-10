@@ -11,7 +11,6 @@ import { createBlog, updateBlog, removeBlog } from '../reducers/blogReducer'
 
 
 
-
 const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
 
 
@@ -39,7 +38,7 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
     const handleLogout = async (event) => {
         event.preventDefault()
         console.log('logging out:', user.username)
-        dispatch(logoutUser(user.username))
+        dispatch(logoutUser())
     }
 
 
@@ -90,38 +89,38 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
             blogToRemove.title
         )
         if (confirmRemove) {
-        dispatch(removeBlog(blogId))
-    // Front-end and back-end deletion moved to action creator
-    //    blogService
-    //      .deleteBlog(blogToRemove.id)
-    //      .then((returnedBlog) => {
-    //        const blogsAfterRemove = blogs.filter(
-    //          (listblog) => listblog.id.toLowerCase() !== blogId
-    //        )
-    //        //Update shown list after delete
-    //        setBlogs(blogsAfterRemove)
-    //        /*setErrorMessage('Blog: ' + blogObject.title + ' removed successfully')
-    //        setTimeout(() => {
-    //          setErrorMessage(null)
-    //        }, 3000)*/
-    //        dispatch(setNotificationWithTimeout("Blog: " + blogObject.title + "removed successfully", 5000))
-    //        console.log(
-    //          'Blog list after deleting, ',
-    //          blogsAfterRemove.length,
-    //          ' blogs:',
-    //          blogsAfterRemove
-    //        )
-    //      })
-    //      .catch((error) => {
-    //        /*setErrorMessage('Removing the blog failed')
-    //        console.log('Removing the blog failed', error)
-    //        setTimeout(() => {
-    //          setErrorMessage(null)
-    //        }, 3000)*/
-    //        dispatch(setNotificationWithTimeout("Removing the blog failed: " + blogObject.title, 5000))
-    //        console.log('Removing the blog failed', error)
-    //        
-    //      })
+         dispatch(removeBlog(blogId[0]))
+        // Front-end and back-end deletion moved to action creator
+        //    blogService
+        //      .deleteBlog(blogToRemove.id)
+        //      .then((returnedBlog) => {
+        //        const blogsAfterRemove = blogs.filter(
+        //          (listblog) => listblog.id.toLowerCase() !== blogId
+        //        )
+        //        //Update shown list after delete
+        //        setBlogs(blogsAfterRemove)
+        //        /*setErrorMessage('Blog: ' + blogObject.title + ' removed successfully')
+        //        setTimeout(() => {
+        //          setErrorMessage(null)
+        //        }, 3000)*/
+        //        dispatch(setNotificationWithTimeout("Blog: " + blogObject.title + "removed successfully", 5000))
+        //        console.log(
+        //          'Blog list after deleting, ',
+        //          blogsAfterRemove.length,
+        //          ' blogs:',
+        //          blogsAfterRemove
+        //        )
+        //      })
+        //      .catch((error) => {
+        //        /*setErrorMessage('Removing the blog failed')
+        //        console.log('Removing the blog failed', error)
+        //        setTimeout(() => {
+        //          setErrorMessage(null)
+        //        }, 3000)*/
+        //        dispatch(setNotificationWithTimeout("Removing the blog failed: " + blogObject.title, 5000))
+        //        console.log('Removing the blog failed', error)
+        //        
+        //      })
         }
     }
 

@@ -23,10 +23,11 @@ const getUserBlogs = async () => {
     headers: { Authorization: token },
   }
   const request=axios.get(baseUrl, config)
-  return request.then(response => response.data).catch(error => error.response.status)
+  return request.then(response => response.data).catch(error => error.response.data.errorMessage)
   
   /*TODO: This doesn't work, blog list is left empty in frontend even if the data is eventually successfully fetched in front-end,
-  this is true even with await/asyncs, .catch is needed however to avoid error message in front-end for non-logged users (empty authentication token)
+  this is true even with await/asyncs, .catch is needed however to avoid error message in front-end for non-logged users (empty authentication token),
+  but multi-lined .then and .catch are avoided for now
   */
   /*request.then((response) => {
     console.log('services -> blogs.js -> getUserBlogs, HTTP response:', response)
@@ -35,12 +36,13 @@ const getUserBlogs = async () => {
   }).catch((error) => {
     //console.log('services -> getUserBlogs, HTTP error object.keys and object.values:', Object.keys(error), Object.values(error))
     console.log("services -> blogs.js -> getUserBlogs, error.response.status, token most likely nonexistent:", error.response.status)
-    console.log("services -> blogs.js -> getUserBlogs, error.response.data.error, token most likely nonexistent:" , error.response.data.error)
+    console.log("services -> blogs.js -> getUserBlogs, error.response.data.errorMessage, token most likely nonexistent:" , error.response.data.errorMessage)
     return error.response.data.error
   })*/
   
 
 }
+
 
 const update = async (id, updatedBlog) => {
   console.log('blogServices, update, id:', id)

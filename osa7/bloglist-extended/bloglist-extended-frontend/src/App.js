@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link, Navigate, useNavigate, useParams,
+} from "react-router-dom"
 import LoggedIn from './components/LoggedIn'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -7,10 +11,18 @@ import loginService from './services/login'
 import BlogForm from './components/Blogform'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+import UsersSummary from './components/UsersSummary'
+import UserInfo from './components/UserInfo'
+import NotFound from './components/NotFound'
 import { setUser, /*initializeUser,*/ loginUser, logoutUser } from './reducers/userReducer' 
 import { setNotification, setNotificationWithTimeout } from './reducers/notificationReducer'
 import { getUserBlogs, initializeBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
 import { getAllUsers } from './reducers/allUsersInfoReducer'
+
+
+
+
+
 
 const Footer = () => {
   const footerStyle = {
@@ -56,6 +68,10 @@ const App = () => {
     console.log('user retrieved from Redux store with useSelector:', user)
     return user
   })
+  const allUsersInfo=useSelector(( { allUsersInfo } )=>{
+    console.log('allUsersInfo info retrieved from Redux store with useSelector:', allUsersInfo)
+    return allUsersInfo
+  })
   //const [errorMessage, setErrorMessage] = useState('')
 
   //see components/Blogform
@@ -65,9 +81,13 @@ const App = () => {
 
   const dispatch = useDispatch()  
 
-  //Empty array argument ensures that the effect is executed only upon the first rendering
+  //Empty array argument for useEffect ensures that the effect is executed only upon the first rendering
   useEffect(() => {
-    console.log('useEffect, initializing user and blogs in front-end')
+    console.log('useEffect, initializing user, users info and blogs in front-end')
+    dispatch(initializeBlogs())
+
+    dispatch(getAllUsers())
+    
     //blogService.getUserBlogs().then((blogs) => setBlogs(blogs))
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -83,22 +103,34 @@ const App = () => {
     }
     else{
       console.log('credentials not found in local storage:', loggedUserJSON)
-      dispatch(initializeBlogs())
+      //dispatch(logoutUser())
+      //dispatch(initializeBlogs())
     }
   }, [])
   
   useEffect(()=>{
     dispatch(getUserBlogs())
-    console.log('useEffect, user blogs after dispatch(getUserBlogs())', blogs)
+    console.log('useEffect, user state changed, whole state retrieved from Redux store with useSelector:', wholestate)
+    console.log('useEffect, user state changed, user blogs after dispatch(getUserBlogs())', blogs)
   }, [user])
+
+  useEffect(() => {
+    
+    console.log('useEffect, allUsersInfo state changed, whole state retrieved from Redux store with useSelector:', wholestate)
+    console.log('useEffect, allUsersInfo state changed, all users info retrieved from Redux store with useSelector:', allUsersInfo)
+    //blogRef.current = blogRef.current.slice(0, blogs.length)
+  }, [allUsersInfo])
 
   //Refs to blogs array
   useEffect(() => {
     
-    console.log('useEffect, adding refs to changed blogs array, whole state retrieved from Redux store with useSelector:', wholestate)
-    console.log('useEffect, adding refs to changed blogs array, blogs retrieved from Redux store with useSelector:', blogs)
+    console.log('useEffect, blogs state changed, adding refs to changed blogs array, whole state retrieved from Redux store with useSelector:', wholestate)
+    console.log('useEffect, blogs state changed, adding refs to changed blogs array, blogs retrieved from Redux store with useSelector:', blogs)
     blogRef.current = blogRef.current.slice(0, blogs.length)
   }, [blogs])
+
+
+
   
 
   //Empty array argument ensures that the effect is executed only upon the first rendering
@@ -122,7 +154,7 @@ const App = () => {
   const handleLogout = async (event) => {
     event.preventDefault()
     console.log('logging out:', user.username)
-    dispatch(logoutUser(user.username))
+    dispatch(logoutUser())
   }
 
   //Adding blog and promises
@@ -214,6 +246,10 @@ const App = () => {
   }
 
   const loginForm = () => (
+  <>
+    {console.log("loginForm, user:", user)}
+    {console.log("Current user not found, rendering loginForm")}
+  
     <form id="login-form" onSubmit={handleLogin}>
       <div style={{ paddingBottom: '0.4%' }}>
         username
@@ -239,7 +275,54 @@ const App = () => {
         login
       </button>
     </form>
+  
+
+  </>
+
+
+
+
+
+  /*
+  <Route path="/notes" element={<Notes notes={notes}/>} />
+  <Route path="/users" element={user ? <Users /> : <Navigate to="/login"/>} />  
+  <Route path="/login" element= {<Login onLogin={login}/>} />
+  <Route path="/" element={<Home />} />*/
+
+
+)
+
+const UserNotNullView = () => {
+
+
+
+/*
+  {allUsersInfo.length !== 0 ? (allUsersInfo.map((userInfo)=>{
+    {console.log("creating route for userInfo: /users/"+userInfo.id)}
+    <Route path={`/users/${userInfo.id}`} element={userInfo.id ? <UserInfo id={userInfo.id}/> : <NotFound/>} />
+  })) 
+  : <Route path="/users/*" element={<NotFound/>}/>}
+  {console.log("Current user found, rendering UserNotNullView")}*/
+  
+  return (
+      <>
+      
+        {allUsersInfo.length !== 0 ? (
+    
+          <>
+            {console.log("Rendering LoggedIn and UsersSummary for all users")}
+            <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />
+          
+          </>
+          ) : (
+          <>
+            {console.log("Only rendering LoggedIn for all users")}
+            <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />
+          </>
+          )}
+      </>
   )
+}
 
 
 
@@ -249,13 +332,27 @@ const App = () => {
 
       {/*<Notification message={errorMessage} />*/}
       <Notification />
-      {user.username === null ? (
-        loginForm()
-      ) : ( <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />)}
+      <Routes>
+        <Route path="/" element={user.username === null ? loginForm()  : <UserNotNullView />} />
+        <Route path="/users" element={allUsersInfo.length !== 0 ? <UsersSummary/> : <NotFound/>} /> : <></>
+        <Route path="/users/*" element={
+        allUsersInfo.length !== 0 ? (allUsersInfo.map((userInfo)=>{
+          {console.log("creating route for userInfo: /users/"+userInfo.id)}
+          <Route path={`/users/${userInfo.id}`} element={userInfo.id ? <UserInfo id={userInfo.id}/> : <NotFound/>} />
+        })): <Route path={`/users/null`} element={<NotFound/>}/>} />
 
+        
+        <Route path="/notfound" element={<NotFound/>} />
+        <Route path="/*" element={<Navigate to="/notfound"/>} />  
+        
+      </Routes>
       <Footer />
     </div>
   )
 }
+
+
+
+
 
 export default App
