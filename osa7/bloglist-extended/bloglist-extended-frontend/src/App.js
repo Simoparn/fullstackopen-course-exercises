@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Routes, Route, Link, Navigate, useNavigate, useParams,
 } from "react-router-dom"
+import Navbar from './components/Navbar'
 import LoggedIn from './components/LoggedIn'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -119,7 +120,7 @@ const App = () => {
     console.log('useEffect, allUsersInfo state changed, whole state retrieved from Redux store with useSelector:', wholestate)
     console.log('useEffect, allUsersInfo state changed, all users info retrieved from Redux store with useSelector:', allUsersInfo)
     //blogRef.current = blogRef.current.slice(0, blogs.length)
-  }, [allUsersInfo])
+  }, [allUsersInfo])  
 
   //Refs to blogs array
   useEffect(() => {
@@ -296,6 +297,7 @@ const UserNotNullView = () => {
 
 
 
+ 
 /*
   {allUsersInfo.length !== 0 ? (allUsersInfo.map((userInfo)=>{
     {console.log("creating route for userInfo: /users/"+userInfo.id)}
@@ -303,47 +305,77 @@ const UserNotNullView = () => {
   })) 
   : <Route path="/users/*" element={<NotFound/>}/>}
   {console.log("Current user found, rendering UserNotNullView")}*/
+
+  
+
+
+
   
   return (
-      <>
       
+      <>
         {allUsersInfo.length !== 0 ? (
-    
-          <>
-            {console.log("Rendering LoggedIn and UsersSummary for all users")}
-            <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />
-          
-          </>
+            console.log("Rendering LoggedIn and UsersSummary for all users")
+
           ) : (
-          <>
-            {console.log("Only rendering LoggedIn for all users")}
-            <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />
-          </>
+          
+            console.log("Only rendering LoggedIn for all users")
+
           )}
-      </>
+          
+         
+          <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />
+          </>
+    
   )
 }
 
 
 
+allUsersInfo.length !== 0 ? 
+console.log("Current user found, rendering UserNotNullView") : 
+console.log("0 users found, no user routes needed")
+
+allUsersInfo.map((userInfo)=>{  
+  console.log("creating route for userInfo: /users/"+userInfo.id) 
+})
+ 
+
+
   return (
     <div style={{ marginLeft: '0.8%' }}>
-      <h2>Blogs</h2>
+      <h2>Blogs application</h2>
 
       {/*<Notification message={errorMessage} />*/}
       <Notification />
+      {user.username !== null ? <Navbar/> : <></>}
       <Routes>
-        <Route path="/" element={user.username === null ? loginForm()  : <UserNotNullView />} />
-        <Route path="/users" element={allUsersInfo.length !== 0 ? <UsersSummary/> : <NotFound/>} /> : <></>
-        <Route path="/users/*" element={
-        allUsersInfo.length !== 0 ? (allUsersInfo.map((userInfo)=>{
-          {console.log("creating route for userInfo: /users/"+userInfo.id)}
-          <Route path={`/users/${userInfo.id}`} element={userInfo.id ? <UserInfo id={userInfo.id}/> : <NotFound/>} />
-        })): <Route path={`/users/null`} element={<NotFound/>}/>} />
-
+        <Route path="/" element={user.username === null ? loginForm()  : 
+        (<>
         
+        <UserNotNullView />
+        </>)} 
+        />
+        <Route path="/users" element={allUsersInfo.length !== 0 ? <UsersSummary/> : <NotFound/>} />
+        {allUsersInfo.length !== 0 ? (
+            
+            allUsersInfo.map((userInfo)=>(        
+                       
+              <Route path={`/users/${userInfo.id}`} element={<UserInfo id={userInfo.id}/>} />)          
+            )
+          
+        ) : (
+          <>
+            
+         
+          </>
+          )
+        } 
+      
+
         <Route path="/notfound" element={<NotFound/>} />
-        <Route path="/*" element={<Navigate to="/notfound"/>} />  
+        <Route path="*" element={<Navigate to="/notfound"/>} />
+        
         
       </Routes>
       <Footer />

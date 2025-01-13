@@ -251,21 +251,16 @@ export const getUserBlogs = () => {
 }
 
 
-//Needed for Userssummary component
 
-export const getAllBlogs = () => {
-  
-  return async dispatch => {
-    const allBlogs = await blogService.getAll()
-  }
-}
 
 
 
 //Needed for Userinfo component
-export const getBlogsByUserId = () => {
-
-}
+/*export const getBlogsByUserId = () => {
+  return async dispatch => {
+    const allBlogs = await blogService.getAll()
+  }
+}*/
 
 
 
