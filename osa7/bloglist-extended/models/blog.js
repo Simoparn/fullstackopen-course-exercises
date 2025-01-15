@@ -8,6 +8,9 @@ const blogSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
+  comments: [
+    
+  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

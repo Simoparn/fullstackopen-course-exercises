@@ -6,15 +6,26 @@ import styled from 'styled-components'
 //import { UserInfo } from '../components/UserInfo'
 
 
-
-const UsersSummary = () => {
-
     const StyledTable = styled.table`
         font-size: 0.75em;
-        table-
+            
         
 
     `
+
+const UsersSummary = () => {
+
+
+
+    const usersSummaryTitleStyle = {
+        fontSize: 26,
+        marginBottom: 4
+    }
+    const usersSummaryBodyStyle = {
+        fontSize: 20,
+  
+      }
+
     
 
     const allUsersInfo=useSelector(({ allUsersInfo })=>{
@@ -25,14 +36,6 @@ const UsersSummary = () => {
 
     console.log("rendering UsersSummary")
 
-    const usersSummaryTitleStyle = {
-        fontSize: 26,
-        marginBottom: 4
-    }
-    const usersSummaryBodyStyle = {
-        fontSize: 20,
-  
-      }
 
       
 
@@ -47,10 +50,10 @@ const UsersSummary = () => {
                 {allUsersInfo
                     .map((userInfo, i) => (
                         <>
-                        <tr>
-                            <td><Link to={`/users/${userInfo.id}`}>{userInfo.name}</Link></td>
+                        <tr key={userInfo.id}>
+                            <td><Link key={userInfo.id} to={`/users/${userInfo.id}`}>{userInfo.name}</Link></td>
                             <td></td>
-                            <td>{userInfo.blogs.length}</td>
+                            <td >{userInfo.blogs.length}</td>
                         </tr>
                         {console.log("rendering a single link for userInfo:", userInfo)}
                         {console.log(`userInfo link: /users/${userInfo.id}`)}

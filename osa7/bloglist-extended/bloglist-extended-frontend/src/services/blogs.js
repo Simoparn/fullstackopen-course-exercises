@@ -18,6 +18,13 @@ const create = async (newBlog) => {
   //return request.then(response => response.data)
 }
 
+const addBlogComment = async (blogCommentObject) => {
+  console.log('services, addBlogComment, blogCommentObject:', blogCommentObject)
+  console.log('services, addBlogComment, route:', `${baseUrl}/${blogCommentObject.blogId}/comments`)
+  const response = await axios.post(`${baseUrl}/${blogCommentObject.blogId}/comments`, {blogComment:blogCommentObject.blogComment})
+  return response.data
+}
+
 const getUserBlogs = async () => {
   const config = {
     headers: { Authorization: token },
@@ -42,6 +49,8 @@ const getUserBlogs = async () => {
   
 
 }
+
+
 
 
 const update = async (id, updatedBlog) => {
@@ -75,6 +84,7 @@ export default {
   getAll,
   getUserBlogs,
   create: create,
+  addBlogComment: addBlogComment,
   setToken: setToken,
   update: update,
   deleteBlog: deleteBlog,

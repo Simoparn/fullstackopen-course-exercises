@@ -21,12 +21,13 @@ const blogsAtStart = [
 const getId = () => (100000 * Math.random()).toFixed(0)
 
 
-const asObject = (title, author, url, likes, id) => {
+const asObject = (title, author, url, likes, comments, id) => {
   return {
     title: title,
     author: author,
     url: url,
     likes: likes,
+    comments:comments,
     id: getId(),
   
   }
@@ -176,15 +177,31 @@ const blogSlice = createSlice({
         
 
         return changedBlogs
-    }  
-    ,
+    },
+    commentBlog(state, action) {    
+
+      const blogId = action.payload.blogId
+      const blogComment = action.payload.blogComment
+
+      console.log('blog id in commentBlog:', blogId)
+      console.log('comment in commentBlog:', blogComment)    
+
+      const blogCommentsToChange = state.find(n => n.id === blogId)  
+      console.log('commentBlog, blogCommentsToChange:', blogCommentsToChange)
+      const changedBlog = {
+        ... blogCommentsToChange,
+        comments:  blogCommentsToChange.comments.concat(blogComment)
+      }    
+      return changedBlog
+
+    },
     appendBlog(state, action) {
       const newBlogListAfterAppend=state.concat(action.payload)
       return newBlogListAfterAppend
       //state.push(action.payload)
     },
     setBlogs(state, action) { 
-      console.log('setBlogs, setting all blogs in front-end:', action.payload)
+      console.log('setBlogs, setting all blogs for the current user in front-end:', action.payload)
       //state.push(action.payload)     
       return action.payload    
     }
@@ -199,7 +216,14 @@ const blogSlice = createSlice({
 //export const {createBlog, likeBlog, appendBlog, setBlogs} = blogSlice.actions
 
 //When also using @reduxjs/toolkit and Redux Thunk for async, see comments above and below
-export const { likeBlog, appendBlog, setBlogs } = blogSlice.actions
+export const { likeBlog, commentBlog, appendBlog, setBlogs } = blogSlice.actions
+
+
+
+
+
+
+
 
 
 //using React Thunk/asynchronous action creators
@@ -253,16 +277,12 @@ export const getUserBlogs = () => {
 
 
 
-
-
 //Needed for Userinfo component
 /*export const getBlogsByUserId = () => {
   return async dispatch => {
     const allBlogs = await blogService.getAll()
   }
 }*/
-
-
 
 
 
@@ -417,7 +437,21 @@ export const removeBlog = (id) => {
 }
   
 
-
+export const addBlogComment = (blogCommentObject) => {
+  return async dispatch => {
+    try{
+      console.log('addBlogComment, commentObject before adding comment to backend:', blogCommentObject)
+      const commentedBlog = await blogService.addBlogComment(blogCommentObject)
+      dispatch(commentBlog(blogCommentObject))
+      dispatch(setNotificationWithTimeout("Commented a blog successfully: " + blogCommentObject.blogId, 5000))
+      
+      //dispatch(blogService.addBlogComment)
+    }catch(error){
+      console.log('Commenting a blog failed, error:', error)
+      dispatch(setNotificationWithTimeout("Commenting a blog failed: " + blogCommentObject.blogId, 5000))
+    }
+  }
+}
 
 
 export default blogSlice.reducer

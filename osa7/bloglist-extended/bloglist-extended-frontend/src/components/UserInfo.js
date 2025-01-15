@@ -26,7 +26,7 @@ const UserInfo = ({id}) => {
         <ul>
         {userInfo.blogs.map((blog) => (
                 
-                <li>
+                <li key={blog.id}>
                     {blog.title}
 
                 </li>

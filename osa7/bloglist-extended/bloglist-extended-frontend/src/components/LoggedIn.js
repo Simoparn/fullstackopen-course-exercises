@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import Blog from './Blog'
 import BlogForm from './Blogform'
 import Togglable from './Togglable'
 
-import { logoutUser } from '../reducers/userReducer' 
+
 import { createBlog, updateBlog, removeBlog } from '../reducers/blogReducer'
 
 
 
 
 
-const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
+const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
 
 
 
@@ -27,7 +28,7 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
     })
 
     //const blogFormRef = useRef()
-    //const blogViewRef = useRef()
+    //const blogVisibleRef = useRef()
     //const blogRef = useRef([])
 
 
@@ -35,11 +36,7 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
 
 
 
-    const handleLogout = async (event) => {
-        event.preventDefault()
-        console.log('logging out:', user.username)
-        dispatch(logoutUser())
-    }
+
 
 
 
@@ -140,7 +137,7 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
                 }}
             ></span>
             </p>
-            <p style={{ paddingBottom: '3%' }}>
+            {/*<p style={{ paddingBottom: '3%' }}>
             <button
                 onClick={handleLogout}
                 type="button"
@@ -150,18 +147,14 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
             >
                 logout
             </button>
-            </p>
+            </p>*/}
 
             <div style={{ marginLeft: '0.8%' }}>
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
                 <BlogForm createBlog={handleAddBlog} />
             </Togglable>
-            <h4>INSTRUCTIONS:</h4>
-            <p>
-                See localhost:backendport/api/blogs and
-                localhost:backendport/api/users for details about current data and
-                users{' '}
-            </p>
+            
+            
             
 
             <ul className="bloglist">
@@ -176,7 +169,8 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
 
                 {blogs
                 .map((blog, i) => (
-                    <Togglable buttonLabel="view" ref={blogViewRef}>
+                    <>
+                    <Togglable buttonLabel="view" ref={blogVisibleRef}>
                     <Blog
                         key={blog.id}
                         blog={blog}
@@ -186,6 +180,8 @@ const LoggedIn = ({blogFormRef, blogViewRef, blogRef}) => {
                         currentUser={user}
                     />
                     </Togglable>
+                    <Link to={`/blogs/${blog.id}`}>Open blog in a separate view</Link>
+                    </>
                 ))
                 .sort(function (a, b) {
                     return a.likes > b.likes ? 1 : -1

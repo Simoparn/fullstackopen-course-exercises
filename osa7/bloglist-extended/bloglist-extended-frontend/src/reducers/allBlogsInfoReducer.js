@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
-import blogService from '../services/blogs'
+import userService from '../services/users'
+import  { getAllUsers } from '../reducers/allUsersInfoReducer'
 
 
 const initialState=[]
@@ -14,18 +15,30 @@ const allBlogsInfoSlice = createSlice({
     reducers: { 
 
 
-
+        setAllBlogsInfo(state, action){
+            console.log('setAllBlogsInfo, setting all blogs in front-end:', action.payload)
+            return action.payload
+        }
 
     }
 })
 
+export const { setAllBlogsInfo } = allBlogsInfoSlice.actions
 
-//Needed for Userssummary component
+//Needed for Loggedin component
 
 export const getAllBlogs = () => {
   
   return async dispatch => {
-    const allBlogs = await blogService.getAll()
+    const allUsersInfo = await userService.getAll()
+    let allBlogs=[]
+    allUsersInfo.forEach((userInfo)=>{
+        console.log('getAllBlogs, found userInfo while concatenating blogs:', userInfo)
+        allBlogs=allBlogs.concat(userInfo.blogs)
+        
+    })
+    console.log('getAllBlogs, all blogs after going through the data for all users:', allBlogs)
+    dispatch(setAllBlogsInfo(allBlogs))
   }
   
 }

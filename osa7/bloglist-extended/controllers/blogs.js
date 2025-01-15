@@ -131,8 +131,35 @@ blogsRouter.post('/', async (request, response, next) => {
     blogUser.blogs = blogUser.blogs.concat(savedBlog._id)
     await blogUser.save()
     response.status(201).json(savedBlog)
-  } catch (exception) {
-    next(exception)
+  } catch (error) {
+    next(error)
+  }
+})
+
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  try{
+    const blogComment = request.body
+    const blogId=request.params.id
+    console.log("Creating a comment for the blog with id:", blogId)
+    console.log("Creating the following comment:", blogComment)
+    
+
+    const searchedBlogForData = await Blog.findById(request.params.id)
+    console.log('searched blog for data:', searchedBlogForData)
+
+
+    const updatedBlog = await Blog.findByIdAndUpdate(      
+      request.params.id,
+      { title:searchedBlogForData.title, author:searchedBlogForData.author, url:searchedBlogForData.url, likes:searchedBlogForData.likes, comments:[...searchedBlogForData.comments, blogComment] },
+      { new: true, runValidators: true, context: 'query' }
+    )
+    response.status(201).json(updatedBlog)
+
+
+
+  } catch (error) {
+    console.log("error while trying to add a new blog comment:", error)
+    next(error)
   }
 })
 
@@ -170,8 +197,8 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     //TODO: old references are not deleted yet
     //const removedReference = await User.findOneAndRemove({})
     return response.status(204).end()
-  } catch (exception) {
-    next(exception)
+  } catch (error) {
+    next(error)
   }
 })
 
@@ -185,8 +212,8 @@ blogsRouter.put('/:id', async (request, response, next) => {
       { new: true, runValidators: true, context: 'query' }
     )
     response.json(updatedBlog)
-  } catch (exception) {
-    next(exception)
+  } catch (error) {
+    next(error)
   }
 })
 

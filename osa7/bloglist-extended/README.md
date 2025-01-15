@@ -58,6 +58,7 @@ npm run test
 -App seems to freeze after a while
 
 ## TODO, ROUTING
+Redirects to NotFound when using browser address bar directly for id-based single user/blog views 
 Consider adding a component for nonexisting routes
 
 ## TODO, ERROR HANDLING
@@ -68,6 +69,9 @@ Consider adding a component for nonexisting routes
 -blog input form fields need headers or permanent placeholders
 -manual sorting for blogs is still unfinished (see blogReducer.js comments)
 -Considering forbidding empty author input field (now only empty URL and likes)
+
+## TODO, USER LIST
+-User list is not updated yet automatically when new blogs are added for users, this must be resolved a technique such as WebSocket etc.
 
 ## TODO, HTTP REQUESTS
 -Consider moving setToken for HTTP requests from to an appropriate action creator, instead of using it directly in rerenders (useEffect).

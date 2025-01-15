@@ -6,6 +6,7 @@ import {
 } from "react-router-dom"
 import Navbar from './components/Navbar'
 import LoggedIn from './components/LoggedIn'
+import Instructions from './components/Instructions'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -14,11 +15,13 @@ import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import UsersSummary from './components/UsersSummary'
 import UserInfo from './components/UserInfo'
+import BlogView from './components/BlogView'
 import NotFound from './components/NotFound'
 import { setUser, /*initializeUser,*/ loginUser, logoutUser } from './reducers/userReducer' 
 import { setNotification, setNotificationWithTimeout } from './reducers/notificationReducer'
 import { getUserBlogs, initializeBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
 import { getAllUsers } from './reducers/allUsersInfoReducer'
+import { getAllBlogs } from './reducers/allBlogsInfoReducer'
 
 
 
@@ -73,6 +76,11 @@ const App = () => {
     console.log('allUsersInfo info retrieved from Redux store with useSelector:', allUsersInfo)
     return allUsersInfo
   })
+
+  const allBlogsInfo=useSelector(( { allBlogsInfo } )=>{
+    console.log('allBlogsInfo info retrieved from Redux store with useSelector:', allBlogsInfo)
+    return allBlogsInfo
+  })
   //const [errorMessage, setErrorMessage] = useState('')
 
   //see components/Blogform
@@ -88,6 +96,7 @@ const App = () => {
     dispatch(initializeBlogs())
 
     dispatch(getAllUsers())
+    dispatch(getAllBlogs())
     
     //blogService.getUserBlogs().then((blogs) => setBlogs(blogs))
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -121,6 +130,13 @@ const App = () => {
     console.log('useEffect, allUsersInfo state changed, all users info retrieved from Redux store with useSelector:', allUsersInfo)
     //blogRef.current = blogRef.current.slice(0, blogs.length)
   }, [allUsersInfo])  
+
+  useEffect(() => {
+    
+    console.log('useEffect, allBlogsInfo state changed, whole state retrieved from Redux store with useSelector:', wholestate)
+    console.log('useEffect, allBlogsInfo state changed, info for all blogs retrieved from Redux store with useSelector:', allBlogsInfo)
+    //blogRef.current = blogRef.current.slice(0, blogs.length)
+  }, [allBlogsInfo]) 
 
   //Refs to blogs array
   useEffect(() => {
@@ -352,31 +368,26 @@ allUsersInfo.map((userInfo)=>{
       <Routes>
         <Route path="/" element={user.username === null ? loginForm()  : 
         (<>
-        
         <UserNotNullView />
         </>)} 
         />
-        <Route path="/users" element={allUsersInfo.length !== 0 ? <UsersSummary/> : <NotFound/>} />
-        {allUsersInfo.length !== 0 ? (
-            
-            allUsersInfo.map((userInfo)=>(        
-                       
-              <Route path={`/users/${userInfo.id}`} element={<UserInfo id={userInfo.id}/>} />)          
-            )
-          
-        ) : (
-          <>
-            
-         
-          </>
+        {allBlogsInfo.length !== 0 ? (
+          allBlogsInfo.map((blogInfo) => (
+            <Route path={`/blogs/${blogInfo.id}`} element={<BlogView id={blogInfo.id}/>} />) 
           )
-        } 
-      
+        ) : (<></>)
 
+        }
+        <Route path="/users" element={allUsersInfo.length !== 0 ? <UsersSummary/> : <NotFound/>} />
+        {allUsersInfo.length !== 0 ? (    
+            allUsersInfo.map((userInfo)=>(                           
+              <Route path={`/users/${userInfo.id}`} element={<UserInfo id={userInfo.id}/>} />)          
+            )   
+        ) : (<> </>)
+        } 
+        <Route path="/instructions" element={user.username !== null ? <Instructions/> : <NotFound/> }/>       
         <Route path="/notfound" element={<NotFound/>} />
         <Route path="*" element={<Navigate to="/notfound"/>} />
-        
-        
       </Routes>
       <Footer />
     </div>
