@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import userService from '../services/users'
+//import blogService from '../services/blogs'
 import  { getAllUsers } from '../reducers/allUsersInfoReducer'
 
 
@@ -30,6 +31,7 @@ export const { setAllBlogsInfo } = allBlogsInfoSlice.actions
 export const getAllBlogs = () => {
   
   return async dispatch => {
+   
     const allUsersInfo = await userService.getAll()
     let allBlogs=[]
     allUsersInfo.forEach((userInfo)=>{
@@ -37,6 +39,7 @@ export const getAllBlogs = () => {
         allBlogs=allBlogs.concat(userInfo.blogs)
         
     })
+    //const allBlogs = await blogService.getAll()
     console.log('getAllBlogs, all blogs after going through the data for all users:', allBlogs)
     dispatch(setAllBlogsInfo(allBlogs))
   }

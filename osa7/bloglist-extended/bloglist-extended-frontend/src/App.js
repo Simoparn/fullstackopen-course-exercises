@@ -19,7 +19,7 @@ import BlogView from './components/BlogView'
 import NotFound from './components/NotFound'
 import { setUser, /*initializeUser,*/ loginUser, logoutUser } from './reducers/userReducer' 
 import { setNotification, setNotificationWithTimeout } from './reducers/notificationReducer'
-import { getUserBlogs, initializeBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
+import { getUserBlogs, initializeBlogs, createBlog, updateBlog, removeBlog, addBlogComment } from './reducers/blogReducer'
 import { getAllUsers } from './reducers/allUsersInfoReducer'
 import { getAllBlogs } from './reducers/allBlogsInfoReducer'
 
@@ -85,7 +85,7 @@ const App = () => {
 
   //see components/Blogform
   const blogFormRef = useRef()
-  const blogViewRef = useRef()
+  const blogVisibleRef = useRef()
   const blogRef = useRef([])
 
   const dispatch = useDispatch()  
@@ -186,7 +186,7 @@ const App = () => {
   //const handleViewBlog = () => {
   //  console.log(
   //    'Showing or hiding full blog details depending on visibility status',
-  //    blogViewRef.current.visible
+  //    blogVisibleRef.current.visible
   //  )
   //}
 
@@ -340,7 +340,7 @@ const UserNotNullView = () => {
           )}
           
          
-          <LoggedIn blogFormRef={blogFormRef} blogViewRef={blogViewRef} blogRef={blogRef}  />
+          <LoggedIn blogFormRef={blogFormRef} blogVisibleRef={blogVisibleRef} blogRef={blogRef}  />
           </>
     
   )
@@ -373,7 +373,7 @@ allUsersInfo.map((userInfo)=>{
         />
         {allBlogsInfo.length !== 0 ? (
           allBlogsInfo.map((blogInfo) => (
-            <Route path={`/blogs/${blogInfo.id}`} element={<BlogView id={blogInfo.id}/>} />) 
+            <Route path={`/blogs/${blogInfo.id}`} element={<BlogView id={blogInfo.id} />} />) 
           )
         ) : (<></>)
 
@@ -381,7 +381,7 @@ allUsersInfo.map((userInfo)=>{
         <Route path="/users" element={allUsersInfo.length !== 0 ? <UsersSummary/> : <NotFound/>} />
         {allUsersInfo.length !== 0 ? (    
             allUsersInfo.map((userInfo)=>(                           
-              <Route path={`/users/${userInfo.id}`} element={<UserInfo id={userInfo.id}/>} />)          
+              <Route path={`/users/${userInfo.id}`} element={<UserInfo id={userInfo.id} />} />)          
             )   
         ) : (<> </>)
         } 

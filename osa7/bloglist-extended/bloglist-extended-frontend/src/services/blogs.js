@@ -19,9 +19,11 @@ const create = async (newBlog) => {
 }
 
 const addBlogComment = async (blogCommentObject) => {
+  const { blogId, blogComment } = blogCommentObject
+  const blogCommentContentObject = { blogComment }
   console.log('services, addBlogComment, blogCommentObject:', blogCommentObject)
   console.log('services, addBlogComment, route:', `${baseUrl}/${blogCommentObject.blogId}/comments`)
-  const response = await axios.post(`${baseUrl}/${blogCommentObject.blogId}/comments`, {blogComment:blogCommentObject.blogComment})
+  const response = await axios.post(`${baseUrl}/${blogId}/comments`, blogCommentContentObject)
   return response.data
 }
 

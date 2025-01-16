@@ -47,7 +47,12 @@ const Navbar = () => {
         >
             logout
         </button>
+        <span style={{marginLeft:"1em"}}>
+        <b>{user.name} logged in{' '}</b>
+        </span>
+        
     </p>
+
       )
     }
 
@@ -61,7 +66,8 @@ return (
         <Link style={linkStyle} to="/">My blogs</Link>
         <Link style={linkStyle} to="/users">Users</Link>
         <Link style={linkStyle} to="/instructions">Instructions</Link>
-        {user.user !== null ? <LogoutButton /> : <></>}
+        {user.user !== null ? (<LogoutButton /> )
+        : <></>}
 
     </StyledComponentsNavigation>
 )

@@ -1,7 +1,8 @@
 import { useState, useImperativeHandle, forwardRef } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import Togglable from '../components/Togglable'
+import Togglable from '../components/Togglable'    
 
 
 const UserInfo = ({id}) => {
@@ -25,12 +26,14 @@ const UserInfo = ({id}) => {
         User {userInfo.name} added blogs
         <ul>
         {userInfo.blogs.map((blog) => (
-                
+ 
                 <li key={blog.id}>
                     {blog.title}
+                    <Link to={`/blogs/${blog.id}`}>Open blog in a separate view</Link>
 
                 </li>
-               
+
+   
             ))
         }
         

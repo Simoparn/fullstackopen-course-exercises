@@ -138,14 +138,15 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.post('/:id/comments', async (request, response, next) => {
   try{
-    const blogComment = request.body
+    const { blogComment } = request.body
+    console.log('Creating a comment for a new blog, request.body:', request.body)
     const blogId=request.params.id
     console.log("Creating a comment for the blog with id:", blogId)
     console.log("Creating the following comment:", blogComment)
     
 
     const searchedBlogForData = await Blog.findById(request.params.id)
-    console.log('searched blog for data:', searchedBlogForData)
+    console.log('Creating a comment, searched blog for data:', searchedBlogForData)
 
 
     const updatedBlog = await Blog.findByIdAndUpdate(      
@@ -153,6 +154,7 @@ blogsRouter.post('/:id/comments', async (request, response, next) => {
       { title:searchedBlogForData.title, author:searchedBlogForData.author, url:searchedBlogForData.url, likes:searchedBlogForData.likes, comments:[...searchedBlogForData.comments, blogComment] },
       { new: true, runValidators: true, context: 'query' }
     )
+    console.log('updated blog after adding a comment:', updatedBlog)
     response.status(201).json(updatedBlog)
 
 

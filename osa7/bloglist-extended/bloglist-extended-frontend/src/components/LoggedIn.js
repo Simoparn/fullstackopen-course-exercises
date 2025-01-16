@@ -9,7 +9,9 @@ import Togglable from './Togglable'
 import { createBlog, updateBlog, removeBlog } from '../reducers/blogReducer'
 
 
-
+const blogTitleStyle = {
+    fontSize: 26
+}
 
 
 const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
@@ -130,7 +132,7 @@ const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
                 fontSize: '25px',
             }}
             >
-            {user.name} logged in{' '}
+           
             <span
                 style={{
                 paddingTop: '1%',

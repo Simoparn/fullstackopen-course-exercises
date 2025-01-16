@@ -1,7 +1,8 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, /*useSelector*/ } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
 import { logoutUser } from './userReducer'
 import { setNotificationWithTimeout } from './notificationReducer'
+import { getAllBlogs } from './allBlogsInfoReducer'
 import blogService from '../services/blogs'
 
 
@@ -33,8 +34,13 @@ const asObject = (title, author, url, likes, comments, id) => {
   }
 }
 
+
+
+
+
 //Initializing state with MongoDB
 const initialState=[]
+
 
 //Needed for initializing state without json-server/axios or MongoDB database
 /*
@@ -153,6 +159,7 @@ const blogSlice = createSlice({
       }) 
       //state.push(action.payload)      
     },*/   
+    //TODO: state.find is likely null (need state.data?)
     likeBlog(state, action) {    
       console.log('id in likeBlog:', action.payload)  
       
@@ -179,20 +186,32 @@ const blogSlice = createSlice({
         return changedBlogs
     },
     commentBlog(state, action) {    
+      
+      const id = action.payload.blogCommentObject.blogId
+      const blogComment = action.payload.blogCommentObject.blogComment
+      const allBlogs=action.payload.allBlogs
 
-      const blogId = action.payload.blogId
-      const blogComment = action.payload.blogComment
-
-      console.log('blog id in commentBlog:', blogId)
+      console.log('blog id in commentBlog:', id)
       console.log('comment in commentBlog:', blogComment)    
-
-      const blogCommentsToChange = state.find(n => n.id === blogId)  
+      console.log("commentBlog, blogs state just before adding the comment for the blog in frontend:", allBlogs)
+      //console.log("commentBlog, blogs state just before adding the comment for the blog in frontend:", state)
+      
+      const blogCommentsToChange = allBlogs.find(n => n.id === id)  
+      //const blogCommentsToChange = state.find(n => n.id === blogId)  
       console.log('commentBlog, blogCommentsToChange:', blogCommentsToChange)
       const changedBlog = {
         ... blogCommentsToChange,
         comments:  blogCommentsToChange.comments.concat(blogComment)
       }    
-      return changedBlog
+      console.log('commentBlog, changed blog comments after commenting:', changedBlog)
+
+      const changedBlogs=allBlogs.map(blog =>
+        blog.id !== id ? blog : changedBlog)
+      //const changedBlogs=state.map(blog =>
+      //  blog.id !== id ? blog : changedBlog)
+
+      console.log('commentblog, all blogs after changing the commented blog:', changedBlogs)
+      return changedBlogs
 
     },
     appendBlog(state, action) {
@@ -277,6 +296,9 @@ export const getUserBlogs = () => {
 
 
 
+
+
+
 //Needed for Userinfo component
 /*export const getBlogsByUserId = () => {
   return async dispatch => {
@@ -304,7 +326,7 @@ export const createBlog = (blogObject) => {
                 setTimeout(() => {
                   setErrorMessage(null)
         }, 3000)*/
-        dispatch(setNotificationWithTimeout("New blog: " + blogObject.title + " added", 5000))
+
     
       } catch (error){
         console.log('Retrieving the updated blogs from back-end after saving a new blog to back-end failed:',error)
@@ -313,6 +335,7 @@ export const createBlog = (blogObject) => {
 
       console.log('Created a new blog in database, attempting to add this blog to the list in front-end:', returnedBlog)
       dispatch(appendBlog(returnedBlog))  
+      dispatch(setNotificationWithTimeout("New blog: " + blogObject.title + " added", 5000))
     } catch (error){
       console.log('Creating a new blog in back-end failed:', error)
       dispatch(setNotificationWithTimeout(`Adding a new blog failed, check that 1) the likes field is a number and does not contain letters 2) the URL field is not empty.`, 5000))
@@ -438,11 +461,16 @@ export const removeBlog = (id) => {
   
 
 export const addBlogComment = (blogCommentObject) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     try{
+      //const state=getState()
       console.log('addBlogComment, commentObject before adding comment to backend:', blogCommentObject)
+      //console.log("addBlogComment, blogs state before adding comment to backend:", state)
       const commentedBlog = await blogService.addBlogComment(blogCommentObject)
-      dispatch(commentBlog(blogCommentObject))
+     
+      const allBlogs=getState().blogs
+      dispatch(commentBlog({blogCommentObject, allBlogs}))
+      dispatch(getAllBlogs())
       dispatch(setNotificationWithTimeout("Commented a blog successfully: " + blogCommentObject.blogId, 5000))
       
       //dispatch(blogService.addBlogComment)
