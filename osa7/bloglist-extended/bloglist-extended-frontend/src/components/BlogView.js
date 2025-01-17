@@ -54,6 +54,19 @@ const BlogView = ({id}) => {
 
 
 
+
+    /*const handleAddBlogLike = (event) => {
+        event.preventDefault()
+        console.log('Blog props in handleAddBlogLike: ', props)
+        props.handleUpdateBlog({
+          title: props.blog.title,
+          author: props.blog.author,
+          url: props.blog.url,
+          likes: props.blog.likes + 1,
+          user: props.blog.user,
+          id: props.blog.id,
+        })
+      }*/
     
 
     const handleBlogCommentChange = (event) => {
@@ -164,6 +177,8 @@ const BlogView = ({id}) => {
             </li>
         </ul>
         <CommentForm newComment={newComment} handleAddComment={handleAddComment} handleBlogCommentChange={handleBlogCommentChange}  />
+        <br />
+        <span style={blogTitleStyle}>Comments</span>
         <ul>
             {blog[0].comments.map((comment)=>(
                 <>

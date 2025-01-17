@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 const Navbar = () => {
 
   const StyledComponentsNavigation = styled.div`
-    background: lightGrey;
+    background: grey;
     padding: 1em;
   `
 

@@ -57,7 +57,7 @@ npm run test
 -Remember to replace any "state.push(action.payload)" with "return state.concat(action.payload)" or similar in reducers, reducer state should not be changed directly
 -Commenting leaves the redux frontend state for blogs as an object, instead of the required array, noticed also the following below:
     -Left empty (proxy: target/handler null etc.) -> blogreducer.js -> commentBlog const blogCommentsToChange = state.find(n => n.id === blogId) 
--Blog id's for removed blogs are still left in the user data in database 
+-Old blog id's for removed blogs are still left in the user data in database 
 -App seems to freeze after a while
 
 ## TODO, ROUTING
@@ -77,12 +77,12 @@ Consider adding a component for nonexisting routes
 
 
 ## TODO, USER LIST
--User list is not updated yet automatically when new blogs are added for users, this must be resolved a technique such as WebSocket etc.
+-User list is not updated yet automatically for every logged in user when new blogs are added for users, this must be resolved a technique such as WebSocket etc.
 
 ## TODO, HTTP REQUESTS
 -Consider moving setToken for HTTP requests from to an appropriate action creator, instead of using it directly in rerenders (useEffect).
 
 ## TODO, REDUCERS
--Consider getting rid of allBlogsInfoReducer.js (which is only needed for getAllBlogs) and move getAllBlogs to blogReducer.js (rename to getAllBlogsInfo etc. and address the lack of token problem in backend with 
+-Consider getting rid of allBlogsInfoReducer.js (which is only needed for getAllBlogsInfo) and move getAllBlogsInfo to blogReducer.js (also address the lack of token problem in backend with 
 a new route in controllers -> blogs.js and find({}).populate etc.)
 

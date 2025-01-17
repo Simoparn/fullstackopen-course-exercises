@@ -71,6 +71,7 @@ const deleteBlog = async (id) => {
   const config = {
     headers: { Authorization: token },
   }
+  console.log('deleteBlog, blog id:', id)
   const request = axios.delete(`${baseUrl}/${id}`, config)
   return request.then((response) => response.data)
   //const request = axios.post(baseUrl, newObject)

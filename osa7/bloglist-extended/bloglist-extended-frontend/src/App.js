@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Routes, Route, Link, Navigate, useNavigate, useParams,
 } from "react-router-dom"
+import styled from 'styled-components'
 import Navbar from './components/Navbar'
 import LoggedIn from './components/LoggedIn'
 import Instructions from './components/Instructions'
@@ -21,11 +22,14 @@ import { setUser, /*initializeUser,*/ loginUser, logoutUser } from './reducers/u
 import { setNotification, setNotificationWithTimeout } from './reducers/notificationReducer'
 import { getUserBlogs, initializeBlogs, createBlog, updateBlog, removeBlog, addBlogComment } from './reducers/blogReducer'
 import { getAllUsers } from './reducers/allUsersInfoReducer'
-import { getAllBlogs } from './reducers/allBlogsInfoReducer'
+import { getAllBlogsInfo } from './reducers/allBlogsInfoReducer'
 
 
 
+const AllAppStyle = styled.div`
 
+background-color:lightgrey;
+`
 
 
 const Footer = () => {
@@ -92,11 +96,11 @@ const App = () => {
 
   //Empty array argument for useEffect ensures that the effect is executed only upon the first rendering
   useEffect(() => {
-    console.log('useEffect, initializing user, users info and blogs in front-end')
+    console.log('useEffect, initializing personal blogs, info for all users, info for all blogs and current user in front-end')
     dispatch(initializeBlogs())
 
     dispatch(getAllUsers())
-    dispatch(getAllBlogs())
+    dispatch(getAllBlogsInfo())
     
     //blogService.getUserBlogs().then((blogs) => setBlogs(blogs))
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -140,7 +144,8 @@ const App = () => {
 
   //Refs to blogs array
   useEffect(() => {
-    
+    dispatch(getAllBlogsInfo())
+    dispatch(getAllUsers())
     console.log('useEffect, blogs state changed, adding refs to changed blogs array, whole state retrieved from Redux store with useSelector:', wholestate)
     console.log('useEffect, blogs state changed, adding refs to changed blogs array, blogs retrieved from Redux store with useSelector:', blogs)
     blogRef.current = blogRef.current.slice(0, blogs.length)
@@ -359,7 +364,7 @@ allUsersInfo.map((userInfo)=>{
 
 
   return (
-    <div style={{ marginLeft: '0.8%' }}>
+    <AllAppStyle>
       <h2>Blogs application</h2>
 
       {/*<Notification message={errorMessage} />*/}
@@ -390,7 +395,7 @@ allUsersInfo.map((userInfo)=>{
         <Route path="*" element={<Navigate to="/notfound"/>} />
       </Routes>
       <Footer />
-    </div>
+    </AllAppStyle>
   )
 }
 

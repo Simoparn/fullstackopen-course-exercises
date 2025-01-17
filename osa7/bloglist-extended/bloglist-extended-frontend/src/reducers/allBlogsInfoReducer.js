@@ -28,19 +28,19 @@ export const { setAllBlogsInfo } = allBlogsInfoSlice.actions
 
 //Needed for Loggedin component
 
-export const getAllBlogs = () => {
+export const getAllBlogsInfo = () => {
   
   return async dispatch => {
    
     const allUsersInfo = await userService.getAll()
     let allBlogs=[]
     allUsersInfo.forEach((userInfo)=>{
-        console.log('getAllBlogs, found userInfo while concatenating blogs:', userInfo)
+        console.log('getAllBlogsInfo, found userInfo while concatenating blogs:', userInfo)
         allBlogs=allBlogs.concat(userInfo.blogs)
         
     })
     //const allBlogs = await blogService.getAll()
-    console.log('getAllBlogs, all blogs after going through the data for all users:', allBlogs)
+    console.log('getAllBlogsInfo, all blogs after going through the data for all users:', allBlogs)
     dispatch(setAllBlogsInfo(allBlogs))
   }
   

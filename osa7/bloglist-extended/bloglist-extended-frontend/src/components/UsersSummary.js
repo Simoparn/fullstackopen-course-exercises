@@ -6,6 +6,13 @@ import styled from 'styled-components'
 //import { UserInfo } from '../components/UserInfo'
 
 
+
+    const PageStyle = styled.div`
+    padding-top: 2%;
+    padding-bottom:2%;
+    background-color:lightblue;
+    `
+
     const StyledTable = styled.table`
         font-size: 0.75em;
             
@@ -41,7 +48,7 @@ const UsersSummary = () => {
 
 
     return(
-        <>
+        <PageStyle>
         <b style={usersSummaryTitleStyle}>Users statistics</b>
         <div style={usersSummaryBodyStyle}>
             <StyledTable>
@@ -64,7 +71,7 @@ const UsersSummary = () => {
             </StyledTable>
         </div>
 
-        </>
+        </PageStyle>
     )
 
 

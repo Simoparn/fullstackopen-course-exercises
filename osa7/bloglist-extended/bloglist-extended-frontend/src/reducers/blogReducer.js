@@ -2,7 +2,7 @@ import { useDispatch, /*useSelector*/ } from 'react-redux'
 import { createSlice } from '@reduxjs/toolkit'
 import { logoutUser } from './userReducer'
 import { setNotificationWithTimeout } from './notificationReducer'
-import { getAllBlogs } from './allBlogsInfoReducer'
+import { getAllBlogsInfo } from './allBlogsInfoReducer'
 import blogService from '../services/blogs'
 
 
@@ -216,6 +216,7 @@ const blogSlice = createSlice({
     },
     appendBlog(state, action) {
       const newBlogListAfterAppend=state.concat(action.payload)
+      console.log('appendBlog, new blogs state after appending in front-end:', newBlogListAfterAppend)
       return newBlogListAfterAppend
       //state.push(action.payload)
     },
@@ -318,23 +319,11 @@ export const createBlog = (blogObject) => {
 
       console.log('createBlog, returned blog to be added to front-end after creating in back-end:', returnedBlog)
 
-      try{
-        const allBlogs = await blogService.getUserBlogs()
-        console.log('createBlog, retrieving updated blogs after saving a new blog to back-end succeeded, attempting to update the list in front-end:', allBlogs)
-        setBlogs(allBlogs.concat(returnedBlog))
-        /*setErrorMessage('New blog: ' + blogObject.title + ' added')
-                setTimeout(() => {
-                  setErrorMessage(null)
-        }, 3000)*/
-
-    
-      } catch (error){
-        console.log('Retrieving the updated blogs from back-end after saving a new blog to back-end failed:',error)
-        dispatch(setNotificationWithTimeout(`Updating the blog list failed, please consider contacting the app owner`, 5000))
-      }
+      
 
       console.log('Created a new blog in database, attempting to add this blog to the list in front-end:', returnedBlog)
       dispatch(appendBlog(returnedBlog))  
+      dispatch(getAllBlogsInfo())
       dispatch(setNotificationWithTimeout("New blog: " + blogObject.title + " added", 5000))
     } catch (error){
       console.log('Creating a new blog in back-end failed:', error)
@@ -470,7 +459,7 @@ export const addBlogComment = (blogCommentObject) => {
      
       const allBlogs=getState().blogs
       dispatch(commentBlog({blogCommentObject, allBlogs}))
-      dispatch(getAllBlogs())
+      dispatch(getAllBlogsInfo())
       dispatch(setNotificationWithTimeout("Commented a blog successfully: " + blogCommentObject.blogId, 5000))
       
       //dispatch(blogService.addBlogComment)

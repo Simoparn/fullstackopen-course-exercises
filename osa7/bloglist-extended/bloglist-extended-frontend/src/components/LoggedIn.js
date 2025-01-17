@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import styled from 'styled-components'
 import Blog from './Blog'
 import BlogForm from './Blogform'
 import Togglable from './Togglable'
@@ -9,9 +10,19 @@ import Togglable from './Togglable'
 import { createBlog, updateBlog, removeBlog } from '../reducers/blogReducer'
 
 
+
+const PageStyle = styled.div`
+padding-top: 2%;
+padding-bottom:2%;
+background-color:lightblue;
+`
+
+
 const blogTitleStyle = {
     fontSize: 26
 }
+
+
 
 
 const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
@@ -125,20 +136,8 @@ const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
 
 
     return (
-        <div>
-            <p
-            style={{
-                paddingBottom: '2%',
-                fontSize: '25px',
-            }}
-            >
-           
-            <span
-                style={{
-                paddingTop: '1%',
-                }}
-            ></span>
-            </p>
+        <PageStyle>
+
             {/*<p style={{ paddingBottom: '3%' }}>
             <button
                 onClick={handleLogout}
@@ -151,7 +150,7 @@ const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
             </button>
             </p>*/}
 
-            <div style={{ marginLeft: '0.8%' }}>
+            <div>
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
                 <BlogForm createBlog={handleAddBlog} />
             </Togglable>
@@ -172,6 +171,7 @@ const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
                 {blogs
                 .map((blog, i) => (
                     <>
+                    <b>{blog.title}</b>
                     <Togglable buttonLabel="view" ref={blogVisibleRef}>
                     <Blog
                         key={blog.id}
@@ -182,7 +182,8 @@ const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
                         currentUser={user}
                     />
                     </Togglable>
-                    <Link to={`/blogs/${blog.id}`}>Open blog in a separate view</Link>
+                    <Link to={`/blogs/${blog.id}`}>Open the blog in a separate view</Link>
+                    
                     </>
                 ))
                 .sort(function (a, b) {
@@ -190,7 +191,7 @@ const LoggedIn = ({blogFormRef, blogVisibleRef, blogRef}) => {
                 })}
             </ul>
             </div>
-        </div>
+        </PageStyle>
     )
 }
 
