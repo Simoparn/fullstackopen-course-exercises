@@ -123,7 +123,7 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: Author! 
+    author: String! 
     id: ID!
     genres: [String!]!
   }
@@ -135,6 +135,11 @@ const typeDefs = `
       author: String!
       genres: [String!]!
     ): Book
+
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }
 `
 
@@ -176,23 +181,23 @@ const resolvers = {
         }
       )
       //console.log("authorsWithBookCount: ", authorsWithBookCount)
-      return authors
+      return authorsWithBookCount 
     
     },
   },
 
-  Book: {
+  /*Book: {
     author: (root) => {
       //console.log("author resolver, root.author:", root.author)
       return {
         name: root.author,
-        //born: root.born,
-        //id: uuid()
+        born: root.born,
+        id: uuid()
         
       }
     },
     
-  },
+  },*/
   /*Author: {
     name: (root) => {
       return {
@@ -205,14 +210,26 @@ const resolvers = {
 
   Mutation:{
     addBook: (root, args) => {
-      console.log("addBook, root:", root)
       console.log("addBook, args:", args)
       const book = { ...args, id: uuid() }
 
       books = books.concat(book)
-    
+      const author = {name:args.author, born:null, id:uuid()}
+      authors = authors.concat(author)
       return book
 
+    },
+    editAuthor: (root, args) => {
+      console.log("editAuthor, args:", args)
+      const author = authors.find(a => a.name === args.name)
+      if(author){
+        const updatedAuthor = { ...author, born: args.setBornTo }
+        authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
+        return updatedAuthor
+      } 
+      else{
+        return null
+      }
     }
   },
 }
