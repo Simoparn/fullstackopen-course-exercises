@@ -214,8 +214,15 @@ const resolvers = {
       const book = { ...args, id: uuid() }
 
       books = books.concat(book)
-      const author = {name:args.author, born:null, id:uuid()}
-      authors = authors.concat(author)
+      const foundAuthor = authors.find(a => a.name === args.author)
+      if (!foundAuthor){
+        console.log("addBook, nonexistent author, adding to authors:", args.author)
+        const author = {name:args.author, born:null, id:uuid()}
+        authors = authors.concat(author)
+      }
+      else {
+        console.log("addBook, author already exists, cannot create a new author:", args.author)
+      }
       return book
 
     },
