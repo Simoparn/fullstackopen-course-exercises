@@ -7,7 +7,7 @@ const Authors = (props) => {
 
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
-  const [selected, setSelected] = useState('')
+  //const [selected, setSelected] = useState('')
 
   
 
@@ -27,8 +27,8 @@ const Authors = (props) => {
     setBorn('')
   }
 
-  const handleChange = (event) => {
-    setSelected(event.target.value)
+  const handleSelectedAuthorChange = (event) => {
+    setName(event.target.value)
   }
 
 
@@ -40,7 +40,8 @@ const Authors = (props) => {
 
 
 
-    console.log("Currently selected author:", selected)
+    console.log("Currently selected author:", name)
+    console.log('Currently selected birth year:', born)
 
 
 
@@ -68,31 +69,27 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <div>
-      <h2>change author</h2>
+      
+      <h2>Edit author</h2>
 
-      <select value={selected} onChange={handleChange}>
-        {props.authors.map((a) => {
+      <select value={name} onChange={handleSelectedAuthorChange}>
+        <option value={name}>{name}</option>
+        {props.authors.map((a) => (
           <option value={a.name}>{a.name}</option>
-        })}
+        ))}
       </select>
-
-      {/*<form onSubmit={submit}>
-        <div>
-          name <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
-        </div>
-        <div>
+      {name ?
+      <form onSubmit={submit}>
+        
           born <input
             value={born}
-            onChange={({ target }) => setBorn(parseInt(target.value))}
+            onChange={({ target }) => {parseInt(target.value) ? setBorn(parseInt(target.value)) : setBorn('')}}
           />
-        </div>
+        
         <button type='submit'>change birth year</button>
-      </form>*/}
-    </div>
+      </form>
+      : <></>}
+    
     </div>
 
   )
