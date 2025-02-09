@@ -135,7 +135,7 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: String! 
+    author: Author! 
     id: ID!
     genres: [String!]!
   }
@@ -207,7 +207,7 @@ const resolvers = {
         
         let books = await Book
         .find({}).populate('author', { _id: 0, name: 1 })
-        books=books.map(b => ({...b, author:b.author.name}))
+        //books=books.map(b => ({...b, author:b.author.name}))
         //books.forEach(b => )
         console.log('allBooks, no filters, all books retrieved:', books)
         return books
@@ -233,15 +233,24 @@ const resolvers = {
 
       const authors=await Author.find({})
       const books=await Book.find({})
+      console.log("allAuthors, authors:", authors)
+      console.log("allAuthors, books:", books)
+      
       const authorsWithBookCount=authors.map(a=>{
           const count = books.filter(b => b.author === a.name).length
           a.bookCount=count
           return a
         }
       )
-      //console.log("authorsWithBookCount: ", authorsWithBookCount)
-      return authorsWithBookCount 
+
+
+
+      
+
+        console.log("authorsWithBookCount: ", authorsWithBookCount)
+        return authorsWithBookCount 
     
+      
     },
 
     /*me: (root, args, context) => {
@@ -292,24 +301,31 @@ const resolvers = {
     },*/
     addBook: async (root, args, /* context */) => {
       console.log("addBook, args:", args)
-      const book = new Book({ ...args})
+      //const book = new Book({ ...args})
+      //console.log('addBook, new book model object:', book)
+      
       //const currentUser = context.currentUser
       
-      const authors= await Author.find({})
-      const foundAuthor = authors.findOne({ name: args.author })
+      
+      const foundAuthor = await Author.findOne({ name: args.author })
       if (!foundAuthor){
         console.log("addBook, nonexistent author, adding to authors:", args.author)
         //const author = {name:args.author, born:null, id:uuid()}
         //authors = authors.concat(author)
         const author= new Author({ name:args.author, born:null })
-      }
-      else {     
-        console.log("addBook, author already exists, cannot create a new author:", args.author)
-      }
+        console.log("addBook, author model object:", author)
+        try{
+          await author.save()
+        } catch(error){
+          console.log('addBook, error while trying to save an unknown author before saving the book:', error)
+        }
 
+        const book = new Book({ ...args, author:author})
+        console.log('addBook, new book model object:', book)
+        
         try{
           await book.save()
-
+  
         } catch(error){
           throw new GraphQLError('Saving book failed', {
             extensions: {
@@ -319,6 +335,28 @@ const resolvers = {
             }
           })
         }
+      }
+      else {     
+        console.log('addBook, found author:', foundAuthor)
+        console.log("addBook, author already exists, cannot create a new author:", args.author)
+      
+      
+      const book = new Book({ ...args, author:foundAuthor})
+      console.log('addBook, new book model object:', book)
+
+      try{
+        await book.save()
+
+      } catch(error){
+        throw new GraphQLError('Saving book failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+           }
+         })
+       }
+     }
 
     },
     //Without back-end database (MongoDB)
