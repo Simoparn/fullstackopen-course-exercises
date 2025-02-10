@@ -207,6 +207,7 @@ const resolvers = {
         
         let books = await Book
         .find({}).populate('author', { _id: 0, name: 1 })
+        
         //books=books.map(b => ({...b, author:b.author.name}))
         //books.forEach(b => )
         console.log('allBooks, no filters, all books retrieved:', books)
@@ -233,22 +234,28 @@ const resolvers = {
 
       const authors=await Author.find({})
       const books=await Book.find({})
-      console.log("allAuthors, authors:", authors)
-      console.log("allAuthors, books:", books)
-      
-      const authorsWithBookCount=authors.map(a=>{
-          const count = books.filter(b => b.author === a.name).length
-          a.bookCount=count
-          return a
+
+
+      //The following is needed because we need a bookCount attribute and
+      //mongoDN documents retrieved with find are immutable 
+      const authorsWithBookCount = authors.map(a=>{
+        const count = books.filter(b => b.author.toString() === a._id.toString()).length
+        const authorObject=a.toObject()
+        authorObject.bookCount=count
+
+        
+        
+        let oldKey="_id"
+        let newKey="id"
+        if(authorObject.hasOwnProperty(oldKey)){
+          authorObject[newKey]=authorObject[oldKey]
+          delete authorObject[oldKey]
         }
-      )
 
-
-
-      
-
-        console.log("authorsWithBookCount: ", authorsWithBookCount)
-        return authorsWithBookCount 
+        return authorObject
+      })
+      console.log('allAuthors, authorsWithBookCount:', authorsWithBookCount)
+      return authorsWithBookCount
     
       
     },
@@ -325,7 +332,7 @@ const resolvers = {
         
         try{
           await book.save()
-  
+          return book
         } catch(error){
           throw new GraphQLError('Saving book failed', {
             extensions: {
@@ -346,6 +353,7 @@ const resolvers = {
 
       try{
         await book.save()
+        return book
 
       } catch(error){
         throw new GraphQLError('Saving book failed', {
@@ -379,6 +387,7 @@ const resolvers = {
         try{
           author.born = args.setBornTo
           await author.save()
+          return author
         }catch (error){
           throw new GraphQLError('Editing author failed, setting a new birth year failed', {
             extensions: {
