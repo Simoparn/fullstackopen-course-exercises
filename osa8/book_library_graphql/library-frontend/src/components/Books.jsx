@@ -26,11 +26,11 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {props.books.map((a) => (
-            <tr key={a.id}>
-              <td>{a.title}</td>
-              <td>{a.author}</td>
-              <td>{a.published}</td>
+          {props.books.map((b) => (
+            <tr key={b.id}>
+              <td>{b.title}</td>
+              <td>{b.author.name}</td>
+              <td>{b.published}</td>
             </tr>
           ))}
         </tbody>

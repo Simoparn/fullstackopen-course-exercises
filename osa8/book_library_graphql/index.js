@@ -9,7 +9,7 @@ mongoose.set('strictQuery', false)
 const Author = require('./models/author')
 const Book = require('./models/book')
 const book = require('./models/book')
-//const User = require('./models/user')
+const User = require('./models/user')
 
 require('dotenv').config()
 const MONGODB_URI = process.env.MONGODB_URI
@@ -114,7 +114,18 @@ const typeDefs = `
 
 
 
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
+    me: User
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
@@ -152,6 +163,17 @@ const typeDefs = `
       name: String!
       setBornTo: Int!
     ): Author
+
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    
+    login(
+      username: String!
+      password: String!
+    ): Token
+
   }
 `
 
@@ -207,10 +229,9 @@ const resolvers = {
         
         let books = await Book
         .find({}).populate('author', { _id: 0, name: 1 })
+  
+        //console.log('allBooks, no filters, all books retrieved:', books)
         
-        //books=books.map(b => ({...b, author:b.author.name}))
-        //books.forEach(b => )
-        console.log('allBooks, no filters, all books retrieved:', books)
         return books
     
 
@@ -260,9 +281,9 @@ const resolvers = {
       
     },
 
-    /*me: (root, args, context) => {
+    me: (root, args, context) => {
       return context.currentUser
-    }*/
+    }
   },
 
   /*Book: {
@@ -306,65 +327,79 @@ const resolvers = {
       return book
 
     },*/
-    addBook: async (root, args, /* context */) => {
+    addBook: async (root, args, context ) => {
       console.log("addBook, args:", args)
       //const book = new Book({ ...args})
       //console.log('addBook, new book model object:', book)
       
-      //const currentUser = context.currentUser
+      const currentUser = context.currentUser
       
-      
-      const foundAuthor = await Author.findOne({ name: args.author })
-      if (!foundAuthor){
-        console.log("addBook, nonexistent author, adding to authors:", args.author)
-        //const author = {name:args.author, born:null, id:uuid()}
-        //authors = authors.concat(author)
-        const author= new Author({ name:args.author, born:null })
-        console.log("addBook, author model object:", author)
-        try{
-          await author.save()
-        } catch(error){
-          console.log('addBook, error while trying to save an unknown author before saving the book:', error)
-        }
+      if(currentUser){
+        console.log('addBook, valid user token found, adding a new book')
 
-        const book = new Book({ ...args, author:author})
-        console.log('addBook, new book model object:', book)
+        const foundAuthor = await Author.findOne({ name: args.author })
+        if (!foundAuthor){
+          console.log("addBook, nonexistent author, adding to authors:", args.author)
+          //const author = {name:args.author, born:null, id:uuid()}
+          //authors = authors.concat(author)
+          const author= new Author({ name:args.author, born:null })
+          console.log("addBook, author model object:", author)
+          try{
+            await author.save()
+          } catch(error){
+            console.log('addBook, error while trying to create an unknown author before saving the book:', error)
+            throw new GraphQLError('Saving book failed, author name is too short', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.author,
+                error
+              }
+            })
+          }
+
+          const book = new Book({ ...args, author:author})
+          console.log('addBook, new book model object:', book)
+          
+          try{
+            await book.save()
+            return book
+          } catch(error){
+            console.log("addBook, error while trying to save a book after creating the new author:", args.author)
+            throw new GraphQLError('Saving book failed, book title is too short', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.title,
+                error
+              }
+            })
+          }
+        }
+        else {     
+          console.log('addBook, found author:', foundAuthor)
+          console.log("addBook, author already exists, cannot create a new author:", args.author)
         
+        
+        const book = new Book({ ...args, author:foundAuthor})
+        console.log('addBook, new book model object:', book)
+
         try{
           await book.save()
           return book
+
         } catch(error){
-          throw new GraphQLError('Saving book failed', {
+          console.log('addBook, error while trying to save before a book and the author already exists in database:', error)
+          throw new GraphQLError('Saving book failed, book title is too short', {
             extensions: {
               code: 'BAD_USER_INPUT',
               invalidArgs: args.title,
               error
             }
           })
+          }
         }
+      } else {
+        console.log('addBook, no valid user token found, cannot add a new book')
       }
-      else {     
-        console.log('addBook, found author:', foundAuthor)
-        console.log("addBook, author already exists, cannot create a new author:", args.author)
-      
-      
-      const book = new Book({ ...args, author:foundAuthor})
-      console.log('addBook, new book model object:', book)
-
-      try{
-        await book.save()
-        return book
-
-      } catch(error){
-        throw new GraphQLError('Saving book failed', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.title,
-            error
-           }
-         })
-       }
-     }
 
     },
     //Without back-end database (MongoDB)
@@ -382,35 +417,44 @@ const resolvers = {
     },*/
     editAuthor: async (root, args) => {
       console.log("editAuthor, args:", args)
-      const author = await Author.findOne({ name: args.name })
-      if(author){
-        try{
-          author.born = args.setBornTo
-          await author.save()
-          return author
-        }catch (error){
-          throw new GraphQLError('Editing author failed, setting a new birth year failed', {
+
+
+      const currentUser = context.currentUser
+      
+      if(currentUser){
+        console.log('editAuthor, no valid user token found, cannot edit author')
+        const author = await Author.findOne({ name: args.name })
+        if(author){
+          try{
+            author.born = args.setBornTo
+            await author.save()
+            return author
+          }catch (error){
+            throw new GraphQLError('Editing author failed, setting a new birth year failed', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.name,            
+                error  
+                }
+              })
+            }   
+        } 
+        else{
+          console.log('editAuthor, no valid user token found, cannot edit author')
+          throw new GraphQLError('Editing author failed, author not found', {
             extensions: {
               code: 'BAD_USER_INPUT',
               invalidArgs: args.name,            
               error  
               }
             })
-          }   
-      } 
-      else{
-        throw new GraphQLError('Editing author failed, author not found', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.name,            
-            error  
-            }
-          })
+        }
       }
     },
-    /*createUser: async (root, args) => {
+    createUser: async (root, args) => {
+        console.log('createUser, args:', args)
         const user = new User({ username: args.username })
-    
+      
         return user.save()
           .catch(error => {
             throw new GraphQLError('Creating the user failed', {
@@ -421,9 +465,9 @@ const resolvers = {
               }
             })
           })
-      },*/
+      },
 
-    /*
+    
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username })
   
@@ -441,7 +485,7 @@ const resolvers = {
       }
   
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
-    }*/
+    }
       
 
   },
@@ -456,15 +500,16 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 }, 
-  /*context: async ({ req, res }) => {
+  context: async ({ req, res }) => {
     const auth = req ? req.headers.authorization : null    
       if (auth && auth.startsWith('Bearer ')) {      
         const decodedToken = jwt.verify(        
           auth.substring(7), process.env.JWT_SECRET      
         )      
-        const currentUser = await User.findById(decodedToken.id).populate('friends')      
+        const currentUser = await User.findById(decodedToken.id)     
         return { currentUser }    
-  }   */
+      }
+  }   
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })

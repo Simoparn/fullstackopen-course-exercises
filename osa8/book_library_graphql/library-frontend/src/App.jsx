@@ -27,10 +27,10 @@ const App = () => {
 
 
   const authorsResult = useQuery(ALL_AUTHORS, {    
-        pollInterval: 6000  
+        pollInterval: 4000  
   })
   const booksResult = useQuery(ALL_BOOKS, {    
-      pollInterval: 6000  
+      pollInterval: 4000  
   })
   console.log('authors, query result data:', authorsResult.data)
   console.log('books, query result data:', booksResult.data)
