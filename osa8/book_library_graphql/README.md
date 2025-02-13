@@ -12,3 +12,8 @@ Use localhost:4000 in browser for editing the database and localhost:5173 for ap
 -mongoose-unique-validator not working, ERESOLVE error when trying to install with npm.
 Apparently mongoose-unique-validator requires an older mongoose version (7.0.0)
 -Book categories when adding new books are still not validated
+-Consider implementing friends for users
+-Remember to disable CORS (Same-origin) in production mode
+-books and authors are still fetched regardless of login 
+-Consider also implementing automatic token-based login between window refreshes
+

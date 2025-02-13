@@ -48,4 +48,29 @@ mutation editAuthor($name: String!, $born: Int!) {
     born
   }
 }
-` 
+`
+
+export const CREATE_USER = gql`
+mutation createUser($username: String!, $password: String!, $favoriteGenre: String!) {
+  createUser(
+    username: $username, password: $password, favoriteGenre: $favoriteGenre
+  ) {
+    username
+    favoriteGenre
+    id
+ }
+}
+`
+
+
+
+export const LOGIN = gql`
+mutation login($username: String!, $password: String!) {
+  login (
+    username: $username
+    password: $password
+  ) {
+    value
+  }
+}
+`

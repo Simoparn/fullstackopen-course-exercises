@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ADD_BOOK } from '../queries'
+import { ADD_BOOK, ALL_BOOKS } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -13,12 +13,21 @@ const NewBook = (props) => {
   const [ addBook ] = useMutation(ADD_BOOK, 
         
     {
-         //reFetchQueries generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
-        /*refetchQueries: [ { query: ALL_BOOKS } ], */
+        //refetchQueries needed for updating cache after creating new books. 
+        //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
+        refetchQueries: [  {query: ALL_BOOKS} ],
         onError: (error) => {      
             const messages = error.graphQLErrors.map(e => e.message).join('\n')      
             props.setError(messages)    
-        }
+        },
+        //Needed for updating the query in cache with new data (such as creating a new person)
+        update: (cache, response) => {      
+          cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {        
+            return {          
+              allBooks: allBooks.concat(response.data.addBook),        
+            }      
+          })    
+        },
 })
 
 

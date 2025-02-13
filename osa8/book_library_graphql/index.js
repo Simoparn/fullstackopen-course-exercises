@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 //const { v1: uuid } = require('uuid')
@@ -8,15 +9,15 @@ const jwt = require('jsonwebtoken')
 mongoose.set('strictQuery', false)
 const Author = require('./models/author')
 const Book = require('./models/book')
-const book = require('./models/book')
 const User = require('./models/user')
+
 
 require('dotenv').config()
 const MONGODB_URI = process.env.MONGODB_URI
-
+console.log('connecting to MongoDB:', MONGODB_URI)
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    console.log('connected to MongoDB')
+    console.log('connected to MongoDB:', MONGODB_URI)
   })
   .catch((error) => {
     console.log('error connection to MongoDB:', error.message)
@@ -166,6 +167,7 @@ const typeDefs = `
 
     createUser(
       username: String!
+      password: String!
       favoriteGenre: String!
     ): User
     
@@ -399,6 +401,13 @@ const resolvers = {
         }
       } else {
         console.log('addBook, no valid user token found, cannot add a new book')
+        throw new GraphQLError('Adding a new book failed, no valid user token', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
       }
 
     },
@@ -444,8 +453,7 @@ const resolvers = {
           throw new GraphQLError('Editing author failed, author not found', {
             extensions: {
               code: 'BAD_USER_INPUT',
-              invalidArgs: args.name,            
-              error  
+              invalidArgs: args.name  
               }
             })
         }
@@ -453,11 +461,60 @@ const resolvers = {
     },
     createUser: async (root, args) => {
         console.log('createUser, args:', args)
-        const user = new User({ username: args.username })
-      
+        
+
+        const existingUser = await User.findOne({ username:args.username })
+        if(existingUser){
+          console.log('createUser, the username already exists, cannot create the new user')
+          throw new GraphQLError('Creating the new user failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.username 
+              }
+            })
+        } 
+        
+        if (args.username.length < 3) {
+          console.log('createUser, the given username is too short, cannot create the new user')
+          throw new GraphQLError('Username is too short, must be atleast 3 characters long', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.username           
+              }
+            })
+        }
+
+        if(args.password.length < 3){
+          console.log('createUser, the given password for the new user is too short, cannot create the new user')
+          throw new GraphQLError('Password is too short, must be atleast 3 characters long', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.password           
+              }
+            })
+        }
+
+        if(args.favoriteGenre.length < 5){
+          console.log('createUser, the favorite genre of the new user is too short, cannot create the new user')
+          throw new GraphQLError('The favorite genre for the new user must be atleast 5 characters long,', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.favoriteGenre
+              }
+            })
+        }
+
+        const saltRounds = 10
+        const passwordHash = await bcrypt.hash(args.password, saltRounds)
+
+
+        const user = new User({ username: args.username, passwordHash:passwordHash, favoriteGenre: args.favoriteGenre })
+
         return user.save()
           .catch(error => {
-            throw new GraphQLError('Creating the user failed', {
+            console.log('createUser, creating the user failed for the following reason:', error)
+    
+            throw new GraphQLError('Creating the user failed, please try again', {
               extensions: {
                 code: 'BAD_USER_INPUT',
                 invalidArgs: args.username,
@@ -469,9 +526,16 @@ const resolvers = {
 
     
     login: async (root, args) => {
+      console.log('login, args:', args)
       const user = await User.findOne({ username: args.username })
   
-      if ( !user || args.password !== 'secret' ) {
+
+      const passwordCorrect =
+      user === null ? false : await bcrypt.compare(args.password, user.passwordHash)
+
+
+      if (!(user && passwordCorrect)) {
+        console.log('login, wrong credentials, failed to login')
         throw new GraphQLError('wrong credentials', {
           extensions: {
             code: 'BAD_USER_INPUT'
@@ -496,6 +560,10 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  cors: {
+    origin: 'http:localhost:4000',
+    credentials: true
+  }
 })
 
 startStandaloneServer(server, {
