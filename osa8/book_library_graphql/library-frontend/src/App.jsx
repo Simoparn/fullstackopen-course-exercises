@@ -31,7 +31,9 @@ const App = () => {
   const [ tokenLogin, result ] = useMutation(TOKEN_LOGIN, {    
     onError: (error) => {
       console.log('automatic login error, result:', result)
+      console.log('automatic login, error:', error)
       notify(error.graphQLErrors[0].message)
+      
     }
   })
 
@@ -49,7 +51,7 @@ const App = () => {
   }*/)
   console.log('authors, query result data:', authorsResult.data)
   console.log('books, query result data:', booksResult.data)
- 
+  console.log('App, user token:', token)
 
 
   const notify = (message) => {   
@@ -67,7 +69,7 @@ const App = () => {
 
 
   useEffect(()=>{
-    console.log('App, user token:', token)
+    
     if(localStorage.getItem('book-library-user-token')){
       //localStorage.removeItem('book-library-user-token')
       /**/
@@ -78,6 +80,7 @@ const App = () => {
   }, [])
 
   useEffect(()=>{
+    console.log('App, token changed:', token)
     if(token){
       console.log('Attempting automatic token login, token value:', token)
       tokenLogin({ variables: { token } })

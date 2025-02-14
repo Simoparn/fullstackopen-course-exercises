@@ -200,7 +200,7 @@ const resolvers = {
       return authors.length
     },
     allBooks: async (root, args)=>{
-      console.log("allBooks, args:", args)
+      //console.log("allBooks, args:", args)
       
       //Without back-end database (MongoDB)
       /*if(args.author || args.genre){
@@ -281,7 +281,7 @@ const resolvers = {
 
         return authorObject
       })
-      console.log('allAuthors, authorsWithBookCount:', authorsWithBookCount)
+      //console.log('allAuthors, authorsWithBookCount:', authorsWithBookCount)
       return authorsWithBookCount
     
       
@@ -534,8 +534,9 @@ const resolvers = {
       const user = await User.findOne({ username: args.username })
   
 
+      //await is needed for bcrypt.compare to prevent successful login with username alone, despite the redundancy warning
       const passwordCorrect =
-      user === null ? false : bcrypt.compare(args.password, user.passwordHash)
+      user === null ? false : await bcrypt.compare(args.password, user.passwordHash)
 
 
       if (!(user && passwordCorrect)) {
@@ -552,6 +553,8 @@ const resolvers = {
         id: user._id,
       }
   
+      console.log('login, normal login success, user for token:', userForToken)
+
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
     },
       
