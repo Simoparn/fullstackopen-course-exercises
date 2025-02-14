@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react"
-import { gql, useQuery, useApolloClient } from '@apollo/client'
+import { gql, useQuery, useApolloClient, useMutation } from '@apollo/client'
 import Authors from "./components/Authors"
 import Books from "./components/Books"
 import NewBook from "./components/NewBook"
 import LoginForm from './components/LoginForm'
-import { ALL_AUTHORS, ALL_BOOKS }  from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, TOKEN_LOGIN }  from './queries'
 
 
 
@@ -28,6 +28,13 @@ const App = () => {
   const client = useApolloClient()
   
 
+  const [ tokenLogin, result ] = useMutation(TOKEN_LOGIN, {    
+    onError: (error) => {
+      console.log('automatic login error, result:', result)
+      notify(error.graphQLErrors[0].message)
+    }
+  })
+
 
   const authorsResult = useQuery(ALL_AUTHORS, 
   //Using refetchQueries when needed instead
@@ -42,7 +49,7 @@ const App = () => {
   }*/)
   console.log('authors, query result data:', authorsResult.data)
   console.log('books, query result data:', booksResult.data)
-  console.log('App, user token:', token)
+ 
 
 
   const notify = (message) => {   
@@ -60,10 +67,22 @@ const App = () => {
 
 
   useEffect(()=>{
+    console.log('App, user token:', token)
     if(localStorage.getItem('book-library-user-token')){
-      localStorage.removeItem('book-library-user-token')
+      //localStorage.removeItem('book-library-user-token')
+      /**/
+      console.log('App, browser cache token found:', localStorage.getItem('book-library-user-token'))
+      setToken(localStorage.getItem('book-library-user-token'))
+      //tokenLogin({ variables: { token } })
     }
   }, [])
+
+  useEffect(()=>{
+    if(token){
+      console.log('Attempting automatic token login, token value:', token)
+      tokenLogin({ variables: { token } })
+    }
+  }, [token])
 
 
   if (authorsResult.loading || booksResult.loading)  {

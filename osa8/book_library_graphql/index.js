@@ -176,6 +176,10 @@ const typeDefs = `
       password: String!
     ): Token
 
+    tokenLogin(
+      token: String!
+    ): Token
+
   }
 `
 
@@ -531,7 +535,7 @@ const resolvers = {
   
 
       const passwordCorrect =
-      user === null ? false : await bcrypt.compare(args.password, user.passwordHash)
+      user === null ? false : bcrypt.compare(args.password, user.passwordHash)
 
 
       if (!(user && passwordCorrect)) {
@@ -549,10 +553,45 @@ const resolvers = {
       }
   
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
-    }
+    },
       
 
+    tokenLogin: async (root, args) => {
+      console.log('tokenLogin, args:', args)
+      
+      try{
+        const verifiedToken=jwt.verify(args.token, process.env.JWT_SECRET)
+        console.log('tokenLogin, automatic login success, verified token:', verifiedToken)
+        return verifiedToken
+        
+
+      }catch(error){
+        if (error instanceof jwt.TokenExpiredError){
+          console.log("error while retrieving trying automatic login for the user, token expired:", error)
+          throw new GraphQLError('Automatic login failed, expired user token', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.token
+            }
+          })  
+        
+        }
+        else if (error instanceof jwt.JsonWebTokenError) {
+          console.log("error while trying automatic login for the user, token is invalid:", error)
+          throw new GraphQLError('Automatic login fail, invalid user token', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.token
+            }
+          })  
+          
+        }
+      }
+  
+    }
   },
+
+  
 }
 
 
@@ -561,7 +600,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   cors: {
-    origin: 'http:localhost:4000',
+    origin: 'http://localhost:4000',
     credentials: true
   }
 })

@@ -74,3 +74,14 @@ mutation login($username: String!, $password: String!) {
   }
 }
 `
+
+
+export const TOKEN_LOGIN = gql`
+mutation tokenLogin($token: String!) {
+  tokenLogin (
+    token: $token  
+  ) {
+    value
+  }
+}
+`
