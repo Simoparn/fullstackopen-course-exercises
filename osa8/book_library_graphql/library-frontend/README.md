@@ -1,5 +1,5 @@
 # ABOUT
-Backend for part 8 GraphQL library exercise. Frontend is in a child directory.
+Frontend for part 8 GraphQL library exercise. Backend is in the parent directory.
 
 # APPLICATION LOGIC
 

@@ -28,6 +28,21 @@ export const ALL_BOOKS=gql`
   }
 `
 
+export const FAVORITE_BOOKS=gql`
+  query favoriteBooks($token: String) {
+    favoriteBooks(token: $token) {
+      title
+      published
+      author{
+        name
+      }
+      id
+      genres
+    }
+  }
+
+`
+
 export const ADD_BOOK=gql`   
   mutation addBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
       addBook(title: $title, author: $author, published: $published, genres: $genres){

@@ -4,11 +4,13 @@ import Authors from "./components/Authors"
 import Books from "./components/Books"
 import NewBook from "./components/NewBook"
 import LoginForm from './components/LoginForm'
-import { ALL_AUTHORS, ALL_BOOKS, TOKEN_LOGIN }  from './queries'
+import Recommendations from './components/Recommendations'
+import { ALL_AUTHORS, ALL_BOOKS, FAVORITE_BOOKS, TOKEN_LOGIN }  from './queries'
+import { set } from "mongoose"
 
 
 
-const Notify = ({errorMessage}) => {  
+const Notification = ({errorMessage}) => {  
   if ( !errorMessage ) {    
     return null  
   }  
@@ -24,16 +26,33 @@ const Notify = ({errorMessage}) => {
 const App = () => {
   const [token, setToken] = useState(null)
   const [page, setPage] = useState("authors");
+  const [favoriteBooks, setFavoriteBooks] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const client = useApolloClient()
   
 
-  const [ tokenLogin, result ] = useMutation(TOKEN_LOGIN, {    
+  const [ tokenLogin, result ] = useMutation(TOKEN_LOGIN,  {   
     onError: (error) => {
       console.log('automatic login error, result:', result)
-      console.log('automatic login, error:', error)
-      notify(error.graphQLErrors[0].message)
-      
+      console.log('automatic login, error:', error.message)  
+      if(error.graphQLErrors.length > 0){
+        console.log('automatic login, error.graphQLErrors:', error.graphQLErrors)
+        const messages = error.graphQLErrors.map(e => e.message).join('\n')    
+        setErrorMessage(messages)
+        notify(messages)
+      }
+      else{
+        console.log('automatic login, error.message:', error.message)
+        const messages = error.message
+        setErrorMessage(messages)
+        notify(messages)
+      }
+      /*if(messages === "Response not successful: Received status code 500"){
+        console.log('automatic login error, internal server error, user token has most likely expired, clearing token and browser cache')
+        setToken(null)    
+        localStorage.clear()    
+        client.resetStore() 
+      }*/
     }
   })
 
@@ -49,8 +68,21 @@ const App = () => {
   {    
       pollInterval: 4000  
   }*/)
+
+  const favoriteBooksResult = useQuery(FAVORITE_BOOKS, 
+    //Using refetchQueries when needed instead  
+    
+    {    
+        variables: { token }
+        //pollInterval: 4000  
+    })
+
+
+
+
   console.log('authors, query result data:', authorsResult.data)
   console.log('books, query result data:', booksResult.data)
+  console.log('favorite books, query result data:', favoriteBooksResult.data)
   console.log('App, user token:', token)
 
 
@@ -85,17 +117,37 @@ const App = () => {
       console.log('Attempting automatic token login, token value:', token)
       tokenLogin({ variables: { token } })
     }
+
+    
   }, [token])
 
+  
+  useEffect(()=>{
+    console.log('Checking error message:', errorMessage)
+    if(errorMessage === "Automatic login fail while trying to set context server-side, expired user token"){
+      console.log('Checked error message, automatic login failed server-side, expired token, clearing token and browser cache')
+      setToken(null)    
+      localStorage.clear()    
+      client.resetStore()  
+    }
 
-  if (authorsResult.loading || booksResult.loading)  {
+    if(errorMessage === "Response not successful: Received status code 500"){
+      console.log('Checked error message, automatic login error, internal server error, user token has most likely expired, clearing token and browser cache')
+      setToken(null)    
+      localStorage.clear()    
+      client.resetStore() 
+    }
+  }, [errorMessage])
+
+
+  if (authorsResult.loading || booksResult.loading || favoriteBooksResult.loading)  {
     return <div>loading data...</div>
   }
 
   if (!token) {
     return (
       <div>
-        <Notify errorMessage={errorMessage} />
+        <Notification errorMessage={errorMessage} />
         <h2>Login</h2>
         <LoginForm
           setToken={setToken}
@@ -107,12 +159,13 @@ const App = () => {
 
   return (
     <div>
-      <Notify errorMessage={errorMessage} />
+      <Notification errorMessage={errorMessage} />
       <button onClick={logout}>logout</button>
       <div>
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         <button onClick={() => setPage("add")}>add book</button>
+        <button onClick={() => setPage("recommendations")}>recommendations</button>
       </div>
 
       <Authors show={page === "authors"} authors={authorsResult.data.allAuthors} setError={notify} />
@@ -120,6 +173,8 @@ const App = () => {
       <Books show={page === "books"} books={booksResult.data.allBooks} />
 
       <NewBook show={page === "add"} setError={notify} />
+
+      <Recommendations show={page === "recommendations"} setError={notify} favoriteBooks={favoriteBooks.data.favoriteBooks} />
     </div>
   );
 };

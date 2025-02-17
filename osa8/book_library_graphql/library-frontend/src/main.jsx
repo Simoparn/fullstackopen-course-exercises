@@ -15,6 +15,8 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
+
+
 //Needed for token-based authentication
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000',
@@ -27,6 +29,8 @@ const client = new ApolloClient({
   //Needed for token-based authentication
   link: authLink.concat(httpLink)
 })
+
+//console.log('ApolloClient object, checking for context problem with expired tokens:', client)
 
 
 

@@ -130,6 +130,7 @@ const typeDefs = `
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
+    favoriteBooks(token: String): [Book!]!
     allAuthors: [Author!]!
     
   }
@@ -177,7 +178,7 @@ const typeDefs = `
     ): Token
 
     tokenLogin(
-      token: String!
+      token: String
     ): Token
 
   }
@@ -242,6 +243,67 @@ const resolvers = {
     
 
       
+    },
+    favoriteBooks: async (root, args)=>{
+      console.log('favoriteBooks, args:', args)
+        if(args.token){
+          console.log('favoriteBooks, token found:', args.token)
+          try{
+            const verifiedToken=jwt.verify(args.token, process.env.JWT_SECRET)
+            console.log('favoriteBooks, user token found, verified token:', verifiedToken)
+            if(verifiedToken){
+              const user = await User.findOne({username: verifiedToken.username})
+              console.log('favoriteBooks, found user:', user)
+
+              if(user.favoriteGenre.length > 0){
+
+                
+                const allBooks = await Book.find({}).populate('author', { _id: 0, name: 1 })
+
+                const favoriteBooks =  allBooks.filter((b) => b.genres.includes(user.favoriteGenre))
+
+                console.log('favoriteBooks, favorite books for user:', favoriteBooks)
+                return favoriteBooks
+              }
+
+            }
+          }
+          catch(error){
+            console.log('favoriteBooks, error:', code)
+            if (error instanceof jwt.TokenExpiredError){
+              console.log("error while retrieving trying to verify an user, token expired:", error)
+              throw new GraphQLError('Fetching favorite books failed, expired user token', {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                  invalidArgs: args.token
+                }
+              })  
+            
+            }
+            else if (error instanceof jwt.JsonWebTokenError) {
+              console.log("error while trying to verify an user, token is invalid:", error)
+              throw new GraphQLError('Fetching favorite books failed, invalid user token', {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                  invalidArgs: args.token
+                }
+              })  
+              
+            }
+            else {
+              console.log("Unknown error while trying to get favorite books:", error)
+              throw new GraphQLError('Fetching favorite books failed, unknown error', {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                }
+              }) 
+            }
+          }
+
+          
+        
+        
+      }
     },
     //Without back-end database (MongoDB)
     /*allAuthors: (root, args)=>{
@@ -555,7 +617,9 @@ const resolvers = {
   
       console.log('login, normal login success, user for token:', userForToken)
 
-      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET, {
+        expiresIn: 60 * 120
+      }) }
     },
       
 
@@ -569,6 +633,7 @@ const resolvers = {
         
 
       }catch(error){
+        console.log('tokenLogin, error:', code)
         if (error instanceof jwt.TokenExpiredError){
           console.log("error while retrieving trying automatic login for the user, token expired:", error)
           throw new GraphQLError('Automatic login failed, expired user token', {
@@ -602,6 +667,17 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  formatError: (formattedError, error) => {
+    console.log('Apollo Server backend error handler, catched error:', error.message)
+    console.log('Apollo Server backend error handler, formatted error:', formattedError.message)
+    if (formattedError.message.startsWith('Context creation failed: jwt expired: ')) {
+      console.log('Automatic login attempt from frontend failed, user token expired')
+      return { message: 'Automatic login failed, user token expired' };
+  
+    }
+    return formattedError;
+  
+  },
   cors: {
     origin: 'http://localhost:4000',
     credentials: true
@@ -613,13 +689,26 @@ startStandaloneServer(server, {
   context: async ({ req, res }) => {
     const auth = req ? req.headers.authorization : null    
       if (auth && auth.startsWith('Bearer ')) {      
-        const decodedToken = jwt.verify(        
-          auth.substring(7), process.env.JWT_SECRET      
-        )      
-        const currentUser = await User.findById(decodedToken.id)     
-        return { currentUser }    
+        try{
+          const decodedToken = jwt.verify(        
+            auth.substring(7), process.env.JWT_SECRET      
+          )      
+          const currentUser = await User.findById(decodedToken.id)     
+          return { currentUser }
+        }catch(error){
+          if(error instanceof jwt.TokenExpiredError){
+            throw new GraphQLError('Automatic login fail while trying to set context server-side, expired user token', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+              
+              }
+            })  
+          }
+        }    
       }
   }   
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
+}).catch((error)=>{
+  console.log('Error while starting server:', error)
 })

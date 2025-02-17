@@ -20,7 +20,7 @@ const NewBook = (props) => {
             const messages = error.graphQLErrors.map(e => e.message).join('\n')      
             props.setError(messages)    
         },
-        //Needed for updating the query in cache with new data (such as creating a new person)
+        //Needed for updating the query in cache with new data (such as after creating a new person)
         update: (cache, response) => {      
           cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {        
             return {          
@@ -55,6 +55,7 @@ const NewBook = (props) => {
 
   return (
     <div>
+      <h2>Add book</h2>
       <form onSubmit={submit}>
         <div>
           title
