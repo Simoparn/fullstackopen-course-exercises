@@ -15,7 +15,7 @@ const NewBook = (props) => {
     {
         //refetchQueries needed for updating cache after creating new books. 
         //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
-        refetchQueries: [  {query: ALL_BOOKS} ],
+        refetchQueries: [  {query: ALL_BOOKS} /*, {query: ALL_AUTHORS}*/ ],
         onError: (error) => {      
             const messages = error.graphQLErrors.map(e => e.message).join('\n')      
             props.setError(messages)    
@@ -23,10 +23,12 @@ const NewBook = (props) => {
         //Needed for updating the query in cache with new data (such as after creating a new person)
         update: (cache, response) => {      
           cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {        
+            console.log('addBook, Frontend cache update after query, response.data.addBook:', response.data.addBook)
+
             return {          
               allBooks: allBooks.concat(response.data.addBook),        
             }      
-          })    
+          })
         },
 })
 

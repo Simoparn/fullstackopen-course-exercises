@@ -353,7 +353,9 @@ const resolvers = {
       return context.currentUser
     }
   },
+  
 
+  //Without back-end database (MongoDB)
   /*Book: {
     author: (root) => {
       //console.log("author resolver, root.author:", root.author)
@@ -366,6 +368,8 @@ const resolvers = {
     },
     
   },*/
+
+  //Without back-end database (MongoDB)
   /*Author: {
     name: (root) => {
       return {
@@ -490,14 +494,14 @@ const resolvers = {
         return null
       }
     },*/
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
       console.log("editAuthor, args:", args)
 
 
       const currentUser = context.currentUser
       
       if(currentUser){
-        console.log('editAuthor, no valid user token found, cannot edit author')
+        console.log('editAuthor, valid user token found, editing author allowed:', currentUser)
         const author = await Author.findOne({ name: args.name })
         if(author){
           try{
@@ -617,9 +621,18 @@ const resolvers = {
   
       console.log('login, normal login success, user for token:', userForToken)
 
-      return { value: jwt.sign(userForToken, process.env.JWT_SECRET, {
-        expiresIn: 60 * 120
-      }) }
+      const signedToken = process.env.MODE.toLowerCase() !== "production" ?
+          { value: jwt.sign(userForToken, process.env.JWT_SECRET, {
+            expiresIn: 60 * 5
+            }) 
+          } :
+          { value: jwt.sign(userForToken, process.env.JWT_SECRET, {
+            expiresIn: 60 * 120
+          }) }
+        
+        console.log('login, signed token:', signedToken)
+        
+        return signedToken
     },
       
 

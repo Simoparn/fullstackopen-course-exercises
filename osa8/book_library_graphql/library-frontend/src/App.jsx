@@ -26,7 +26,6 @@ const Notification = ({errorMessage}) => {
 const App = () => {
   const [token, setToken] = useState(null)
   const [page, setPage] = useState("authors");
-  const [favoriteBooks, setFavoriteBooks] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const client = useApolloClient()
   
@@ -57,25 +56,72 @@ const App = () => {
   })
 
 
-  const authorsResult = useQuery(ALL_AUTHORS, 
-  //Using refetchQueries when needed instead
-  /*{    
-        pollInterval: 4000  
-  }*/)
-  const booksResult = useQuery(ALL_BOOKS, 
-  //Using refetchQueries when needed instead  
-  /*
-  {    
-      pollInterval: 4000  
-  }*/)
-
-  const favoriteBooksResult = useQuery(FAVORITE_BOOKS, 
+  const authorsResult = useQuery(ALL_AUTHORS, {
+    onError: (error) => {
+      console.log('authors data fetch error, result:', error.message)
+      if(error.graphQLErrors.length > 0){
+        console.log('authors data fetch error, error.graphQLErrors:', error.graphQLErrors)
+        const messages = error.graphQLErrors.map(e => e.message).join('\n')    
+        setErrorMessage(messages)
+        notify(messages)
+      }
+      else{
+        console.log('authors data fetch error, error.message:', error.message)
+        const messages = error.message
+        setErrorMessage(messages)
+        notify(messages)
+      }
+    }
+    //skip: !token,  
+    //Using refetchQueries when needed instead
+    //pollInterval: 4000  
+  
+  })
+  const booksResult = useQuery(ALL_BOOKS, {
+    onError: (error) => {
+      console.log('books data fetch error, result:', error.message)
+      if(error.graphQLErrors.length > 0){
+        console.log('books data fetch error, error.graphQLErrors:', error.graphQLErrors)
+        const messages = error.graphQLErrors.map(e => e.message).join('\n')    
+        setErrorMessage(messages)
+        notify(messages)
+      }
+      else{
+        console.log('books data fetch error, error.message:', error.message)
+        const messages = error.message
+        setErrorMessage(messages)
+        notify(messages)
+      }
+      
+    },
+    //skip: !token,  
     //Using refetchQueries when needed instead  
-    
-    {    
-        variables: { token }
+    //pollInterval: 4000  
+
+  })
+
+  const favoriteBooksResult = useQuery(FAVORITE_BOOKS, {   
+      onError: (error) => {
+
+          console.log('favorite books data fetch error, result:', error.message)
+          if(error.graphQLErrors.length > 0){
+            console.log('favorite books data fetch error, error.graphQLErrors:', error.graphQLErrors)
+            const messages = error.graphQLErrors.map(e => e.message).join('\n')    
+            setErrorMessage(messages)
+            notify(messages)
+          }
+          else{
+            console.log('favorite books data fetch error, error.message:', error.message)
+            const messages = error.message
+            setErrorMessage(messages)
+            notify(messages)
+          }
+        },
+        variables: { token },
+        //skip: !token,  
+        //Using refetchQueries when needed instead 
         //pollInterval: 4000  
-    })
+  })
 
 
 
@@ -174,7 +220,7 @@ const App = () => {
 
       <NewBook show={page === "add"} setError={notify} />
 
-      <Recommendations show={page === "recommendations"} setError={notify} favoriteBooks={favoriteBooks.data.favoriteBooks} />
+      <Recommendations show={page === "recommendations"} setError={notify} favoriteBooks={favoriteBooksResult.data.favoriteBooks} />
     </div>
   );
 };

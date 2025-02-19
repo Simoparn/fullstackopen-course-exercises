@@ -26,8 +26,8 @@ const Books = (props) => {
     })
   })
 
-  console.log('Books, selected genre:', genre)
-  console.log('Books, unique book genres:', bookgenres)
+  //console.log('Books, selected genre:', genre)
+  //console.log('Books, unique book genres:', bookgenres)
 
   if (!props.show) {
     return null
@@ -42,11 +42,11 @@ const Books = (props) => {
       <table>
         <tbody>
           <tr>
-            <th></th>
-            <th>author</th>
-            <th>published</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Published</th>
           </tr>
-          <br/>
+          
           {genre === "all" ? props.books.map((b) => (
               <tr key={b.id}>
                 <td>{b.title}</td>
@@ -71,6 +71,9 @@ const Books = (props) => {
           )}
         </tbody>
       </table>
+      <br/>
+      <b>Select genre</b>
+      <br/>
       <select value={genre} onChange={handleSelectedGenreChange}>
         <option value={genre}>{genre}</option>
           <option value="all">all</option>
