@@ -46,7 +46,13 @@ const App = () => {
         setErrorMessage(messages)
         notify(messages)
       }
-      /*if(messages === "Response not successful: Received status code 500"){
+      /*if(messages === "Automatic login fail while trying to set context server-side, expired user token"){
+        console.log('Checked error message, automatic login failed server-side, expired token, clearing token and browser cache')
+        setToken(null)    
+        localStorage.clear()    
+        client.resetStore()  
+      }  
+      if(messages === "Response not successful: Received status code 500"){
         console.log('automatic login error, internal server error, user token has most likely expired, clearing token and browser cache')
         setToken(null)    
         localStorage.clear()    
@@ -71,8 +77,8 @@ const App = () => {
         setErrorMessage(messages)
         notify(messages)
       }
-    }
-    //skip: !token,  
+    },
+    skip: !token,  
     //Using refetchQueries when needed instead
     //pollInterval: 4000  
   
@@ -94,7 +100,7 @@ const App = () => {
       }
       
     },
-    //skip: !token,  
+    skip: !token,  
     //Using refetchQueries when needed instead  
     //pollInterval: 4000  
 
@@ -118,7 +124,7 @@ const App = () => {
           }
         },
         variables: { token },
-        //skip: !token,  
+        skip: !token,  
         //Using refetchQueries when needed instead 
         //pollInterval: 4000  
   })

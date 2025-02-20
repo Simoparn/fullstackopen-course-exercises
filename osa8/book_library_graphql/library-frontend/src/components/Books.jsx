@@ -7,7 +7,7 @@ import { useQuery } from '@apollo/client'
 const Books = (props) => {
 
 
-  const [genre, setGenre] = useState(null)
+  const [genre, setGenre] = useState("")
   //const [showedBooks, setShowedBooks] = useState(showedBooks)
   const handleSelectedGenreChange = (event) => {
     setGenre(event.target.value)

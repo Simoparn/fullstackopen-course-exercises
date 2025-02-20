@@ -5,7 +5,7 @@ import { ADD_BOOK, ALL_BOOKS } from '../queries'
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
+  const [published, setPublished] = useState(1000)
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
@@ -39,15 +39,44 @@ const NewBook = (props) => {
   }
 
   const submit = async (event) => {
-    event.preventDefault()
-    addBook({variables: { title, author, published, genres  } })
-    console.log('adding book:', title, author, published, genres)
+    try{
+      event.preventDefault()
+      addBook({variables: { title, author, published, genres  } })
+      console.log('adding book:', title, author, published, genres)
 
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
+      setTitle('')
+      setPublished(1000)
+      setAuthor('')
+      setGenres([])
+      setGenre('')
+    }catch(error){
+      console.log('newBook, submit error:', error)
+      props.notify(error)
+    }
+  }
+
+  const handleParseInt = () => {
+    event.preventDefault()
+    const parsedInt= parseInt(event.target.value)
+    if(parsedInt){
+      console.log('published field, ParseInt successful:', parsedInt)
+      console.log('first character of event.target.value:', event.target.value[0])
+      if(event.target.value[0] === "0"){
+        const parsedInt = parseInt(event.target.value.substr(1))
+        event.target.value = parsedInt
+        setPublished(parseInt(parsedInt))
+        return parsedInt
+      }
+      else{
+        event.target.value = parsedInt
+        setPublished(parsedInt)
+      }
+      return parsedInt
+    }
+    else{
+      console.log('published field, ParseInt failed, casting to 0')
+      return 0
+    }
   }
 
   const addGenre = () => {
@@ -78,7 +107,7 @@ const NewBook = (props) => {
           <input
             type="number"
             value={published}
-            onChange={({ target }) => setPublished(parseInt(target.value))}
+            onChange={({ target }) => setPublished(handleParseInt)}
           />
         </div>
         <div>

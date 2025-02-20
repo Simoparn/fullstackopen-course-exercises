@@ -12,14 +12,22 @@ const schema = new mongoose.Schema({
   },
   published: {
     type: Number,
+    //maximum possible year with a custom error message
+    max: [10000, "Published year cannot exceed 10000"]
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Author'
   },
-  genres: [
-    { type: String}
-  ]
+  genres: {
+    type: [String],
+    validate: {
+      validator: function(genresArray) {
+        return genresArray.length > 0
+      },
+      message: "The genres array must have atleast 1 genre"
+    }
+  }
 })
 
 //schema.plugin(uniqueValidator)

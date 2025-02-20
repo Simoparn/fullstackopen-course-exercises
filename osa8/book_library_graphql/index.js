@@ -458,15 +458,36 @@ const resolvers = {
           await book.save()
           return book
 
-        } catch(error){
+        }catch(error){
           console.log('addBook, error while trying to save before a book and the author already exists in database:', error)
-          throw new GraphQLError('Saving book failed, book title is too short', {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-              invalidArgs: args.title,
-              error
-            }
-          })
+           
+          if(error.errors.genres){
+            throw new GraphQLError('Saving book failed, must have atleast 1 genre for the book', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.genres,
+                error
+              }
+            })
+          }
+          else if(error.errors.published){
+            throw new GraphQLError('Saving book failed, published year cannot exceed 10000', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.published,
+                error
+              }
+            })
+          }
+          else {
+              throw new GraphQLError('Saving book failed, book title may be too short', {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                  //invalidArgs: args.title,
+                  error
+                }
+              })
+          }
           }
         }
       } else {
@@ -500,10 +521,13 @@ const resolvers = {
 
       const currentUser = context.currentUser
       
+      console.log('editAuthor, context.currentUser:', currentUser)
+
       if(currentUser){
         console.log('editAuthor, valid user token found, editing author allowed:', currentUser)
         const author = await Author.findOne({ name: args.name })
         if(author){
+          console.log('editAuthor, author found:', author)
           try{
             author.born = args.setBornTo
             await author.save()
@@ -519,7 +543,7 @@ const resolvers = {
             }   
         } 
         else{
-          console.log('editAuthor, no valid user token found, cannot edit author')
+          console.log('editAuthor, no author found, cannot edit the author')
           throw new GraphQLError('Editing author failed, author not found', {
             extensions: {
               code: 'BAD_USER_INPUT',
@@ -527,6 +551,15 @@ const resolvers = {
               }
             })
         }
+      }
+      else{
+        console.log('editAuthor, no valid user found, cannot edit author')
+        throw new GraphQLError('Editing author failed, no valid user token', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name  
+            }
+          })
       }
     },
     createUser: async (root, args) => {

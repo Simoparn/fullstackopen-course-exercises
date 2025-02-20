@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
-import { EDIT_AUTHOR } from '../queries'
+import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 
 
 const Authors = (props) => {
@@ -12,11 +12,24 @@ const Authors = (props) => {
   
 
   const [ editAuthor, editAuthorResult ] = useMutation(EDIT_AUTHOR, {
-
+    //refetchQueries needed for updating cache after creating new entries. 
+    //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
+    refetchQueries: [  {query: ALL_AUTHORS} ],
     onError: (error) => {
       const messages = error.graphQLErrors.map(e => e.message).join('\n')      
       props.setError(messages)   
-    }
+    },
+    //Needed for updating the query in cache with new data (such as after creating a new person)
+    update: (cache, response) => {      
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {        
+        console.log('Authors.js, Frontend cache update after query, response.data.editAuthor:', response.data.editAuthor)
+
+        return {          
+          //allAuthors: allAuthors.concat(response.data.editAuthor), 
+          allAuthors: allAuthors.map(a => { return a.id === response.data.editAuthor.id ? response.data.editAuthor : a }),       
+        }      
+      })
+    },
   })
 
   const submit = async (event) => {
