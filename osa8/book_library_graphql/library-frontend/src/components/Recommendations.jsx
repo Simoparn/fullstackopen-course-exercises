@@ -7,6 +7,8 @@ import { useState } from 'react'
 const Recommendations = (props) => {
 
 
+    
+
     //console.log('Recommendations, favorite books:', props.favoriteBooks)
 
     if (!props.show) {
