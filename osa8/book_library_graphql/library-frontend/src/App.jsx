@@ -224,7 +224,7 @@ const App = () => {
 
       <Books show={page === "books"} books={booksResult.data.allBooks} />
 
-      <NewBook show={page === "add"} setError={notify} token={token} />
+      <NewBook show={page === "add"} setError={notify} token={token} books={booksResult.data.allBooks} authors={authorsResult.data.allAuthors} favoriteBooks={favoriteBooksResult.data.favoriteBooks} />
 
       <Recommendations show={page === "recommendations"} setError={notify} favoriteBooks={favoriteBooksResult.data.favoriteBooks} />
     </div>

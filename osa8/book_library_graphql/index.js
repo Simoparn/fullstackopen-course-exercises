@@ -235,7 +235,7 @@ const resolvers = {
       }
         
         let books = await Book
-        .find({}).populate('author', { _id: 0, name: 1 })
+        .find({}).populate('author', { _id: 1, name: 1 })
   
         //console.log('allBooks, no filters, all books retrieved:', books)
         
@@ -262,7 +262,7 @@ const resolvers = {
 
                 const favoriteBooks =  allBooks.filter((b) => b.genres.includes(user.favoriteGenre))
 
-                console.log('favoriteBooks, favorite books for user:', favoriteBooks)
+                //console.log('favoriteBooks, favorite books for user:', favoriteBooks)
                 return favoriteBooks
               }
 
@@ -343,7 +343,7 @@ const resolvers = {
 
         return authorObject
       })
-      //console.log('allAuthors, authorsWithBookCount:', authorsWithBookCount)
+      console.log('allAuthors, authorsWithBookCount:', authorsWithBookCount)
       return authorsWithBookCount
     
       
@@ -353,6 +353,8 @@ const resolvers = {
       return context.currentUser
     }
   },
+
+  
   
 
   //Without back-end database (MongoDB)
@@ -379,6 +381,8 @@ const resolvers = {
       }
     }
   },*/
+
+  
 
   Mutation:{
     //Without back-end database (MongoDB)

@@ -11,7 +11,7 @@ const NewBook = (props) => {
 
 
   const [ addBook, addBookResult ] = useMutation(ADD_BOOK, {
-        //refetchQueries needed for updating cache after creating new books. 
+        //refetchQueries needed for updating cache after creating new books (if not updated manually with update callback below). 
         //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
         refetchQueries: [  {query: ALL_BOOKS}, {query: ALL_AUTHORS}, {query: FAVORITE_BOOKS, variables: { token:props.token }} ],
         onError: (error) => {      
@@ -20,7 +20,8 @@ const NewBook = (props) => {
         },
         //Needed for updating the query in cache with new data (such as after creating a new person)
         update: (cache, response) => { 
-          console.log('addBook, Frontend cache update after query, response.data.addBook:', response.data.addBook)     
+          console.log('addBook, Frontend cache update after query, response.data.addBook:', response.data.addBook)   
+          console.log('addBook, frontend cache update after query, addBookResult:', addBookResult)  
           cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {   
             console.log('frontend cache update, old allBooks:', allBooks)     
             return {          
@@ -58,17 +59,33 @@ const NewBook = (props) => {
         },
 })
 
+
   useEffect(() => {    
+    console.log('addBookResult.data:', addBookResult.data)
     if (addBookResult.data && addBookResult.data.addBook === null) {      
-        props.setError('NewBook, Book result data not found')    
+        props.setError('Books not updated correctly after adding a book')    
     }  
-    }, [addBookResult.data])
+
+  }, [addBookResult.data])
+
+  
 
 
   
   if (!props.show) {
     return null
   }
+
+  
+  //May be needed to ensure UI updates in all components after the addBook mutation
+  if (props.books || props.authors || props.favoriteBooks) {
+    //console.log('NewBook, books:', props.books)
+    //console.log('NewBook, authors:', props.authors)
+    //console.log('NewBook, books:', props.favoriteBooks)
+  }
+
+
+  
 
   const submit = async (event) => {
     try{
@@ -83,7 +100,7 @@ const NewBook = (props) => {
       setGenre('')
     }catch(error){
       console.log('newBook, submit error:', error)
-      props.notify(error)
+      props.setError(error)
     }
   }
 
@@ -116,8 +133,15 @@ const NewBook = (props) => {
     setGenre('')
   }
 
+  //checks for query results (props.books etc.) may be needed to ensure the queries are used by the component, so that
+  //UI updates after mutations work properly for other components
   return (
+
     <div>
+      <br />
+      Total number of books in database: {props.books.length} <br />
+      Total number of authors in database: {props.authors.length} <br />
+      User's favorite books in database: {props.favoriteBooks.length}
       <h2>Add book</h2>
       <form onSubmit={submit}>
         <div>
