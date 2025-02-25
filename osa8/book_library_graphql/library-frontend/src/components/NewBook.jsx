@@ -11,9 +11,10 @@ const NewBook = (props) => {
 
 
   const [ addBook, addBookResult ] = useMutation(ADD_BOOK, {
-        //refetchQueries needed for updating cache after creating new books (if not updated manually with update callback below). 
+        //refetchQueries needed for updating cache after creating new books (if not handled manually with update callback below). 
         //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
         refetchQueries: [  {query: ALL_BOOKS}, {query: ALL_AUTHORS}, {query: FAVORITE_BOOKS, variables: { token:props.token }} ],
+        //awaitRefetchQueries: true,
         onError: (error) => {      
             const messages = error.graphQLErrors.map(e => e.message).join('\n')      
             props.setError(messages)    
@@ -132,6 +133,8 @@ const NewBook = (props) => {
     setGenres(genres.concat(genre))
     setGenre('')
   }
+
+  console.log('NewBook rendered')
 
   //checks for query results (props.books etc.) may be needed to ensure the queries are used by the component, so that
   //UI updates after mutations work properly for other components

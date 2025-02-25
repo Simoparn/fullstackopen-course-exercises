@@ -9,7 +9,7 @@ const Recommendations = (props) => {
 
     
 
-    //console.log('Recommendations, favorite books:', props.favoriteBooks)
+    console.log('Recommendations rendered, favorite books:', props.favoriteBooks)
 
     if (!props.show) {
         return null

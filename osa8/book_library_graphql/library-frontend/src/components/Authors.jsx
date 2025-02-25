@@ -12,15 +12,16 @@ const Authors = (props) => {
   
 
   const [ editAuthor, editAuthorResult ] = useMutation(EDIT_AUTHOR, {
-    //refetchQueries needed for updating cache after creating new entries (if not updated manually with update callback below). 
+    //refetchQueries needed for updating cache after creating new entries (if not handled manually with update callback below). 
     //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
-    //refetchQueries: [  {query: ALL_AUTHORS} ],
+    refetchQueries: [  {query: ALL_AUTHORS} ],
+    //awaitRefetchQueries: true,
     onError: (error) => {
       const messages = error.graphQLErrors.map(e => e.message).join('\n')      
       props.setError(messages)   
     },
     //Needed for updating the query in cache with new data (such as after creating a new person)
-    update: (cache, response) => {      
+    update: async (cache, response) => {      
       cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {       
         console.log('Authors.js, Frontend cache update after query, response.data.:', response.data) 
         console.log('Authors.js, Frontend cache update after query, response.data.editAuthor:', response.data.editAuthor)
@@ -46,16 +47,26 @@ const Authors = (props) => {
   }
 
 
+
+  
+
   useEffect(() => {    
+    
     if (editAuthorResult.data && editAuthorResult.data.editAuthor === null) {      
         props.setError('Author not found')    
-    }  
+    }
+
+    if(editAuthorResult.data){
+      console.log('result data from editing author:', editAuthorResult.data)
+    }
+
+    
     }, [editAuthorResult.data])
 
 
-
-    console.log("Currently selected author:", name)
-    console.log('Currently selected birth year:', born)
+    console.log("Authors, authors data:", props.authors)
+    //console.log("Currently selected author:", name)
+    //console.log('Currently selected birth year:', born)
 
 
 
@@ -70,7 +81,7 @@ const Authors = (props) => {
       <table>
         <tbody>
           <tr>
-            <th></th>
+            <th>name</th>
             <th>born</th>
             <th>books</th>
           </tr>

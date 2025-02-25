@@ -6,7 +6,7 @@ import NewBook from "./components/NewBook"
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
 import { ALL_AUTHORS, ALL_BOOKS, FAVORITE_BOOKS, TOKEN_LOGIN }  from './queries'
-import { set } from "mongoose"
+
 
 
 
@@ -30,9 +30,9 @@ const App = () => {
   const client = useApolloClient()
   
 
-  const [ tokenLogin, result ] = useMutation(TOKEN_LOGIN,  {   
+  const [ tokenLogin, tokenLoginResult ] = useMutation(TOKEN_LOGIN,  {   
     onError: (error) => {
-      console.log('automatic login error, result:', result)
+      console.log('automatic login error, result:', tokenLoginResult)
       console.log('automatic login, error:', error.message)  
       if(error.graphQLErrors.length > 0){
         console.log('automatic login, error.graphQLErrors:', error.graphQLErrors)
@@ -63,6 +63,11 @@ const App = () => {
 
 
   const authorsResult = useQuery(ALL_AUTHORS, {
+    fetchPolicy:"no-cache",
+    onCompleted: (result) => {
+      //console.log("authors data fetch complete, token status:", token)
+      console.log("authors result data fetch complete, result:", result)
+    },
     onError: (error) => {
       console.log('authors data fetch error, result:', error.message)
       if(error.graphQLErrors.length > 0){
@@ -84,8 +89,13 @@ const App = () => {
   
   })
   const booksResult = useQuery(ALL_BOOKS, {
+    
+    onCompleted: (result) => {
+      //console.log("books data fetch complete, token status:", token)
+      //console.log("books data fetch complete, result:", result)
+    },
     onError: (error) => {
-      console.log('books data fetch error, result:', error.message)
+      //console.log('books data fetch error, result:', error.message)
       if(error.graphQLErrors.length > 0){
         console.log('books data fetch error, error.graphQLErrors:', error.graphQLErrors)
         const messages = error.graphQLErrors.map(e => e.message).join('\n')    
@@ -107,7 +117,11 @@ const App = () => {
   })
 
   const favoriteBooksResult = useQuery(FAVORITE_BOOKS, {   
-      onError: (error) => {
+    onCompleted: (result) => {
+      console.log("favorite books data fetch complete, token status:", token)
+      //console.log("favorite books data fetch complete, result:", result)
+    },
+    onError: (error) => {
 
           console.log('favorite books data fetch error, result:', error.message)
           if(error.graphQLErrors.length > 0){
@@ -131,7 +145,7 @@ const App = () => {
 
 
 
-
+  //console.log('App rendered')
   console.log('authors, query result data:', authorsResult.data)
   console.log('books, query result data:', booksResult.data)
   console.log('favorite books, query result data:', favoriteBooksResult.data)
@@ -162,6 +176,14 @@ const App = () => {
       //tokenLogin({ variables: { token } })
     }
   }, [])
+
+  useEffect(()=>{
+
+    console.log('tokeLoginResult.data:', tokenLoginResult.data)
+    if (tokenLoginResult.data && tokenLoginResult.data.addBook === null) {      
+        notify('Error with automatic login')    
+    }  
+  }, [tokenLoginResult.data])
 
   useEffect(()=>{
     console.log('App, token changed:', token)
@@ -209,6 +231,7 @@ const App = () => {
     )
   }
 
+
   return (
     <div>
       <Notification errorMessage={errorMessage} />
@@ -222,7 +245,7 @@ const App = () => {
 
       <Authors show={page === "authors"} authors={authorsResult.data.allAuthors} setError={notify} />
 
-      <Books show={page === "books"} books={booksResult.data.allBooks} />
+      <Books show={page === "books"} books={booksResult.data.allBooks}  />
 
       <NewBook show={page === "add"} setError={notify} token={token} books={booksResult.data.allBooks} authors={authorsResult.data.allAuthors} favoriteBooks={favoriteBooksResult.data.favoriteBooks} />
 

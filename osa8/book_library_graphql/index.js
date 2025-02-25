@@ -163,7 +163,7 @@ const typeDefs = `
 
     editAuthor(
       name: String!
-      setBornTo: Int!
+      born: Int!
     ): Author
 
     createUser(
@@ -327,13 +327,11 @@ const resolvers = {
 
       //The following is needed because we need a bookCount attribute and
       //mongoDN documents retrieved with find are immutable 
-      const authorsWithBookCount = authors.map(a=>{
+      const authorsWithBookCount = await authors.map(a=>{
         const count = books.filter(b => b.author.toString() === a._id.toString()).length
         const authorObject=a.toObject()
         authorObject.bookCount=count
-
-        
-        
+        authorObject._id=authorObject._id.toString()  
         let oldKey="_id"
         let newKey="id"
         if(authorObject.hasOwnProperty(oldKey)){
@@ -343,6 +341,7 @@ const resolvers = {
 
         return authorObject
       })
+      
       console.log('allAuthors, authorsWithBookCount:', authorsWithBookCount)
       return authorsWithBookCount
     
@@ -511,7 +510,7 @@ const resolvers = {
       console.log("editAuthor, args:", args)
       const author = authors.find(a => a.name === args.name)
       if(author){
-        const updatedAuthor = { ...author, born: args.setBornTo }
+        const updatedAuthor = { ...author, born: args.born }
         authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
         return updatedAuthor
       } 
@@ -533,9 +532,25 @@ const resolvers = {
         if(author){
           console.log('editAuthor, author found:', author)
           try{
-            author.born = args.setBornTo
-            await author.save()
-            return author
+            
+            
+            //const newAuthor= new Author({ ..author, born:args.born })
+            const editedAuthor= await Author.findByIdAndUpdate( author.id, {name:author.name, born:args.born}, { new: true, runValidators: true, context: 'query' })
+            console.log('editAuthor, edited author:', editedAuthor)
+            //await newAuthor.save()
+            const allBooks = await Book.find({}).populate('author', { _id: 1, name: 1 })
+
+            const authorsBooks =  allBooks.filter((b) => b.author.id === editedAuthor.id)
+            console.log('editAuthor, all books of the author (needed for bookCount):', authorsBooks)
+            //This is needed for object type conversion and to eliminate redundant __v field
+            const editedAuthorValues={id:editedAuthor._id.toString(), name:editedAuthor.name, born:editedAuthor.born}
+            
+            //The following is needed because we need a bookCount attribute and
+            //mongoDN documents retrieved with find are immutable 
+            const editedAuthorWithBookCount={...editedAuthorValues, bookCount: authorsBooks.length}
+            console.log('editAuthor, editedAuthorsWithBookCount: ', editedAuthorWithBookCount)
+            
+            return editedAuthorWithBookCount
           }catch (error){
             throw new GraphQLError('Editing author failed, setting a new birth year failed', {
               extensions: {

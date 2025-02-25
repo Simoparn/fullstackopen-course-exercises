@@ -26,6 +26,7 @@ const Books = (props) => {
     })
   })
 
+  //console.log('Books rendered')
   //console.log('Books, selected genre:', genre)
   //console.log('Books, unique book genres:', bookgenres)
 

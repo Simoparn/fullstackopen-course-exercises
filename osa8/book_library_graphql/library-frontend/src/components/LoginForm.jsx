@@ -30,6 +30,9 @@ const LoginForm = ({ setError, setToken }) => {
     login({ variables: { username, password } })
   }
 
+
+  console.log('LoginForm rendered')
+
   return (
     <div>
       <form onSubmit={submit}>
