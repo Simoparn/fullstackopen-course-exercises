@@ -21,10 +21,10 @@ const Authors = (props) => {
       props.setError(messages)   
     },
     //Needed for updating the query in cache with new data (such as after creating a new person)
-    update: async (cache, response) => {      
+    update: (cache, response) => {      
       cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {       
-        console.log('Authors.js, Frontend cache update after query, response.data.:', response.data) 
-        console.log('Authors.js, Frontend cache update after query, response.data.editAuthor:', response.data.editAuthor)
+        console.log('Authors.js, Frontend cache update after edit query, response.data.:', response.data) 
+        console.log('Authors.js, Frontend cache update after edit query, response.data.editAuthor:', response.data.editAuthor)
 
         return {          
           //allAuthors: allAuthors.concat(response.data.editAuthor), 

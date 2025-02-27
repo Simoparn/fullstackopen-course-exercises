@@ -19,8 +19,8 @@ const LoginForm = ({ setError, setToken }) => {
         console.log('LoginForm, result data fetched:', result.data)    
         const token = result.data.login.value  
         console.log('setting user token:', token)    
-        setToken(token)      
-        localStorage.setItem('book-library-user-token', token)    
+        localStorage.setItem('book-library-user-token', token)   
+        setToken(token)  
     }  }, [result.data])
 
     
@@ -31,7 +31,7 @@ const LoginForm = ({ setError, setToken }) => {
   }
 
 
-  console.log('LoginForm rendered')
+  //console.log('LoginForm rendered')
 
   return (
     <div>

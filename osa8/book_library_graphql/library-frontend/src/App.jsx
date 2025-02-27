@@ -30,7 +30,8 @@ const App = () => {
   const client = useApolloClient()
   
 
-  const [ tokenLogin, tokenLoginResult ] = useMutation(TOKEN_LOGIN,  {   
+  const [ tokenLogin, tokenLoginResult ] = useMutation(TOKEN_LOGIN,  { 
+    //refetchQueries: [  {query: ALL_AUTHORS}, {query: ALL_BOOKS}, {query: FAVORITE_BOOKS} ],  
     onError: (error) => {
       console.log('automatic login error, result:', tokenLoginResult)
       console.log('automatic login, error:', error.message)  
@@ -63,7 +64,7 @@ const App = () => {
 
 
   const authorsResult = useQuery(ALL_AUTHORS, {
-    fetchPolicy:"no-cache",
+    //fetchPolicy:"no-cache",
     onCompleted: (result) => {
       //console.log("authors data fetch complete, token status:", token)
       console.log("authors result data fetch complete, result:", result)
@@ -115,6 +116,7 @@ const App = () => {
     //pollInterval: 4000  
 
   })
+  
 
   const favoriteBooksResult = useQuery(FAVORITE_BOOKS, {   
     onCompleted: (result) => {
@@ -127,13 +129,13 @@ const App = () => {
           if(error.graphQLErrors.length > 0){
             console.log('favorite books data fetch error, error.graphQLErrors:', error.graphQLErrors)
             const messages = error.graphQLErrors.map(e => e.message).join('\n')    
-            setErrorMessage(messages)
+            //setErrorMessage(messages)
             notify(messages)
           }
           else{
             console.log('favorite books data fetch error, error.message:', error.message)
             const messages = error.message
-            setErrorMessage(messages)
+            //setErrorMessage(messages)
             notify(messages)
           }
         },
@@ -145,10 +147,14 @@ const App = () => {
 
 
 
-  //console.log('App rendered')
-  console.log('authors, query result data:', authorsResult.data)
-  console.log('books, query result data:', booksResult.data)
-  console.log('favorite books, query result data:', favoriteBooksResult.data)
+  console.log('App rendered')
+  console.log('App, Apollo client cache data:', client.cache.data.data)
+  //console.log('App, authors, query result object:', authorsResult)
+  console.log('App, authors, query result data:', authorsResult.data)
+  //console.log('App, books, query result object', booksResult)
+  console.log('App, books, query result data:', booksResult.data)
+  //console.log('App, favorite books, query result object:', favoriteBooksResult)
+  console.log('App, favorite books, query result data:', favoriteBooksResult.data)
   console.log('App, user token:', token)
 
 
@@ -160,13 +166,18 @@ const App = () => {
  }
 
   const logout = () => {    
-    setToken(null)    
     localStorage.clear()    
-    client.resetStore()  
+    client.resetStore() 
+    setToken(null)    
+    
   }
 
 
   useEffect(()=>{
+    console.log("App, initial render")
+      
+
+
     
     if(localStorage.getItem('book-library-user-token')){
       //localStorage.removeItem('book-library-user-token')
@@ -192,6 +203,7 @@ const App = () => {
       tokenLogin({ variables: { token } })
     }
 
+
     
   }, [token])
 
@@ -200,18 +212,52 @@ const App = () => {
     console.log('Checking error message:', errorMessage)
     if(errorMessage === "Automatic login fail while trying to set context server-side, expired user token"){
       console.log('Checked error message, automatic login failed server-side, expired token, clearing token and browser cache')
-      setToken(null)    
       localStorage.clear()    
       client.resetStore()  
+      setToken(null) 
     }
 
     if(errorMessage === "Response not successful: Received status code 500"){
       console.log('Checked error message, automatic login error, internal server error, user token has most likely expired, clearing token and browser cache')
-      setToken(null)    
+        
       localStorage.clear()    
       client.resetStore() 
+      setToken(null) 
     }
   }, [errorMessage])
+
+
+  //all born fields are most of the time left null for some reason, this was an attempt at solution
+  useEffect(()=>{
+    console.log('App, useEffect, authorsResult:', authorsResult)
+    let allBornFieldsAreNull = true
+    if(authorsResult.data){
+      authorsResult.data.allAuthors.forEach(author => {
+        author.born ? allBornFieldsAreNull=false : true 
+      })
+
+      if(allBornFieldsAreNull === true){
+        
+          console.log("born field is null, refetching data.")
+          authorsResult.refetch()
+      }  
+      else{
+          console.log("born field is not null for every author, no need to refresh page:", authorsResult.data.allAuthors)
+        }
+    }
+    
+  }, [authorsResult])
+
+  /*
+  useEffect(()=>{
+    console.log('App, books, query result data:', booksResult.data)
+  }, [booksResult.data])
+
+  useEffect(()=>{
+    console.log('App, favorite books, query result data:', favoriteBooksResult.data)
+  }, [favoriteBooksResult.data])*/
+  
+
 
 
   if (authorsResult.loading || booksResult.loading || favoriteBooksResult.loading)  {

@@ -327,7 +327,7 @@ const resolvers = {
 
       //The following is needed because we need a bookCount attribute and
       //mongoDN documents retrieved with find are immutable 
-      const authorsWithBookCount = await authors.map(a=>{
+      const authorsWithBookCount = authors.map(a=>{
         const count = books.filter(b => b.author.toString() === a._id.toString()).length
         const authorObject=a.toObject()
         authorObject.bookCount=count
@@ -548,7 +548,7 @@ const resolvers = {
             //The following is needed because we need a bookCount attribute and
             //mongoDN documents retrieved with find are immutable 
             const editedAuthorWithBookCount={...editedAuthorValues, bookCount: authorsBooks.length}
-            console.log('editAuthor, editedAuthorsWithBookCount: ', editedAuthorWithBookCount)
+            console.log('editAuthor, editedAuthorWithBookCount: ', editedAuthorWithBookCount)
             
             return editedAuthorWithBookCount
           }catch (error){
