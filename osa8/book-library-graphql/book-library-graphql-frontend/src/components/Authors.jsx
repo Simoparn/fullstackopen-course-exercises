@@ -17,8 +17,17 @@ const Authors = (props) => {
     refetchQueries: [  {query: ALL_AUTHORS} ],
     //awaitRefetchQueries: true,
     onError: (error) => {
-      const messages = error.graphQLErrors.map(e => e.message).join('\n')      
-      props.setError(messages)   
+      if(error.graphQLErrors.length > 0){
+        const messages = error.graphQLErrors.map(e => e.message).join('\n')
+        console.log("editAuthor mutation error, error.graphQLErrors:", messages)      
+        props.setError(messages)   
+      }
+      else{
+        console.log('editAuthor mutation error, error message:', error.message)
+        const messages = error.message
+        props.setError(messages)
+        
+      }
     },
     //Needed for updating the query in cache with new data (such as after creating a new person)
     update: (cache, response) => {      
@@ -56,9 +65,23 @@ const Authors = (props) => {
         props.setError('Author not found')    
     }
 
-    if(editAuthorResult.data){
+    /*if(editAuthorResult.data){
       console.log('result data from editing author:', editAuthorResult.data)
-    }
+      if(authorsResult.data){
+        authorsResult.data.allAuthors.forEach(author => {
+          author.born ? allBornFieldsAreNull=false : true 
+        })
+  
+        if(allBornFieldsAreNull === true){
+          
+            console.log("born field is null, refetching data.")
+            authorsResult.refetch()
+        }  
+        else{
+            console.log("born field is not null for every author, no need to refresh page:", authorsResult.data.allAuthors)
+          }
+    }*/
+    
 
     
     }, [editAuthorResult.data])

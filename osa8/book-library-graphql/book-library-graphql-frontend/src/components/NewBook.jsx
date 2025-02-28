@@ -14,22 +14,38 @@ const NewBook = (props) => {
         //refetchQueries needed for updating cache after creating new books (if not handled manually with update callback below). 
         //Also generates less traffic than pollInterval in App.js, but the state change won't be seen by every user automatically
         refetchQueries: [  {query: ALL_BOOKS}, {query: ALL_AUTHORS}, {query: FAVORITE_BOOKS, variables: { token:props.token }} ],
-        //awaitRefetchQueries: true,
-        onError: (error) => {      
-            const messages = error.graphQLErrors.map(e => e.message).join('\n')      
-            props.setError(messages)    
+        awaitRefetchQueries: true,
+        onError: (error) => { 
+          
+          if(error.graphQLErrors.length > 0){
+            const messages = error.graphQLErrors.map(e => e.message).join('\n')
+            console.log("addBook mutation error, error.graphQLErrors:", messages)      
+            props.setError(messages)   
+          }
+          else{
+            console.log('addBook mutation error, error message:', error.message)
+            const messages = error.message      
+            props.setError(messages)   
+          } 
         },
+        
         //Needed for updating the query in cache with new data (such as after creating a new person)
         update: (cache, response) => { 
           console.log('addBook, Frontend cache update after query, response.data.addBook:', response.data.addBook)   
           console.log('addBook, frontend cache update after query, addBookResult:', addBookResult)  
-          cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {   
+          console.log('addBook, frontend cache update after query, entire cache:', cache)  
+        
+          //cache.updateQuery won't work because it's never present in the cache object for 
+          //some reason despite documentation and IDE claims, rerendering everything seems to work
+          //nicely with just refetchQueries
+          
+          /*cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {   
             console.log('frontend cache update, old allBooks:', allBooks)     
             return {          
               allBooks: allBooks.concat(response.data.addBook),        
             }      
-          })
-          cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {        
+          })*/
+          /*cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {        
             console.log('frontend cache update, old allAuthors:', allAuthors)  
 
             return {          
@@ -56,18 +72,19 @@ const NewBook = (props) => {
             return {          
               favoriteBooks: isFavoriteAlready === true ? favoriteBooks.concat(response.data.addBook) : favoriteBooks   
             }      
-          })
-        },
+          })*/
+        }
 })
 
 
   useEffect(() => {    
-    console.log('addBookResult.data:', addBookResult.data)
+    console.log('useEffect, addBookResult:', addBookResult)
+    console.log('useEffect, addBookResult.data:', addBookResult.data)
     if (addBookResult.data && addBookResult.data.addBook === null) {      
         props.setError('Books not updated correctly after adding a book')    
     }  
 
-  }, [addBookResult.data])
+  }, [addBookResult])
 
   
 
@@ -78,12 +95,12 @@ const NewBook = (props) => {
   }
 
   
-  //May be needed to ensure UI updates in all components after the addBook mutation
+  /*//May be needed to ensure UI updates in all components after the addBook mutation
   if (props.books || props.authors || props.favoriteBooks) {
     //console.log('NewBook, books:', props.books)
     //console.log('NewBook, authors:', props.authors)
     //console.log('NewBook, books:', props.favoriteBooks)
-  }
+  }*/
 
 
   
@@ -134,7 +151,7 @@ const NewBook = (props) => {
     setGenre('')
   }
 
-  console.log('NewBook rendered')
+  //console.log('NewBook rendered')
 
   //checks for query results (props.books etc.) may be needed to ensure the queries are used by the component, so that
   //UI updates after mutations work properly for other components

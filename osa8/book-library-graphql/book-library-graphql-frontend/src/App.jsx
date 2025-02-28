@@ -148,7 +148,7 @@ const App = () => {
 
 
   console.log('App rendered')
-  console.log('App, Apollo client cache data:', client.cache.data.data)
+  //console.log('App, Apollo client cache data:', client.cache.data.data)
   //console.log('App, authors, query result object:', authorsResult)
   console.log('App, authors, query result data:', authorsResult.data)
   //console.log('App, books, query result object', booksResult)
@@ -210,6 +210,8 @@ const App = () => {
   
   useEffect(()=>{
     console.log('Checking error message:', errorMessage)
+    //This is needed, because context in ApolloServer backend instance can intercept
+    //query attempts with an expired token, so error handlers in resolvers are not enough  
     if(errorMessage === "Automatic login fail while trying to set context server-side, expired user token"){
       console.log('Checked error message, automatic login failed server-side, expired token, clearing token and browser cache')
       localStorage.clear()    
@@ -222,7 +224,8 @@ const App = () => {
         
       localStorage.clear()    
       client.resetStore() 
-      setToken(null) 
+      setToken(null)
+      
     }
   }, [errorMessage])
 
@@ -293,7 +296,7 @@ const App = () => {
 
       <Books show={page === "books"} books={booksResult.data.allBooks}  />
 
-      <NewBook show={page === "add"} setError={notify} token={token} books={booksResult.data.allBooks} authors={authorsResult.data.allAuthors} favoriteBooks={favoriteBooksResult.data.favoriteBooks} />
+      <NewBook show={page === "add"} setError={notify} token={token} books={booksResult.data.allBooks} authors={authorsResult.data.allAuthors} favoriteBooks={favoriteBooksResult.data.favoriteBooks} booksResult={booksResult}/>
 
       <Recommendations show={page === "recommendations"} setError={notify} favoriteBooks={favoriteBooksResult.data.favoriteBooks} />
     </div>

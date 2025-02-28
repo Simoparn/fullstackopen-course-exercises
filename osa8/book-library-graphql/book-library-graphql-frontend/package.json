@@ -1,5 +1,5 @@
 {
-  "name": "library-frontend",
+  "name": "book-library-graphql-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",

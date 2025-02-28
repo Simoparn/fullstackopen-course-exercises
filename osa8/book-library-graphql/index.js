@@ -409,6 +409,8 @@ const resolvers = {
       
       const currentUser = context.currentUser
       
+      console.log('addBook, context.currentUser:', currentUser)
+
       if(currentUser){
         console.log('addBook, valid user token found, adding a new book')
 
@@ -433,11 +435,26 @@ const resolvers = {
           }
 
           const book = new Book({ ...args, author:author})
-          console.log('addBook, new book model object:', book)
+          console.log('addBook, new book mongoose model object:', book)
           
           try{
             await book.save()
-            return book
+            const bookObject=book.toObject()
+            bookObject._id=bookObject._id.toString()  
+            let oldKey="_id"
+            let newKey="id"
+            if(bookObject.hasOwnProperty(oldKey)){
+              bookObject[newKey]=bookObject[oldKey]
+              delete bookObject[oldKey]
+            }
+            if(bookObject.author.hasOwnProperty(oldKey)){
+              bookObject.author[newKey]=bookObject.author[oldKey]
+              delete bookObject.author[oldKey]
+            }
+
+            console.log('addBook, book before returning:', bookObject)
+            return bookObject
+            //return book
           } catch(error){
             console.log("addBook, error while trying to save a book after creating the new author:", args.author)
             throw new GraphQLError('Saving book failed, book title is too short', {
@@ -453,44 +470,70 @@ const resolvers = {
           console.log('addBook, found author:', foundAuthor)
           console.log("addBook, author already exists, cannot create a new author:", args.author)
         
+          
+          /*const foundAuthorObject=foundAuthor.toObject()
+          foundAuthorObject._id=foundAuthorObject._id.toString()  
+          let oldKey="_id"
+          let newKey="id"
+          if(foundAuthorObject.hasOwnProperty(oldKey)){
+            foundAuthorObject[newKey]=foundAuthorObject[oldKey]
+            delete foundAuthorObject[oldKey]
+          }
+          console.log('addBook, found author as plain JavaScript object:', foundAuthorObject)*/
         
-        const book = new Book({ ...args, author:foundAuthor})
-        console.log('addBook, new book model object:', book)
+          const book = new Book({ ...args, author:foundAuthor})
+          console.log('addBook, new book mongoose model object:', book)
 
-        try{
-          await book.save()
-          return book
+          try{
+            await book.save()
+            const bookObject=book.toObject()
+            bookObject._id=bookObject._id.toString()  
+            let oldKey="_id"
+            let newKey="id"
+            if(bookObject.hasOwnProperty(oldKey)){
+              bookObject[newKey]=bookObject[oldKey]
+              delete bookObject[oldKey]
+            }
+            
+            
+            if(bookObject.author.hasOwnProperty(oldKey)){
+              bookObject.author[newKey]=bookObject.author[oldKey]
+              delete bookObject.author[oldKey]
+            }
+            console.log('addBook, book before returning', bookObject)
+            return bookObject
+            //return book
 
-        }catch(error){
-          console.log('addBook, error while trying to save before a book and the author already exists in database:', error)
-           
-          if(error.errors.genres){
-            throw new GraphQLError('Saving book failed, must have atleast 1 genre for the book', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-                invalidArgs: args.genres,
-                error
-              }
-            })
-          }
-          else if(error.errors.published){
-            throw new GraphQLError('Saving book failed, published year cannot exceed 10000', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-                invalidArgs: args.published,
-                error
-              }
-            })
-          }
-          else {
-              throw new GraphQLError('Saving book failed, book title may be too short', {
+          }catch(error){
+            console.log('addBook, error while trying to save before a book and the author already exists in database:', error)
+            
+            if(error.errors.genres){
+              throw new GraphQLError('Saving book failed, must have atleast 1 genre for the book', {
                 extensions: {
                   code: 'BAD_USER_INPUT',
-                  //invalidArgs: args.title,
+                  invalidArgs: args.genres,
                   error
                 }
               })
-          }
+            }
+            else if(error.errors.published){
+              throw new GraphQLError('Saving book failed, published year cannot exceed 10000', {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                  invalidArgs: args.published,
+                  error
+                }
+              })
+            }
+            else {
+                throw new GraphQLError('Saving book failed, book title may be too short', {
+                  extensions: {
+                    code: 'BAD_USER_INPUT',
+                    //invalidArgs: args.title,
+                    error
+                  }
+                })
+            }
           }
         }
       } else {

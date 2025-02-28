@@ -1,5 +1,5 @@
 {
-  "name": "book_library_graphql",
+  "name": "book-library-graphql",
   "version": "1.0.0",
   "description": "project root and backend for part 8 exercise book library",
   "main": "index.js",
