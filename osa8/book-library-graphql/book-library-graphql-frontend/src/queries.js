@@ -3,7 +3,7 @@ import { gql } from '@apollo/client'
 
 
 const BOOK_DETAILS = gql`
-  fragment BookDetails on Person {
+  fragment BookDetails on Book {
     title
     published
     author{
@@ -31,8 +31,11 @@ export const ALL_AUTHORS=gql`
 
 export const ALL_BOOKS=gql`
   query {
-  ${BOOK_DETAILS}
-  }
+    allBooks {
+      ...BookDetails
+    }
+} ${BOOK_DETAILS}  
+  
 `
 
 export const FAVORITE_BOOKS=gql`
@@ -114,9 +117,9 @@ mutation tokenLogin($token: String) {
 }
 `
 export const BOOK_ADDED = gql`
-  subscription {    
+  subscription Subscription {    
     bookAdded {      
-      ...bookDetails    
+      ...BookDetails    
     }  
   }  ${BOOK_DETAILS}
 `

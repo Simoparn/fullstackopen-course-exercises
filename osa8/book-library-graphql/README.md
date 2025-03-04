@@ -32,6 +32,7 @@ Apparently mongoose-unique-validator requires an older mongoose version (7.0.0)
 ## TODO, ADDING BOOKS 
 -Book categories when adding new books are still not validated as existing
 -Input form for new books still seems to have issues with recently expired tokens, in these cases an error notification message won't be sent and there is no automatic logoff
+-Encountered an error with overwriting allBooks caching data, [see instructions for defining a custom merge function for Quer.allBooks field](https://go.apollo.dev/c/merging-non-normalized-objects)
 ## TODO, USERS AND AUTHENTICATION
 -Consider implementing friends for users
 

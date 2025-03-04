@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import { gql, useQuery, useApolloClient, useMutation } from '@apollo/client'
+import { gql, useQuery, useApolloClient, useMutation, useSubscription } from '@apollo/client'
 import Authors from "./components/Authors"
 import Books from "./components/Books"
 import NewBook from "./components/NewBook"
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
-import { ALL_AUTHORS, ALL_BOOKS, FAVORITE_BOOKS, TOKEN_LOGIN }  from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, FAVORITE_BOOKS, TOKEN_LOGIN, BOOK_ADDED }  from './queries'
 
 
 
@@ -19,6 +19,31 @@ const Notification = ({errorMessage}) => {
       <b>{errorMessage}</b>    
     </div>  
   )
+}
+
+
+
+// function that takes care of manipulating Apollo cache updates for added books
+export const updateCacheForAllBooks = (cache, query, addedBook) => {
+  //Helper that is used to eliminate saving the same book twice
+  const uniqByName = (a) => {    
+    let seen = new Set()    
+    return a.filter((item) => {      
+      let k = item.name      
+      return seen.has(k) ? false : seen.add(k)    
+    })  
+  }
+
+
+  cache.updateQuery(query, ({allBooks}) => {    
+    console.log('Cache updateQuery for books with custom function, allBooks:', allBooks)
+    return {      
+      allBooks: uniqByName(allBooks.concat(addedBook)),    
+    }  
+  })
+
+  
+
 }
 
 
@@ -145,6 +170,26 @@ const App = () => {
         //pollInterval: 4000  
   })
 
+
+  //Needed for GraphQL subscriptions for monitoring server data changes from front-end
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      //console.log('GraphQL subscription alert, data:', data)
+      const addedBook = data.data.bookAdded
+      notify(`${addedBook.title} added`)
+      console.log("GraphQL subscription alert ", addedBook.title , " added")
+
+      //Without a helper function
+      /*client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {        
+        return {          
+          allBooks: allBooks.concat(allBooks),        
+        }      
+      })*/
+      //Helper function defined above outside the App component
+      updateCacheForAllBooks(client.cache, { query: ALL_BOOKS }, addedBook)
+      
+    }
+  })
 
 
   console.log('App rendered')

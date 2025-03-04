@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS, FAVORITE_BOOKS } from '../queries'
+import { updateCacheForAllBooks } from '../App'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -34,7 +35,12 @@ const NewBook = (props) => {
           console.log('addBook, Frontend cache update after query, response.data.addBook:', response.data.addBook)   
           console.log('addBook, frontend cache update after query, addBookResult:', addBookResult)  
           console.log('addBook, frontend cache update after query, entire cache:', cache)  
-        
+          
+          //cache.updateQuery won't work here either
+          //Helper function defined in App.js
+          //updateCacheForAllBooks(cache, { query: ALL_BOOKS }, response.data.addBook)
+          
+
           //cache.updateQuery won't work because it's never present in the cache object for 
           //some reason despite documentation and IDE claims, rerendering everything seems to work
           //nicely with just refetchQueries

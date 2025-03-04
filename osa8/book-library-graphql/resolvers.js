@@ -181,7 +181,17 @@ const resolvers = {
       }
     },
   
-    
+    /*Book: {
+      author: (root) => {
+        console.log("Book, author resolver, root.author:", root.author)
+        return {
+          name: root.author,
+          born: root.born,
+          id: root.id
+          
+        }
+      }
+    },*/
     
   
     //Without back-end database (MongoDB)
@@ -280,7 +290,12 @@ const resolvers = {
                 delete bookObject.author[oldKey]
               }
   
-              console.log('addBook, book before returning:', bookObject)
+              console.log('addBook, book before returning:', bookObject)  
+
+            
+              //Needed for websocket subscriptions for server data changes
+              pubsub.publish('BOOK_ADDED', { bookAdded: book })
+              
               return bookObject
               //return book
             } catch(error){
@@ -329,6 +344,10 @@ const resolvers = {
                 delete bookObject.author[oldKey]
               }
               console.log('addBook, book before returning', bookObject)
+              
+              //Needed for websocket subscriptions for server data changes
+              pubsub.publish('BOOK_ADDED', { bookAdded: book })
+              
               return bookObject
               //return book
   
@@ -365,12 +384,13 @@ const resolvers = {
             }
           }
         } else {
+          
           console.log('addBook, no valid user token found, cannot add a new book')
           throw new GraphQLError('Adding a new book failed, no valid user token', {
             extensions: {
               code: 'BAD_USER_INPUT',
               invalidArgs: args.title,
-              error
+              
             }
           })
         }
@@ -595,12 +615,13 @@ const resolvers = {
       }
     },
 
-        //Needed for websocket subscriptions for server data changes
-        Subscription: {    
-            bookAdded: {      
-              subscribe: () => pubsub.asyncIterator('BOOK_ADDED')    
-            }, 
-        },
+    //Needed for websocket subscriptions for server data changes
+    Subscription: {    
+        bookAdded: {      
+          subscribe: () => pubsub.asyncIterableIterator(['BOOK_ADDED'])    
+          
+        }, 
+    },
   
     
   }
