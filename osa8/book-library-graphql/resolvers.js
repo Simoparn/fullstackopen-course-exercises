@@ -14,14 +14,14 @@ const pubsub = new PubSub()
 
 const resolvers = {
     Query: {
-      bookCount: async (root, args)=>{
+      allBooksCount: async (root, args)=>{
         //Without back-end database (MongoDB)
         //return books.length
   
         const books=await Book.find({})
         return books.length
       },
-      authorCount: async (root, args)=>{
+      allAuthorsCount: async (root, args)=>{
         //Without back-end database (MongoDB)
         //return authors.length
   
