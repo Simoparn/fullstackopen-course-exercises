@@ -1,0 +1,17 @@
+{
+  "name": "exercises_9.1_9.7",
+  "version": "1.0.0",
+  "description": "Project for Full Stack Open exercises 9.1-9.7",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "calculatebmi": "ts-node bmiCalculator.ts",
+    "calculateexercises": "ts-node exerciseCalculator.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
