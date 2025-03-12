@@ -66,21 +66,25 @@ export const calculateExercises = (exerciseHoursForWeekDays: number[], target: n
             //console.log('reduce, accumulated:', accumulated, "current:", current )
             return accumulated + current; 
     });
-    console.log('final sum for period:', periodSum);
+    //console.log('final exercise hours sum for period:', periodSum);
     
     const averageTime=periodSum/exerciseHoursForWeekDays.length;
     const calculatedRating= averageTime< 1.5 ? 1 : (averageTime >= 1.5 && averageTime < 2.5 ? 2 : 3);
+    const calculatedRatingDescription: ratingDescription = calculatedRating === 1 ? "bad score" : (calculatedRating === 2 ? "medium score" : "good score");
 
-    return{
+    const exerciseData ={
         periodLength: exerciseHoursForWeekDays.length,
         trainingDays: exerciseHoursForWeekDays.filter((h)=>h !== 0).length,
         targetWasReached: calculatedRating >= target ? true : false,
         rating: calculatedRating,
-        ratingDescription: calculatedRating === 1 ? "bad score" : (calculatedRating === 2 ? "medium score" : "good score"),
+        ratingDescription: calculatedRatingDescription,
         target: target,
         averageTime: averageTime
 
     };
+
+    console.log('exercise data:', exerciseData);
+    return exerciseData;
 
 
 
