@@ -1,4 +1,5 @@
-
+import { z } from 'zod'
+import { NewPatientEntrySchema } from './utils'
 
 export type Diagnosis = {
     code: string;
@@ -24,7 +25,10 @@ export enum Gender {
 export type NonSensitivePatientData = Omit<Patient, 'ssn'>;
 
 
-export type NewPatientEntry = Omit<Patient, 'id'>;
+//Without zod library type inference
+//export type NewPatientEntry = Omit<Patient, 'id'>;
 
+// infer the type from schema
+export type NewPatientEntry = z.infer<typeof NewPatientEntrySchema>; 
 
 

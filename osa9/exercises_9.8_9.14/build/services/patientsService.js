@@ -19,7 +19,7 @@ const getNonSensitivePatientData = () => {
 };
 const addPatient = (newPatient) => {
     const newId = (0, uuid_1.v1)();
-    return patients_1.default.concat(Object.assign(Object.assign({}, newPatient), { id: newId }));
+    return Object.assign({ id: newId }, newPatient);
     //return null;
 };
 const findById = (id) => {
