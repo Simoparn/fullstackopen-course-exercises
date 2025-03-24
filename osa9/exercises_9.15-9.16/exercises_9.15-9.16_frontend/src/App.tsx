@@ -56,6 +56,12 @@ interface TotalProps {
 }
 
 
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
 
 const Header = (props: HeaderProps): JSX.Element => {
 
@@ -72,18 +78,15 @@ const Content = (props: ContentProps): JSX.Element => {
       switch(part.kind){
         case "basic": 
           return <Part name={part.name} exerciseCount={part.exerciseCount} description={part.description} kind={part.kind}/>
-          break;
         case "group":
           return <Part name={part.name} exerciseCount={part.exerciseCount} groupProjectCount={part.groupProjectCount} kind={part.kind}/>
-          break;
         case "background":
-          return <Part name={part.name} exerciseCount={part.exerciseCount} description={part.description} backgroundMaterial={part.backgroundMaterial} kind={part.kind}/>
-          break;
+          return <Part name={part.name} exerciseCount={part.exerciseCount} description={part.description} backgroundMaterial={part.backgroundMaterial} kind={part.kind}/> 
         case "special":
           return <Part name={part.name} exerciseCount={part.exerciseCount} description={part.description} requirements={part.requirements} kind={part.kind} />
-          break;
         default:
-          break;
+          return assertNever(part)
+          
       }
       
     })}
