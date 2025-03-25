@@ -6,7 +6,7 @@ export const NewEntrySchema = z.object({
   weather: z.nativeEnum(Weather),
   visibility: z.nativeEnum(Visibility),
   date: z.string().date(),
-  comment: z.string().optional()
+  comment: z.string().max(200).optional().default('')
 });
 
 

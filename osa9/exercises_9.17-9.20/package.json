@@ -7,8 +7,7 @@
     "tsc": "tsc",
     "dev": "ts-node-dev index.ts",
     "lint": "eslint .",
-    "start": "node build/index.js",
-    "server": "json-server -p3001 --watch db.json"
+    "start": "node build/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,10 +23,8 @@
   },
   "dependencies": {
     "@types/cors": "^2.8.17",
-    "@types/json-server": "^0.14.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "json-server": "^1.0.0-beta.3",
     "zod": "^3.24.2"
   }
 }

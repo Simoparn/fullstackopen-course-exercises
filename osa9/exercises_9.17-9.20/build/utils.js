@@ -7,7 +7,7 @@ exports.NewEntrySchema = zod_1.z.object({
     weather: zod_1.z.nativeEnum(types_1.Weather),
     visibility: zod_1.z.nativeEnum(types_1.Visibility),
     date: zod_1.z.string().date(),
-    comment: zod_1.z.string().optional()
+    comment: zod_1.z.string().max(200).optional().default('')
 });
 const toNewDiaryEntry = (object) => {
     return exports.NewEntrySchema.parse(object);

@@ -10,6 +10,7 @@ const zod_1 = require("zod");
 const router = express_1.default.Router();
 //Middleware for validating requests before handling in endpoint
 const newDiaryParser = (req, _res, next) => {
+    console.log('newDiaryParser, req.body:', req.body);
     try {
         utils_1.NewEntrySchema.parse(req.body);
         next();
@@ -20,6 +21,7 @@ const newDiaryParser = (req, _res, next) => {
 };
 //Middleware for handling errors
 const errorMiddleware = (error, _req, res, next) => {
+    console.log('errorMiddleware:', error);
     if (error instanceof zod_1.z.ZodError) {
         res.status(400).send({ error: error.issues });
     }

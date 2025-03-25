@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import './App.css';
 import { Diary, Weather, Visibility } from './types';
 import { getAllDiaries, createDiary } from './services/diaryService'
@@ -12,7 +12,10 @@ import { getAllDiaries, createDiary } from './services/diaryService'
   
   
   
- 
+ /*interface ValidationError {
+  message: string;
+  errors: Record<string, string[]>
+ }*/
   
   
 
@@ -27,7 +30,7 @@ function App() {
   const [newWeather, setNewWeather] = useState<Weather>(Weather.Sunny)
   const [newVisibility, setNewVisibility] = useState<Visibility>(Visibility.Good)
   const [newComment, setNewComment] = useState('')
-  
+  const [notification, setNotification] = useState<string | null>(null)
 
 
 
@@ -44,16 +47,31 @@ function App() {
 
 
 
-
- const handleWeatherChange = (event: React.SyntheticEvent) => {
+//Alternative implementation with select
+ /*const handleWeatherChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   event.preventDefault()
+  //console.log('handleWeatherChange, event:', event)
+
+  setNewWeather(event.target.value as Weather)
+  
+ }*/
+
+
+ const handleWeatherChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
+  console.log(event.target.value)
   setNewWeather(event.target.value as Weather)
  }
 
-
-
- const handleVisibilityChange = (event: React.SyntheticEvent) => {
+//Alternative implementation with select
+ /*const handleVisibilityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   event.preventDefault()
+  setNewVisibility(event.target.value as Visibility)
+ }*/
+
+  
+
+ const handleVisibilityChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
+  console.log(event.target.value)
   setNewVisibility(event.target.value as Visibility)
  }
 
@@ -66,6 +84,15 @@ function App() {
         setDiaries(diaries.concat(data))      
 
       })
+      .catch(error => {
+        //if(axios.isAxiosError<ValidationError, Record<string, unknown>>(error)){
+          console.log('Diary creation, error:', error)
+          setNotification(error.response.data.error[0].message)
+          setTimeout(()=>{ 
+            setNotification(null)
+          }, 4000)
+        //}
+      })
     setNewDate('2000-01-01')
   };
 
@@ -77,9 +104,56 @@ function App() {
 
   return (
     <>
+    <p style={{color:'red'}}>
+      <b>
+        {notification}
+      </b>
+    </p>
       <form onSubmit={diaryCreation}>
-      <input type="text" value={newDate} onChange={({target}) => setNewDate(target.value)}></input>
-      <select value={newWeather} onChange={handleWeatherChange}>
+        <b>Date</b>
+      <input type="date" value={newDate} onChange={({target}) => setNewDate(target.value)}/>
+      <fieldset style={{marginLeft:'10px'}}>
+        <legend><b>Visibility</b></legend>
+        <span>
+            <input type="radio" name="selectedvisibility" value={Visibility.Great} onChange={handleVisibilityChangeRadio}/>
+            Great
+
+          <input type="radio" name="selectedvisibility" value={Visibility.Good} onChange={handleVisibilityChangeRadio}/>
+          Good
+
+          <input type="radio" name="selectedvisibility" value={Visibility.Ok} onChange={handleVisibilityChangeRadio}/>
+          Ok
+
+          <input type="radio" name="selectedvisibility" value={Visibility.Poor} onChange={handleVisibilityChangeRadio}/>
+          Poor
+        </span>
+      </fieldset>
+      <fieldset style={{marginLeft:'20px', marginRight: '10px'}}>
+      <legend><b>Weather</b></legend>
+        <span>
+          <input type="radio" name="selectedweather" value={Weather.Sunny} onChange={handleWeatherChangeRadio}/>
+          Sunny
+        </span> 
+        <span>
+          <input type="radio" name="selectedweather" value={Weather.Rainy} onChange={handleWeatherChangeRadio}/>
+          Rainy
+        </span> 
+        <span>
+          <input type="radio" name="selectedweather" value={Weather.Cloudy} onChange={handleWeatherChangeRadio}/>
+          Cloudy
+        </span> 
+        <span>
+          <input type="radio" name="selectedweather" value={Weather.Stormy} onChange={handleWeatherChangeRadio}/>
+          Stormy
+        </span> 
+        <span>
+          <input type="radio" name="selectedweather" value={Weather.Windy} onChange={handleWeatherChangeRadio}/>
+          Windy
+        </span> 
+      </fieldset>
+      
+      {//Alternative implementation with select
+      /*<select value={newWeather} onChange={handleWeatherChange}>
         <option value={Weather.Sunny}>sunny</option>
         <option value={Weather.Rainy}>rainy</option>
         <option value={Weather.Cloudy}>cloudy</option>
@@ -91,12 +165,15 @@ function App() {
         <option value={Visibility.Good}>good</option>
         <option value={Visibility.Ok}>ok</option>
         <option value={Visibility.Poor}>poor</option>
-      </select>
+      </select>*/}
+      <b>Comment</b>
       <input type="text" value={newComment} onChange={({target}) => setNewComment(target.value)}></input>
-      <button type="submit">Create a new diary</button>
+      {newComment.length} / 200
+      <br/>
+      <button type="submit" style={{backgroundColor:"lightgrey"}}>Create a new diary</button>
       </form>
     
-    <h2>Diaries</h2>
+    <h2>All diaries</h2>
     <table style={{border:'1px solid'}}>
     <tbody>
       <tr>
