@@ -31,6 +31,16 @@ const errorMiddleware = (error, _req, res, next) => {
 router.get('/', (_req, res) => {
     res.send(patientsService_1.default.getNonSensitivePatientData());
 });
+router.get('/:id', (req, res) => {
+    const patient = patientsService_1.default.findById(String(req.params.id));
+    //console.log('found patient by id:', patient)
+    if (patient) {
+        res.send(patient);
+    }
+    else {
+        res.sendStatus(404);
+    }
+});
 router.post('/', newPatientParser, (req, res) => {
     //With middleware for zod library validation and errors
     const addedPatient = patientsService_1.default.addPatient(req.body);

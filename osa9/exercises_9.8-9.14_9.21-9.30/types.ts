@@ -13,6 +13,7 @@ export type Patient = {
     ssn:string;
     gender:string;
     occupation:string;
+    entries: Entry[];
 }
 
 export enum Gender {
@@ -21,8 +22,13 @@ export enum Gender {
     Other = 'other'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface Entry {
 
-export type NonSensitivePatientData = Omit<Patient, 'ssn'>;
+}
+
+
+export type NonSensitivePatientData = Omit<Patient, 'ssn' | 'entries'>;
 
 
 //Without zod library type inference

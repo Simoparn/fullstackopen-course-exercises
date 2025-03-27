@@ -25,6 +25,7 @@ const App = () => {
         void axios_1.default.get(`${constants_1.apiBaseUrl}/ping`);
         const fetchPatientList = () => __awaiter(void 0, void 0, void 0, function* () {
             const patients = yield patients_1.default.getAll();
+            console.log('all fetched patients:', patients);
             setPatients(patients);
         });
         void fetchPatientList();

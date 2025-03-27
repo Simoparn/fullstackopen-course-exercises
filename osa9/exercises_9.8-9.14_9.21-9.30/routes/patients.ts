@@ -24,8 +24,10 @@ const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
 //Middleware for handling errors
 const errorMiddleware = (error: unknown, _req: Request, res: Response, next: NextFunction) => { 
   if (error instanceof z.ZodError) {
+    console.log('zod error in backend:', error)
     res.status(400).send({ error: error.issues });
   } else {
+    console.log('error in backend:', error)
     next(error);
   }
 };
@@ -35,6 +37,17 @@ router.get('/', (_req, res:Response<NonSensitivePatientData[]>) => {
     res.send(patientsService.getNonSensitivePatientData());
     
 });
+
+router.get('/:id', (req:Request, res:Response<Patient>) => {
+  
+  const patient = patientsService.findById(String(req.params.id));
+  console.log('found patient by id:', patient)
+  
+
+  res.send(patient);
+  
+  
+})
   
 router.post('/', newPatientParser , (req:Request<unknown, unknown, NewPatientEntry>, res:Response<Patient>) => {
   

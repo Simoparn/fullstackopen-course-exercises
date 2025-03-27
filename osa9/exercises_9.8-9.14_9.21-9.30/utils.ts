@@ -4,12 +4,16 @@ import { z } from 'zod'
 
 
 
+export const EntrySchema = z.object({})
+
 export const NewPatientEntrySchema = z.object({
   name: z.string(),
   dateOfBirth: z.string().date(),
   ssn: z.string(),
   gender: z.nativeEnum(Gender),
-  occupation: z.string()
+  occupation: z.string(),
+  entries: z.array(EntrySchema)
+
 });
 
 export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
