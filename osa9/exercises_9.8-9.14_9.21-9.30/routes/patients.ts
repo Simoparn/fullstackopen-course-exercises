@@ -28,6 +28,7 @@ const errorMiddleware = (error: unknown, _req: Request, res: Response, next: Nex
     res.status(400).send({ error: error.issues });
   } else {
     console.log('error in backend:', error)
+    res.status(400).send(error)
     next(error);
   }
 };
@@ -41,7 +42,13 @@ router.get('/', (_req, res:Response<NonSensitivePatientData[]>) => {
 router.get('/:id', (req:Request, res:Response<Patient>) => {
   
   const patient = patientsService.findById(String(req.params.id));
-  console.log('found patient by id:', patient)
+  if(!(typeof patient === "undefined")){
+    console.log('found patient by id:', patient)
+  }
+  else{
+    console.log('Patient was not found')
+    throw new Error("Patient with the specified id was not found")
+  }
   
 
   res.send(patient);

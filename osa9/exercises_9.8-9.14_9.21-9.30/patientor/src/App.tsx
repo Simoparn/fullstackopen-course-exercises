@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { BrowserRouter as Router, Route, Link, Routes, /*Navigate, useNavigate, To*/ } from "react-router-dom";
+import { Route, Link, Routes, useLocation } from "react-router-dom";
 import { Button, Divider, Container, Typography } from '@mui/material';
 
 import { apiBaseUrl } from "./constants";
@@ -13,18 +13,13 @@ import PatientPage from './components/PatientPage';
 
 
 
-/*interface NavigateOptions {
-  to:To;
-
-}*/
-
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   //const [currentPatient, setCurrentPatient] = useState<string>(''); 
   const [patientData, setPatientData] = useState<Patient>({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  });
-  //const navigateFunction=useNavigate() 
-  
+  //const navigateFunction=useNavigate()
+  const location=useLocation()
 
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
@@ -40,40 +35,46 @@ const App = () => {
     void fetchPatientList();
   }, []);
 
-  /*useEffect(()=>{
+  useEffect(()=> {
+    console.log('Current location is:', location.pathname)
 
 
-    const fetchPatient = async () => {
+
+    const fetchSinglePatientData = async () => { 
+      const id=location.pathname.substring(10)
       try{
-        const patient = await patientService.findById(currentPatient);
+        const patient = await patientService.findById(id);
         console.log('fetched patient:', patient)
-        
-        setPatientData(patient)
+        if(!(typeof patient === "undefined")){
+          setPatientData(patient)
+        }
       
-      }catch(error){
-        console.log('fetchPatient, error:', error)
-        if(error instanceof Error){
-          console.log('error message while fetching patient:', error.message)
+      }catch (e: unknown) {
+        if (axios.isAxiosError(e)) {
+          if (e?.response?.data && typeof e?.response?.data === "string") {
+            const message = e.response.data.replace('Something went wrong. Error: ', '');
+            console.error(message);
+            //setError(message);
+          } else {
+            console.log('unrecognized axios error:', e)
+            setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  })
+            //setError("Unrecognized axios error");
+          }
+        } else {
+          console.error("Unknown error", e);
+          setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  })
+          //setError("Unknown error");
         }
       }
+    }
+    if(location.pathname.includes('/patients')){
+      console.log('Link is in correct format, attempting to fetch single patient data')
+      fetchSinglePatientData();
+    }
     
+  }, [location])
+  
 
-    }
-    void fetchPatient();
-  }, [currentPatient])*/
-
-  useEffect(()=>{
-    if(patientData.id){
-      if(patientData.id.length > 0){
-        console.log('useEffect, id for patient is not empty, navigating to URL')
-        
-        window.location.href=window.location.href+`/api/patients/${patientData.id}`
-        //const navigateprops:object={to:`${apiBaseUrl}/patients/${patientData.id}`}
-        //navigateFunction(navigateprops)
-
-      }
-    }
-  }, [patientData]);
   
   console.log('all patients state:', patients)
   //console.log('current patient state:', currentPatient)
@@ -81,7 +82,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <Router>
+      
         <Container>
           <Typography variant="h3" style={{ marginBottom: "0.5em" }}>
             Patientor
@@ -95,7 +96,7 @@ const App = () => {
             <Route path="/patients/:id" element={<PatientPage patient={patientData} />} />
           </Routes>
         </Container>
-      </Router>
+      
     </div>
   );
 };

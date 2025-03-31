@@ -13,16 +13,16 @@ const getAll = async () => {
 const findById = async (id:string) => { 
 
   console.log(`axios, requested patients id: ${apiBaseUrl}/patients/${id}`)
-  //try{
-    const { data } = await axios.get<Patient>(
+  try{
+    const { data } = await axios.get<Patient | undefined>(
         `${apiBaseUrl}/patients/${id}`
     )  
     console.log('axios, retrieved patient:', data)
     return data;
     
-  /*}catch(error){
+  }catch(error){
     console.log('error in axios:', error)
-  }*/
+  }
 };
 
 const create = async (object: PatientFormValues) => {
