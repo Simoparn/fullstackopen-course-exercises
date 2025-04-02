@@ -6,7 +6,7 @@ import { NewPatientEntrySchema } from './utils'
 
 
 export type Diagnosis = {
-    code: string[];
+    code: string;
     name: string;
     latin?: string;
 };
@@ -31,7 +31,7 @@ interface BaseEntry {
     description: string;
     date: string;
     specialist: string;
-    diagnosisCodes?: Diagnosis['code'];
+    diagnosisCodes?: Diagnosis['code'][];
 }
 
 export enum HealthCheckRating {
@@ -42,32 +42,32 @@ export enum HealthCheckRating {
 }
 
 
-interface dischargeDetails {
+export interface dischargeDetails {
     date: string;
     criteria: string;
 
 }
 
-interface sickLeaveDetails {
+export interface sickLeaveDetails {
     startDate:string;
     endDate:string;
 }
 
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
     type: "Hospital";
     discharge: dischargeDetails;
     
 }
 
 
-interface OccupationalHealthcareEntry extends BaseEntry {
+export interface OccupationalHealthcareEntry extends BaseEntry {
     type: "OccupationalHealthcare"
     employerName: string;
     sickLeave?: sickLeaveDetails;
 }
 
-interface HealthCheckEntry extends BaseEntry {
+export interface HealthCheckEntry extends BaseEntry {
     type: "HealthCheck";
     healthCheckRating: HealthCheckRating;
 

@@ -12,7 +12,7 @@ import patientService from "../../services/patients";
 
 interface Props {
   patients : Patient[]
-  entries: Entry[]
+  //entries: Entry[]
   setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
   //setCurrentPatient: React.Dispatch<React.SetStateAction<string>>
   setPatientData: React.Dispatch<React.SetStateAction<Patient>>

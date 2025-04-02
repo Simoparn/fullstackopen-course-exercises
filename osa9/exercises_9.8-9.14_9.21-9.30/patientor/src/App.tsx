@@ -17,7 +17,7 @@ import PatientPage from './components/PatientPage';
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   //const [currentPatient, setCurrentPatient] = useState<string>(''); 
-  const [patientData, setPatientData] = useState<Patient>({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  });
+  const [patientData, setPatientData] = useState<Patient>({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[]  });
   //const navigateFunction=useNavigate()
   const location=useLocation()
 
@@ -25,7 +25,7 @@ const App = () => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
 
     //setCurrentPatient('')
-    setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  })
+    setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[] })
 
     const fetchPatientList = async () => {
       const patients = await patientService.getAll();
@@ -57,12 +57,12 @@ const App = () => {
             //setError(message);
           } else {
             console.log('unrecognized axios error:', e)
-            setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  })
+            setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[]  })
             //setError("Unrecognized axios error");
           }
         } else {
           console.error("Unknown error", e);
-          setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'',  })
+          setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[]  })
           //setError("Unknown error");
         }
       }

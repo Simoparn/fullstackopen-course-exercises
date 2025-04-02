@@ -24,3 +24,4 @@ npm run tsc
 
 ## TODO
 
+-Type assertions (keyword as) are used within zod schemas for some of the entries' fields (utils.ts). Another option may be needed in the long run.

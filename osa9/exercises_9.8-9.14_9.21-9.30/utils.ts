@@ -1,10 +1,14 @@
-import { NewPatientEntry, Gender } from './types';
+import { NewPatientEntry, Gender, HospitalEntry, HealthCheckEntry,OccupationalHealthcareEntry, HealthCheckRating, sickLeaveDetails} from './types';
 import { z } from 'zod'
 //import { v1 as uuid } from 'uuid'
 
 
 
-export const EntrySchema = z.object({})
+//export const EntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().optional(), healthCheckRating:z.nativeEnum(HealthCheckRating).optional()})
+export const HospitalEntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HospitalEntry["type"]), discharge:z.object({date:z.string(), criteria:z.string()})})
+export const HealthCheckEntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HealthCheckEntry["type"]), healthCheckRating:z.nativeEnum(HealthCheckRating)})
+export const OccupationalHealthCareEntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as OccupationalHealthcareEntry["type"]), employerName:z.string(), sickLeave:z.object({startDate:z.string().transform(value => value as sickLeaveDetails["startDate"]), endDate:z.string().transform(value => value as sickLeaveDetails["endDate"])}).optional()})
+
 
 export const NewPatientEntrySchema = z.object({
   name: z.string(),
@@ -12,10 +16,11 @@ export const NewPatientEntrySchema = z.object({
   ssn: z.string(),
   gender: z.nativeEnum(Gender),
   occupation: z.string(),
-  entries: z.array(EntrySchema)
-
+  //entries: z.array(EntrySchema)
+  entries:z.array(z.union([HospitalEntrySchema, HealthCheckEntrySchema, OccupationalHealthCareEntrySchema]))
 });
 
+//Probably unnecessary when using infer and library objects 
 export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   return NewPatientEntrySchema.parse(object);
 };
