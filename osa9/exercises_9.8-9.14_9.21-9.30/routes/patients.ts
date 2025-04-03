@@ -2,8 +2,8 @@ import express from 'express';
 import { Request, Response } from 'express'
 import { NextFunction } from 'express';
 import { z } from 'zod'
-import { Patient, NewPatientEntry, NonSensitivePatientData } from '../types';
-import { NewPatientEntrySchema, /*toNewPatientEntry*/ } from '../utils'
+import { Patient, NewPatientEntry, Entry, NonSensitivePatientData } from '../types';
+import { NewPatientEntrySchema, NewEntrySchema, /*toNewPatientEntry*/ } from '../utils'
 import patientsService from '../services/patientsService';
 //import { v1 as uuid } from 'uuid'
 
@@ -19,6 +19,17 @@ const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   } catch (error: unknown) {
     next(error);
   }
+};
+
+const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
+  try{
+    NewEntrySchema.parse(req.body);
+    next();
+
+  } catch(error: unknown) {
+    next(error);
+  }
+  
 };
 
 //Middleware for handling errors
@@ -83,7 +94,14 @@ router.post('/', newPatientParser , (req:Request<unknown, unknown, NewPatientEnt
 */
 });
 
+
+router.post('/:id/entries', newEntryParser, (req:Request<unknown, unknown, Entry>, res:Response<Entry>) => {
+  const addedEntry = patientsService.addEntry(req.body)
+  console.log("new entry after adding:", addedEntry)
+  res.json(addedEntry)
+})
+
 router.use(errorMiddleware)
 
   
-  export default router;
+export default router;

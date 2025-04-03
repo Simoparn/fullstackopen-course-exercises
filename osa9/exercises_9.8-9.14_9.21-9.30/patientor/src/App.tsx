@@ -4,9 +4,10 @@ import { Route, Link, Routes, useLocation } from "react-router-dom";
 import { Button, Divider, Container, Typography } from '@mui/material';
 
 import { apiBaseUrl } from "./constants";
-import { Patient, Gender } from "./types";
+import { Patient, Diagnosis, Gender } from "./types";
 
 import patientService from "./services/patients";
+import diagnosesService from "./services/diagnoses";
 import PatientListPage from "./components/PatientListPage";
 import PatientPage from './components/PatientPage';
 
@@ -16,8 +17,10 @@ import PatientPage from './components/PatientPage';
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [allDiagnoses, setAllDiagnoses] = useState<Diagnosis[]>([]);
   //const [currentPatient, setCurrentPatient] = useState<string>(''); 
   const [patientData, setPatientData] = useState<Patient>({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[]  });
+  //const [diagnoseData, setDiagnoseData] = useState<Diagnosis>({code:'', name:'', latin:''});
   //const navigateFunction=useNavigate()
   const location=useLocation()
 
@@ -32,7 +35,19 @@ const App = () => {
       console.log('useEffect, all fetched patients:', patients)
       setPatients(patients);
     };
+
+
+    const fetchAllDiagnoses = async () => {
+      const diagnoses = await diagnosesService.getAll();
+      console.log('useEffect, all fetched diagnoses:', diagnoses) 
+      setAllDiagnoses(diagnoses);
+    }
+
+
+
+
     void fetchPatientList();
+    void fetchAllDiagnoses();
   }, []);
 
   useEffect(()=> {
@@ -67,8 +82,15 @@ const App = () => {
         }
       }
     }
+
+    /*const setDiagnosesForThePatient() = () => {
+      const diagnoses = allDiagnoses.filter((diagnose) => diagnose.code === patientData)
+      setDiagnoseData();
+    }*/
+
+
     if(location.pathname.includes('/patients')){
-      console.log('Link is in correct format, attempting to fetch single patient data')
+      console.log('Link is in correct format, attempting to fetch single patient and diagnoses for the patient data')
       fetchSinglePatientData();
     }
     
@@ -93,7 +115,7 @@ const App = () => {
           <Divider hidden />
           <Routes>
             <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} /*setCurrentPatient={setCurrentPatient}*/ setPatientData={setPatientData} />} />
-            <Route path="/patients/:id" element={<PatientPage patient={patientData} />} />
+            <Route path="/patients/:id" element={<PatientPage patient={patientData} allDiagnoses={allDiagnoses} />} />
           </Routes>
         </Container>
       

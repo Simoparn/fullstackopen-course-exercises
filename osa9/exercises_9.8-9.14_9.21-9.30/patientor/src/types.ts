@@ -49,20 +49,20 @@ interface sickLeaveDetails {
 }
 
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: dischargeDetails;
   
 }
 
 
-interface OccupationalHealthcareEntry extends BaseEntry {
+export interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare"
   employerName: string;
   sickLeave?: sickLeaveDetails;
 }
 
-interface HealthCheckEntry extends BaseEntry {
+export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 
@@ -79,4 +79,9 @@ export type Entry =
 | HealthCheckEntry;
 
 
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type PatientFormValues = Omit<Patient, "id" /*| "entries"*/>;
+
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+export type EntryFormValues = UnionOmit<Entry, "id">

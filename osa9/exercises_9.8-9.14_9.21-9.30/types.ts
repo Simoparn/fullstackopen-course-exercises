@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { NewPatientEntrySchema } from './utils'
+import { NewPatientEntrySchema, NewEntrySchema } from './utils'
 
 
 
@@ -97,5 +97,16 @@ export type NonSensitivePatientData = Omit<Patient, 'ssn' | 'entries'>;
 
 // infer the type from schema
 export type NewPatientEntry = z.infer<typeof NewPatientEntrySchema>; 
+
+export type NewEntry = z.infer<typeof NewEntrySchema>;
+
+
+//Without zod library type inference
+
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+// Define entry without the 'id' property
+export type NewEntryWithoutId = UnionOmit<Entry, 'id'>;
 
 

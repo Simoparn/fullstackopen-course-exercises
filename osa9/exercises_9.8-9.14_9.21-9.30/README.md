@@ -1,5 +1,5 @@
 # aBOUT
-Exercises 9.8-9.14 and 9.21-9.30, backend for the Patientor frontend (https://github.com/fullstack-hy2020/patientor)
+Exercises 9.8-9.14 and 9.21-9.30, backend for the Patientor frontend (https://github.com/fullstack-hy2020/patientor) with some modifications the frontend aswell.
 
 
 
@@ -24,4 +24,10 @@ npm run tsc
 
 ## TODO
 
--Type assertions (keyword as) are used within zod schemas for some of the entries' fields (utils.ts). Another option may be needed in the long run.
+### TODO, POSSIBLY RISKY TYPE ASSERTIONS
+-Type assertions (keyword 'as') are used within zod schemas for some of the entries' fields (utils.ts). Another option may be needed in the long run.
+-Type assertion (keyword 'as') is also used in addEntryForm (healthCheckOptions). Another option may be needed in the long run.
+### TODO, DEBUG EXHAUSTIVE TYPE CHECKING
+-Consider checking exhaustive type checking in PatientPage and AddEntryForm with console.log etc.
+### TODO, PATIENT ENTRIES
+

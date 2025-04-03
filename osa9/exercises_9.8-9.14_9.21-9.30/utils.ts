@@ -20,6 +20,19 @@ export const NewPatientEntrySchema = z.object({
   entries:z.array(z.union([HospitalEntrySchema, HealthCheckEntrySchema, OccupationalHealthCareEntrySchema]))
 });
 
+//export const HospitalEntryWithoutIdSchema = z.object({description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HospitalEntry["type"]), discharge:z.object({date:z.string(), criteria:z.string()})})
+//export const HealthCheckEntryWithoutIdSchema = z.object({description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HealthCheckEntry["type"]), healthCheckRating:z.nativeEnum(HealthCheckRating)})
+//export const OccupationalHealthCareEntryWithoutIdSchema = z.object({description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as OccupationalHealthcareEntry["type"]), employerName:z.string(), sickLeave:z.object({startDate:z.string().transform(value => value as sickLeaveDetails["startDate"]), endDate:z.string().transform(value => value as sickLeaveDetails["endDate"])}).optional()})
+
+
+
+export const NewEntrySchema = z.object({
+ newEntry:z.union([HospitalEntrySchema, HealthCheckEntrySchema, OccupationalHealthCareEntrySchema ])
+});
+
+
+
+
 //Probably unnecessary when using infer and library objects 
 export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   return NewPatientEntrySchema.parse(object);
