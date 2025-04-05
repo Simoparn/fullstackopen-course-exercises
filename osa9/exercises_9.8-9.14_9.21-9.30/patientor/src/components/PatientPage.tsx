@@ -97,29 +97,32 @@ const PatientPage = ({patient, allDiagnoses, setPatientData}:Props, /*{allDiagno
     };
 
     const submitNewEntry = async (values: EntryFormValues) => {
-    try {
-        const entry = await patientService.createEntry(values);
-        setPatientData({...patient, entries:patient.entries.concat(entry)});
-        setModalOpen(false);
-    } catch (e: unknown) {
-        if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data === "string") {
-            const message = e.response.data.replace('Something went wrong. Error: ', '');
-            console.error(message);
-            setError(message);
-        } else {
-            setError("Unrecognized axios error");
+        console.log('Attempting to submit a new entry:', values)
+        console.log('Attempting to submit a new entry, patient data:', patient.id)
+        try {
+            const entry = await patientService.createEntry(patient.id, values);
+            console.log('created entry after handling in backend:', entry)
+            setPatientData({...patient, entries:patient.entries.concat(entry)});
+            setModalOpen(false);    
+        } catch (e: unknown) {
+            if (axios.isAxiosError(e)) {
+            if (e?.response?.data && typeof e?.response?.data === "string") {
+                const message = e.response.data.replace('Something went wrong. Error: ', '');
+                console.error(message);
+                setError(message);
+            } else {
+                setError("Unrecognized axios error");
+            }
+            } else {
+            console.error("Unknown error", e);
+            setError("Unknown error");
+            }
         }
-        } else {
-        console.error("Unknown error", e);
-        setError("Unknown error");
-        }
-    }
     };
     
 
 
-
+    console.log('PatientPage, current patient data:', patient )
     console.log('PatientPage, allDiagnoses:', allDiagnoses)
     
     if((patient.id.length === 0 )){
@@ -156,7 +159,7 @@ const PatientPage = ({patient, allDiagnoses, setPatientData}:Props, /*{allDiagno
                 
                     {patient.entries && patient.entries.length > 0 ? 
                         patient.entries.map((entry:Entry)=>(
-                            <div style={{marginLeft:"1em", marginBottom:"3em", paddingTop:"0.5em", paddingBottom:"0.5em", borderStyle:"solid", borderRadius:"0.25em"}}>
+                            <div key={entry.id} style={{marginLeft:"1em", marginBottom:"3em", paddingTop:"0.5em", paddingBottom:"0.5em", borderStyle:"solid", borderRadius:"0.25em"}}>
                                 <div style={{marginLeft:"0.5em"}}>
                                     <b>Entry date</b><br/>
                                     <span style={{marginLeft:"1em"}}>{entry.date}</span><br/>
@@ -165,8 +168,9 @@ const PatientPage = ({patient, allDiagnoses, setPatientData}:Props, /*{allDiagno
                                     <b>Diagnoses</b><br/>
                                     <ul>
                                         {entry.diagnosisCodes ? entry.diagnosisCodes.map((diagnosisCode)=>(
-                                            <li>{diagnosisCode} {allDiagnoses && allDiagnoses.length > 0 ? 
+                                            <li key={diagnosisCode}>{diagnosisCode} {allDiagnoses && allDiagnoses.length > 0 ? 
                                                 allDiagnoses.map((diagnosis) =>(
+                                                    
                                                     diagnosis.code === diagnosisCode ? 
                                                         diagnosis.name 
                                                         : <></>

@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express'
 import { NextFunction } from 'express';
 import { z } from 'zod'
-import { Patient, NewPatientEntry, Entry, NonSensitivePatientData } from '../types';
+import { Patient, Diagnosis, NewPatientEntry, Entry, NonSensitivePatientData } from '../types';
 import { NewPatientEntrySchema, NewEntrySchema, /*toNewPatientEntry*/ } from '../utils'
 import patientsService from '../services/patientsService';
 //import { v1 as uuid } from 'uuid'
@@ -32,10 +32,20 @@ const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
   
 };
 
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
+  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis['code']>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnosis['code']>;
+};
+
 //Middleware for handling errors
 const errorMiddleware = (error: unknown, _req: Request, res: Response, next: NextFunction) => { 
   if (error instanceof z.ZodError) {
     console.log('zod error in backend:', error)
+    console.log('request body:', _req.body)
     res.status(400).send({ error: error.issues });
   } else {
     console.log('error in backend:', error)
@@ -96,7 +106,10 @@ router.post('/', newPatientParser , (req:Request<unknown, unknown, NewPatientEnt
 
 
 router.post('/:id/entries', newEntryParser, (req:Request<unknown, unknown, Entry>, res:Response<Entry>) => {
-  const addedEntry = patientsService.addEntry(req.body)
+  const diagnosisCodes=parseDiagnosisCodes(req.body)
+  console.log('adding a new entry: request body:', req.body)
+  console.log('adding a new entry, parsed diagnosis codes:', diagnosisCodes)
+  const addedEntry = patientsService.addEntry({...req.body, diagnosisCodes:diagnosisCodes})
   console.log("new entry after adding:", addedEntry)
   res.json(addedEntry)
 })

@@ -5,9 +5,9 @@ import { z } from 'zod'
 
 
 //export const EntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().optional(), healthCheckRating:z.nativeEnum(HealthCheckRating).optional()})
-export const HospitalEntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HospitalEntry["type"]), discharge:z.object({date:z.string(), criteria:z.string()})})
-export const HealthCheckEntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HealthCheckEntry["type"]), healthCheckRating:z.nativeEnum(HealthCheckRating)})
-export const OccupationalHealthCareEntrySchema = z.object({id:z.string(),description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as OccupationalHealthcareEntry["type"]), employerName:z.string(), sickLeave:z.object({startDate:z.string().transform(value => value as sickLeaveDetails["startDate"]), endDate:z.string().transform(value => value as sickLeaveDetails["endDate"])}).optional()})
+export const HospitalEntrySchema = z.object({/*id:z.string(),*/description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HospitalEntry["type"]), discharge:z.object({date:z.string(), criteria:z.string()})})
+export const HealthCheckEntrySchema = z.object({/*id:z.string(),*/description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as HealthCheckEntry["type"]), healthCheckRating:z.nativeEnum(HealthCheckRating)})
+export const OccupationalHealthCareEntrySchema = z.object({/*id:z.string(),*/description:z.string(),date:z.string(),specialist:z.string(), diagnosisCodes:z.array(z.string()).optional(), type:z.string().transform(value => value as OccupationalHealthcareEntry["type"]), employerName:z.string(), sickLeave:z.object({startDate:z.string().transform(value => value as sickLeaveDetails["startDate"]), endDate:z.string().transform(value => value as sickLeaveDetails["endDate"])}).optional()})
 
 
 export const NewPatientEntrySchema = z.object({
@@ -26,9 +26,9 @@ export const NewPatientEntrySchema = z.object({
 
 
 
-export const NewEntrySchema = z.object({
- newEntry:z.union([HospitalEntrySchema, HealthCheckEntrySchema, OccupationalHealthCareEntrySchema ])
-});
+export const NewEntrySchema = /*z.object({*/
+  /*entry:*/z.union([HospitalEntrySchema, HealthCheckEntrySchema, OccupationalHealthCareEntrySchema ])
+//});
 
 
 

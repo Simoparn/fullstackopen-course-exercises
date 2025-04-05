@@ -26,8 +26,10 @@ npm run tsc
 
 ### TODO, POSSIBLY RISKY TYPE ASSERTIONS
 -Type assertions (keyword 'as') are used within zod schemas for some of the entries' fields (utils.ts). Another option may be needed in the long run.
--Type assertion (keyword 'as') is also used in addEntryForm (healthCheckOptions). Another option may be needed in the long run.
+-Type assertions (keyword 'as') are also used in addEntryForm.tsx (entryTypeOptions, healthCheckOptions. Another option may be needed in the long run.
 ### TODO, DEBUG EXHAUSTIVE TYPE CHECKING
 -Consider checking exhaustive type checking in PatientPage and AddEntryForm with console.log etc.
 ### TODO, PATIENT ENTRIES
+-Special input fields for different entry types are still malfunctional, accepting only 1 character at a time. 
+-Reconsider if separate input labels are needed for the input fields.
 
