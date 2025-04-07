@@ -8,6 +8,7 @@ interface Props {
   onClose: () => void;
   onSubmit: (values: PatientFormValues) => void;
   error?: string;
+
 }
 
 const AddPatientModal = ({ modalOpen, onClose, onSubmit, error }: Props) => (
