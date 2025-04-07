@@ -42,7 +42,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
   const [discharge, setDischarge] = useState({date:'', criteria:''})
   const [employerName, setEmployerName] = useState('')
   const [sickLeave, setSickLeave] = useState({startDate:'', endDate:''})
-  const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(0)
+  const [healthCheckRating, setHealthCheckRating] = useState<string>("Healthy")
 
 
   
@@ -59,7 +59,8 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
         return(
           <>
             <InputLabel style={{ marginTop: 50 }}>Entry details, Hospital</InputLabel>
-            <InputLabel style={{ marginTop: 20 }}>Date</InputLabel>
+            <InputLabel style={{ marginTop: 20 }}>Discharge</InputLabel>
+            <InputLabel style={{ marginTop: 20 }}>Discharge date</InputLabel>
             <TextField
             label="Date"
             fullWidth 
@@ -68,7 +69,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
             />
 
 
-            <InputLabel style={{ marginTop: 20 }}>Criteria</InputLabel>
+            <InputLabel style={{ marginTop: 20 }}>Discharge criteria</InputLabel>
             <TextField
             label="Criteria"
             fullWidth 
@@ -93,8 +94,8 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           value={name}
           onChange={({ target }) => setEmployerName(target.value)}
           />
-
-          <InputLabel style={{ marginTop: 20 }}>Start date</InputLabel>
+          <InputLabel style={{ marginTop: 20 }}>Sick leave</InputLabel>
+          <InputLabel style={{ marginTop: 20 }}>Sick leave, start date</InputLabel>
           <TextField
           label="Start Date"
           fullWidth 
@@ -103,7 +104,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           onChange={({ target }) => setSickLeave({...sickLeave, startDate:target.value})}
           />
 
-          <InputLabel style={{ marginTop: 20 }}>End date</InputLabel>
+          <InputLabel style={{ marginTop: 20 }}>Sick leave, end date</InputLabel>
           <TextField
             label="End Date"
             fullWidth 
@@ -126,13 +127,13 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
               value={healthCheckRating.toString()}
               onChange={onHealthCheckRatingChange}
             >
-            {healthCheckOptions.map(option =>
+            {healthCheckOptions.map(option => 
               <MenuItem
                 key={option.label}
                 value={option.value}
               >
-                {option.label
-              }</MenuItem>
+                {option.label}
+              </MenuItem>
             )}
             </Select>
           </>
@@ -146,17 +147,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
 
 
 
-  const onHealthCheckRatingChange = (event: SelectChangeEvent<string>) => {
-    event.preventDefault();
-   
-    if ( typeof event.target.value === "string") {
-      const value = event.target.value;
-      const healthCheckRating = Object.values(HealthCheckRating).find(h => h.toString() === value);
-      if (healthCheckRating === 0 || healthCheckRating === 1 || healthCheckRating === 2 || healthCheckRating === 3) {
-        setHealthCheckRating(healthCheckRating);
-      }
-    }
-  };
+
 
   const handleEntryTypeSelection = (event: SelectChangeEvent<string>) => {
     event.preventDefault();
@@ -164,18 +155,19 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
     //setEntryTypeSelected(true);
     switch(event.target.value){
       case "Hospital":
-        setEntryType(event.target.value as Entry["type"]);
+        setEntryType(event.target.value);
         break;
       case "OccupationalHealthcare":
-        setEntryType(event.target.value as Entry["type"]);
+        setEntryType(event.target.value);
         break;
         case "HealthCheck":
-          setEntryType(event.target.value as Entry["type"]);
+          setEntryType(event.target.value);
           break;
         default:
           assertNever(event.target.value as never)
     };
   }
+
 
   //Helper function for exhaustive type checking
   const assertNever = (value: never): never => {
@@ -184,6 +176,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
       `type checking error, assertNever: ${JSON.stringify(value)}`
     );
   };
+
 
 
   const addEntry = (event: SyntheticEvent) => {
@@ -214,44 +207,44 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
         break;
       case "HealthCheck":
         switch(healthCheckRating){
-          case 0:
+          case "Healthy":
             onSubmit({
               type:entryType,
               description,
               date,
               specialist,
               diagnosisCodes,
-              healthCheckRating,
+              healthCheckRating:HealthCheckRating[healthCheckRating],
             });
             break;
-            case 1:
+            case "LowRisk":
               onSubmit({
                 type:entryType,
                 description,
                 date,
                 specialist,
                 diagnosisCodes,
-                healthCheckRating,       
+                healthCheckRating:HealthCheckRating[healthCheckRating],       
               });
             break;
-              case 2:
+              case "HighRisk":
                 onSubmit({
                   type:entryType,
                   description,
                   date,
                   specialist,
                   diagnosisCodes,
-                  healthCheckRating,     
+                  healthCheckRating:HealthCheckRating[healthCheckRating],     
                 });
               break;
-                case 3:
+                case "CriticalRisk":
                   onSubmit({
                     type:entryType,
                     description,
                     date,
                     specialist,
                     diagnosisCodes,
-                    healthCheckRating,     
+                    healthCheckRating:HealthCheckRating[healthCheckRating],     
                   });
         }
         break;
@@ -267,9 +260,42 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
     setDischarge({date:'', criteria:''})
     setEmployerName('')
     setSickLeave({startDate:'', endDate:''})
-    setHealthCheckRating(0)
+    setHealthCheckRating("Healthy")
 
   }
+
+
+  const onHealthCheckRatingChange = (event: SelectChangeEvent<string>) => {
+    event.preventDefault();
+    
+    if ( typeof event.target.value === "string") {
+      const value = event.target.value;
+      console.log('onHealthCheckRatingChange, target value:', value)
+      const selectedHealthCheckRating = Object.values(HealthCheckRating).find(h => h.toString() === value);
+      console.log('healthCheckRating:', selectedHealthCheckRating)
+      
+      switch(selectedHealthCheckRating) {
+        case "Healthy":
+          console.log('setting healthCheckRating:', selectedHealthCheckRating);
+          setHealthCheckRating(selectedHealthCheckRating);
+          break;
+        case "LowRisk":
+          console.log('setting healthCheckRating:', selectedHealthCheckRating);
+          setHealthCheckRating(selectedHealthCheckRating);
+          break;
+        case "HighRisk":
+          console.log('setting healthCheckRating:', selectedHealthCheckRating);
+          setHealthCheckRating(selectedHealthCheckRating);
+          break;
+        case "CriticalRisk":
+          console.log('setting healthCheckRating:', selectedHealthCheckRating);
+          setHealthCheckRating(selectedHealthCheckRating);
+          break;
+        default:
+          assertNever(selectedHealthCheckRating as never);
+      }
+    }
+  };
   
   console.log("Entry input state: Entry type: ", entryType, "Description: ", description, "Date:", date, "Specialist:", specialist, "diagnosisCodes:", diagnosisCodes, "discharge: ", discharge, "employerName:", employerName, "sickLeave:", sickLeave, "healthCheckRating:", healthCheckRating)
   console.log('Entry type input options state:', entryTypeOptions)

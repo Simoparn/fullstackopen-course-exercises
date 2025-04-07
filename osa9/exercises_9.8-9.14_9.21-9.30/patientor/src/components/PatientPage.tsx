@@ -102,7 +102,7 @@ const PatientPage = ({patient, allDiagnoses, setPatientData}:Props, /*{allDiagno
         try {
             const entry = await patientService.createEntry(patient.id, values);
             console.log('created entry after handling in backend:', entry)
-            setPatientData({...patient, entries:patient.entries.concat(entry)});
+            setPatientData({...patient, entries:patient.entries.concat([entry])});
             setModalOpen(false);    
         } catch (e: unknown) {
             if (axios.isAxiosError(e)) {
