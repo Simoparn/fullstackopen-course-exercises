@@ -9,6 +9,27 @@ interface Props {
   onSubmit: (values: EntryFormValues) => void;
 }
 
+interface EntryTypeFieldsProps {
+  entryType: Entry["type"];
+  onHealthCheckRatingChange: (event: SelectChangeEvent<string>) => void;
+  discharge: DischargeFields;
+  employerName: string;
+  sickLeave: sickLeaveFields;
+  healthCheckRating: string;
+  setDischarge:React.Dispatch<React.SetStateAction<DischargeFields>>;
+  setEmployerName:React.Dispatch<React.SetStateAction<string>>;
+  setSickLeave:React.Dispatch<React.SetStateAction<sickLeaveFields>>;
+}
+
+interface DischargeFields {
+  date:string;
+  criteria:string;
+}
+
+interface sickLeaveFields{
+  startDate:string;
+  endDate:string;
+}
 
 interface EntryTypeOption{
   value:Entry["type"];
@@ -30,30 +51,19 @@ const healthCheckOptions: HealthCheckOption[] = Object.values(HealthCheckRating)
   value: v as unknown as HealthCheckRating, label: v.toString()
 }));
 
-const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
 
-  //const [entryTypeSelected, setEntryTypeSelected] = useState(false)
-  const [entryType, setEntryType] = useState<Entry["type"]>("Hospital");
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('')
-  const [specialist, setSpecialist] = useState('')
-  const [diagnosisCode, setDiagnosisCode] = useState('')
-  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([])
-  const [discharge, setDischarge] = useState({date:'', criteria:''})
-  const [employerName, setEmployerName] = useState('')
-  const [sickLeave, setSickLeave] = useState({startDate:'', endDate:''})
-  const [healthCheckRating, setHealthCheckRating] = useState<string>("Healthy")
+
+
+
+
+const EntryTypeFields = ({entryType, onHealthCheckRatingChange, discharge, employerName, sickLeave, healthCheckRating, setDischarge, setEmployerName, setSickLeave}:EntryTypeFieldsProps) => {
 
 
   
-
-
-
-  const EntryTypeFields = (entryType:{entryType: Entry["type"]}) => {
    
     console.log("EntryTypeFields, entry type:", entryType)
 
-    switch(entryType.entryType){
+    switch(entryType){
 
       case "Hospital":
         return(
@@ -65,6 +75,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
             label="Date"
             fullWidth 
             value={discharge.date}
+            placeholder="YYYY-MM-DD"
             onChange={({ target }) => setDischarge({...discharge, date:target.value})}
             />
 
@@ -86,12 +97,11 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
       return(
         <>
           <InputLabel style={{ marginTop: 50 }}>Entry details, Occupational health care</InputLabel>
-
           <InputLabel style={{ marginTop: 20 }}>Employer name</InputLabel>
           <TextField
           label="Employer Name"
           fullWidth 
-          value={name}
+          value={employerName}
           onChange={({ target }) => setEmployerName(target.value)}
           />
           <InputLabel style={{ marginTop: 20 }}>Sick leave</InputLabel>
@@ -145,6 +155,24 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
 
 
 
+
+const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
+
+    //const [entryTypeSelected, setEntryTypeSelected] = useState(false)
+    const [entryType, setEntryType] = useState<Entry["type"]>("Hospital");
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('')
+    const [specialist, setSpecialist] = useState('')
+    const [diagnosisCode, setDiagnosisCode] = useState('')
+    const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([])
+    const [discharge, setDischarge] = useState({date:'', criteria:''})
+    const [employerName, setEmployerName] = useState('')
+    const [sickLeave, setSickLeave] = useState({startDate:'', endDate:''})
+    const [healthCheckRating, setHealthCheckRating] = useState<string>("Healthy")
+  
+  
+    
+  
 
 
 
@@ -270,9 +298,9 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
     
     if ( typeof event.target.value === "string") {
       const value = event.target.value;
-      console.log('onHealthCheckRatingChange, target value:', value)
+      console.log('onHealthCheckRatingChange, target value:', value);
       const selectedHealthCheckRating = Object.values(HealthCheckRating).find(h => h.toString() === value);
-      console.log('healthCheckRating:', selectedHealthCheckRating)
+      console.log('healthCheckRating:', selectedHealthCheckRating);
       
       switch(selectedHealthCheckRating) {
         case "Healthy":
@@ -296,6 +324,11 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
       }
     }
   };
+
+  if(diagnosisCode.length > 20){
+    console.log("diagnosis code input too long, preventing longer input")
+    setDiagnosisCode(diagnosisCode.substring(0, 20))
+  }
   
   console.log("Entry input state: Entry type: ", entryType, "Description: ", description, "Date:", date, "Specialist:", specialist, "diagnosisCodes:", diagnosisCodes, "discharge: ", discharge, "employerName:", employerName, "sickLeave:", sickLeave, "healthCheckRating:", healthCheckRating)
   console.log('Entry type input options state:', entryTypeOptions)
@@ -330,14 +363,14 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           placeholder="YYYY-MM-DD"
           onChange={({ target }) => setDate(target.value)}
         />
-        <InputLabel style={{ marginTop: 20 }}>Description</InputLabel>
+        <InputLabel style={{ marginTop: 20 }}>Description ({description.length}/200 characters)</InputLabel>
         <TextField
           label="Description"
           fullWidth 
           value={description}
           onChange={({ target }) => setDescription(target.value)}
         />
-        <InputLabel style={{ marginTop: 20 }}>Specialist</InputLabel>
+        <InputLabel style={{ marginTop: 20 }}>Specialist ({specialist.length}/100 characters)</InputLabel>
         <TextField
           label="Specialist"
           fullWidth 
@@ -345,15 +378,15 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           onChange={({ target }) => setSpecialist(target.value)}
         />
 
-        <InputLabel style={{ marginTop: 20 }}>Diagnosis codes</InputLabel>
+        <InputLabel style={{ marginTop: 20 }}>Diagnosis codes ({diagnosisCodes.length}/10 codes)</InputLabel>
         {diagnosisCodes.map(diagnosisCode =>(
           <>{diagnosisCode} </>
         ))}
         <br/>
-
+        
         <TextField
-          label="Write a new diagnosis code here and press"
-          fullWidth 
+          label="Write a new diagnosis code here and press (maximum length 20 characters)"
+          fullWidth
           value={diagnosisCode}
           onChange={({ target}) => setDiagnosisCode(target.value)}
           
@@ -365,7 +398,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
               type="button"
               onClick={() => setDiagnosisCodes(diagnosisCodes.concat(diagnosisCode))}>Add a new diagnosis code</Button>
         
-      <EntryTypeFields entryType={entryType}/>
+      <EntryTypeFields entryType={entryType} onHealthCheckRatingChange={onHealthCheckRatingChange} discharge={discharge} employerName={employerName} sickLeave={sickLeave} healthCheckRating={healthCheckRating}  setDischarge={setDischarge} setEmployerName={setEmployerName} setSickLeave={setSickLeave}/>
 
         <Grid>
           <Grid item>

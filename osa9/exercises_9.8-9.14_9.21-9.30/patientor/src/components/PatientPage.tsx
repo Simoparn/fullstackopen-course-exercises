@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@mui/material'
 import axios from 'axios'
-import { Patient, Diagnosis, Entry, EntryFormValues } from '../types'
+import { Patient, Diagnosis, Entry, EntryFormValues, HealthCheckRating } from '../types'
 import AddEntryModal from './AddEntrymodal'
 import patientService from '../services/patients'
 
@@ -70,7 +70,7 @@ const EntryDetails:React.FC<{entry:Entry}> = ({entry}) => {
                 <div style ={{marginLeft:"1em"}}>
                 <b>Health check rating</b><br/>
                 <span style={{marginLeft:"1em"}}>
-                    {entry.healthCheckRating}
+                    {entry.healthCheckRating} ({Object.values(HealthCheckRating).find(hcr => HealthCheckRating[entry.healthCheckRating] === hcr)})
                 </span><br/>
                 </div>
             )
@@ -105,14 +105,25 @@ const PatientPage = ({patient, allDiagnoses, setPatientData}:Props, /*{allDiagno
             setPatientData({...patient, entries:patient.entries.concat([entry])});
             setModalOpen(false);    
         } catch (e: unknown) {
+            console.log('whole error:', e)
             if (axios.isAxiosError(e)) {
-            if (e?.response?.data && typeof e?.response?.data === "string") {
-                const message = e.response.data.replace('Something went wrong. Error: ', '');
-                console.error(message);
-                setError(message);
-            } else {
-                setError("Unrecognized axios error");
-            }
+                if (e?.response?.data && typeof e?.response?.data === "string") {
+                    //const message = e.response.data.replace('Something went wrong. Error: ', '');
+                    const message = e.message;
+                    console.error("shorter axios error:", message);
+                    setError(message);
+                } else {
+                    if(e?.response?.data?.error[0].message && typeof e?.response?.data?.error[0].message === "string"){
+                        const message = e.response.data.error[0].message;  
+                        console.error("longer axios error with error as a separate field:",message);
+                        setError(message);
+                    }
+                    else {
+                        const message = "Unrecognized axios error: ";  
+                        console.error("unrecognized axios error:", message);
+                        setError(message);
+                    }
+                }
             } else {
             console.error("Unknown error", e);
             setError("Unknown error");

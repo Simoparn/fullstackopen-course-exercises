@@ -2,19 +2,25 @@
 Exercises 9.8-9.14 and 9.21-9.30, backend for the Patientor frontend (https://github.com/fullstack-hy2020/patientor) with some modifications the frontend aswell.
 
 
+## ABOUT, DATA MODEL
 
-## RENDERING PATIENT DATA
+Multiple entries can be added for each patient (Notice the difference between PatientEntry and Entry types).
 
--PatientsListPage is the main component for rendering all patients.
--Data for single patients can be rendered by clicking names from the main list. 
 
-## ERROR HANDLING
+## ABOUT, RENDERING PATIENT DATA
+
+-PatientsListPage is the main component for rendering the non-sensitive patient summary data of all patients.
+-More detailed data for single patients can be rendered by clicking names from the main list. 
+
+## ABOUT, ERROR HANDLING
 
 -Errors for backend Express.js endpoints are handled with a middleware function. Please don't use try catch blocks within the endpoints themselves.
--HTTP request errors (axios) for frontend are handled within the React components. Please don't use try catch blocks within the request modules (services) 
+-In frontend, HTTP request errors (axios) for getting all patients and adding new patients are handled within the React components. Please don't use try catch blocks for these cases within the request modules (services)
 
 # DEVELOPMENT AND TESTING
 
+## DEVELOPMENT MODE
+npm run dev
 
 # PRODUCTION
 
@@ -29,9 +35,16 @@ npm run tsc
 -Type assertions (keyword 'as') are also used in addEntryForm.tsx (entryTypeOptions, healthCheckOptions, onHealthCheckRatingChange). Another option may be needed in the long run.
 ### TODO, DEBUG EXHAUSTIVE TYPE CHECKING
 -Consider checking exhaustive type checking in PatientPage and AddEntryForm with console.log etc.
-### TODO, PATIENT ENTRIES
--Special input fields for different entry types are still malfunctional, accepting only 1 character at a time. 
+### TODO, PATIENT ENTRIES 
 -Consider length resctrictions for entry descriptions, number of allowed diagnosis codes etc.
--Implement date validation for entry inputs
+-Already added diagnosis codes cannot still be deleted in input form
+-Consider distinguishing different entry types with graphical icons (MUI etc.)
 -Reconsider if separate input labels are needed for the input fields.
+
+## TODO, ERROR HANDLING
+### TODO, ERROR HANDLING, FRONTEND
+-Consider removing try catch block for finding a specific patient and let the relevant React component handle the error, as with other requests
+### TODO, ERROR HANDLING, BACKEND
+
+
 
