@@ -42,6 +42,10 @@ npm run tsc
 -Type assertions (keyword 'as') are also used in addEntryForm.tsx (entryTypeOptions, healthCheckOptions, onHealthCheckRatingChange). Another option may be needed in the long run.
 ### TODO, DEBUG EXHAUSTIVE TYPE CHECKING
 -Consider checking exhaustive type checking in PatientPage and AddEntryForm with console.log etc.
+
+### TODO, NEW PATIENTS
+-New patients are still not added to backend, so only the summary data in the main view can be shown (no entries).
+
 ### TODO, PATIENT ENTRIES 
 -Consider distinguishing different entry types with graphical icons (MUI etc.)
 -Reconsider if separate input labels are needed for the input fields.

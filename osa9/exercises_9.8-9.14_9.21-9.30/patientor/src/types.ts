@@ -81,7 +81,8 @@ export type Entry =
 
 export type PatientFormValues = Omit<Patient, "id" /*| "entries"*/>;
 
-// Define special omit for unions
+// Define special omit for unions (needed for entries)
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 
+// Define entry without the 'id' property
 export type EntryFormValues = UnionOmit<Entry, "id">

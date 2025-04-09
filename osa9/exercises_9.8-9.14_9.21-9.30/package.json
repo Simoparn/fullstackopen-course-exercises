@@ -1,7 +1,7 @@
 {
-  "name": "exercises_9.8_9.11",
+  "name": "exercises_9.8-9.14_9.21-9.30",
   "version": "1.0.0",
-  "description": "Backend for the Patientor frontend for exercises 9.8-9.11 (Full Stack Open)",
+  "description": "Backend for the Patientor frontend for exercises 9.8-9.14 and 9.21-9.30 (Full Stack Open)",
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",

@@ -21,7 +21,7 @@ const App = () => {
   //const [currentPatient, setCurrentPatient] = useState<string>(''); 
   const [patientData, setPatientData] = useState<Patient>({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[]  });
   //const [diagnoseData, setDiagnoseData] = useState<Diagnosis>({code:'', name:'', latin:''});
-  //const navigateFunction=useNavigate()
+
   const location=useLocation()
 
   useEffect(() => {
@@ -114,7 +114,7 @@ const App = () => {
           </Button>
           <Divider hidden />
           <Routes>
-            <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} /*setCurrentPatient={setCurrentPatient}*/ setPatientData={setPatientData} />} />
+            <Route path="/" element={<PatientListPage patients={patients} allDiagnoses={allDiagnoses} setPatients={setPatients} /*setCurrentPatient={setCurrentPatient}*/ setPatientData={setPatientData} />} />
             <Route path="/patients/:id" element={<PatientPage patient={patientData} allDiagnoses={allDiagnoses} setPatientData={setPatientData} />} />
           </Routes>
         </Container>

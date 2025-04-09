@@ -72,7 +72,7 @@ const PatientListPage = ({ patients, allDiagnoses, setPatients, /*setCurrentPati
         <TableBody>
           {Object.values(patients).map((patient: Patient) => (
             <TableRow key={patient.id}>
-              {/*<TableCell><button style={{backgroundColor:'white'}} onClick={()=>handleFetchPatient(patient.id)}>{patient.name}</button></TableCell>*/}
+              {/*<TableCell><button style={{backgroundColor:'white'}} onClick={()=>handleFetchPatient(patiente}</button></TableCell>*/}
               <TableCell><Link to={`/patients/${patient.id}`} >{patient.name}</Link></TableCell>
               <TableCell>{patient.gender}</TableCell>
               <TableCell>{patient.occupation}</TableCell>

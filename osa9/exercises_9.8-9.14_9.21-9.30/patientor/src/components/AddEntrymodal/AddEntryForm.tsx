@@ -2,7 +2,7 @@ import { useState, SyntheticEvent } from "react";
 
 import {  Input, TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent } from '@mui/material';
 
-import { Entry, Diagnosis, EntryFormValues, Gender, HealthCheckRating } from "../../types";
+import { Entry, Diagnosis, EntryFormValues, HealthCheckRating } from "../../types";
 
 interface Props {
   onCancel: () => void;
@@ -356,10 +356,7 @@ const AddEntryForm = ({ onCancel, onSubmit, allDiagnoses }: Props) => {
     }
   };
 
-  /*if(diagnosisCode.length > 20){
-    console.log("diagnosis code input too long, preventing longer input")
-    setDiagnosisCode(diagnosisCode.substring(0, 20))
-  }*/
+
   
   console.log("Entry input state: Entry type: ", entryType, "Description: ", description, "Date:", date, "Specialist:", specialist, "diagnosisCodes:", diagnosisCodes, "discharge: ", discharge, "employerName:", employerName, "sickLeave:", sickLeave, "healthCheckRating:", healthCheckRating)
   console.log('Entry type input options state:', entryTypeOptions)
@@ -412,7 +409,6 @@ const AddEntryForm = ({ onCancel, onSubmit, allDiagnoses }: Props) => {
           onChange={({ target }) => setSpecialist(target.value)}
         />
 
-        <InputLabel style={{ marginTop: 20 }}>Diagnosis codes ({diagnosisCodes.length}/10 codes)</InputLabel>
         <InputLabel style={{ marginTop: 20 }}>Diagnosis codes ({diagnosisCodes.length}/10 codes)</InputLabel>
         {diagnosisCodes.map(diagnosisCode =>(
           <>{diagnosisCode} </>
