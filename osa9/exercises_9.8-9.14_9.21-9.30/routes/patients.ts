@@ -21,6 +21,7 @@ const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   }
 };
 //Middleware for validating requests before handling in endpoint
+//Middleware for validating requests before handling in endpoint
 const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
   try{
     NewEntrySchema.parse(req.body);
@@ -165,6 +166,7 @@ router.post('/', newPatientParser , (req:Request<unknown, unknown, NewPatientEnt
 
 router.post('/:id/entries', newEntryParser, (req:Request<unknown, unknown, Entry>, res:Response<Entry>) => {
   const diagnosisCodes=parseDiagnosisCodes(req.body)
+
   //const parseEntryDateError = parseEntryDate(req.body)
   //if(parseEntryDateError){
     console.log('adding a new entry: request body:', req.body)

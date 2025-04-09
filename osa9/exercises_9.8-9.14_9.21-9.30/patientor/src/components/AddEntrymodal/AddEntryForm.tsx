@@ -10,6 +10,7 @@ interface Props {
   allDiagnoses: Diagnosis[]
 }
 
+
 interface EntryTypeFieldsProps {
   entryType: Entry["type"];
   onHealthCheckRatingChange: (event: SelectChangeEvent<string>) => void;
@@ -57,12 +58,22 @@ const healthCheckOptions: HealthCheckOption[] = Object.values(HealthCheckRating)
 
 
 
+
+
+
+  
+
+
+
+
+
 const EntryTypeFields = ({entryType, onHealthCheckRatingChange, discharge, employerName, sickLeave, healthCheckRating, setDischarge, setEmployerName, setSickLeave}:EntryTypeFieldsProps) => {
 
 
   
    
     console.log("EntryTypeFields, entry type:", entryType)
+
 
     switch(entryType){
 
@@ -79,6 +90,7 @@ const EntryTypeFields = ({entryType, onHealthCheckRatingChange, discharge, emplo
             label="Date"
             fullWidth 
             value={discharge.date}
+            placeholder="YYYY-MM-DD"
             placeholder="YYYY-MM-DD"
             onChange={({ target }) => setDischarge({...discharge, date:target.value})}
             />*/}
@@ -401,6 +413,7 @@ const AddEntryForm = ({ onCancel, onSubmit, allDiagnoses }: Props) => {
         />
 
         <InputLabel style={{ marginTop: 20 }}>Diagnosis codes ({diagnosisCodes.length}/10 codes)</InputLabel>
+        <InputLabel style={{ marginTop: 20 }}>Diagnosis codes ({diagnosisCodes.length}/10 codes)</InputLabel>
         {diagnosisCodes.map(diagnosisCode =>(
           <>{diagnosisCode} </>
         ))}
@@ -442,6 +455,7 @@ const AddEntryForm = ({ onCancel, onSubmit, allDiagnoses }: Props) => {
               onClick={() => setDiagnosisCodes(diagnosisCodes.concat(diagnosisCode))}>Add a new diagnosis code</Button>*/}
         
       <EntryTypeFields entryType={entryType} onHealthCheckRatingChange={onHealthCheckRatingChange} discharge={discharge} employerName={employerName} sickLeave={sickLeave} healthCheckRating={healthCheckRating}  setDischarge={setDischarge} setEmployerName={setEmployerName} setSickLeave={setSickLeave}/>
+  
 
         <Grid>
           <Grid item>
