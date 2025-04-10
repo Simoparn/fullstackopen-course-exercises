@@ -3,7 +3,7 @@ import { Box, Table, Button, TableHead, Typography, TableCell, TableRow, TableBo
 import axios from 'axios';
 import { Link } from 'react-router-dom'
 
-import { PatientFormValues, Patient, Diagnosis, Entry } from "../../types";
+import { PatientFormValues, Patient, /*Diagnosis, Entry*/ } from "../../types";
 import AddPatientModal from "../AddPatientModal";
 
 import HealthRatingBar from "../HealthRatingBar";
@@ -12,14 +12,14 @@ import patientService from "../../services/patients";
 
 interface Props {
   patients : Patient[]
-  allDiagnoses: Diagnosis[]
+  //allDiagnoses: Diagnosis[]
   //entries: Entry[]
   setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
   //setCurrentPatient: React.Dispatch<React.SetStateAction<string>>
   setPatientData: React.Dispatch<React.SetStateAction<Patient>>
 }
 
-const PatientListPage = ({ patients, allDiagnoses, setPatients, /*setCurrentPatient, setPatientData*/ } : Props ) => {
+const PatientListPage = ({ patients, /*allDiagnoses,*/ setPatients, /*setCurrentPatient, setPatientData*/ } : Props ) => {
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();

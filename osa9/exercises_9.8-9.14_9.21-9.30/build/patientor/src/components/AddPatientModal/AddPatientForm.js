@@ -12,6 +12,7 @@ const AddPatientForm = ({ onCancel, onSubmit }) => {
     const [ssn, setSsn] = (0, react_1.useState)('');
     const [dateOfBirth, setDateOfBirth] = (0, react_1.useState)('');
     const [gender, setGender] = (0, react_1.useState)(types_1.Gender.Other);
+    const [entries, _setEntries] = (0, react_1.useState)([]);
     const onGenderChange = (event) => {
         event.preventDefault();
         if (typeof event.target.value === "string") {
@@ -29,7 +30,8 @@ const AddPatientForm = ({ onCancel, onSubmit }) => {
             occupation,
             ssn,
             dateOfBirth,
-            gender
+            gender,
+            entries
         });
     };
     return (<div>

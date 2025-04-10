@@ -358,9 +358,9 @@ const AddEntryForm = ({ onCancel, onSubmit, allDiagnoses }: Props) => {
 
 
   
-  console.log("Entry input state: Entry type: ", entryType, "Description: ", description, "Date:", date, "Specialist:", specialist, "diagnosisCodes:", diagnosisCodes, "discharge: ", discharge, "employerName:", employerName, "sickLeave:", sickLeave, "healthCheckRating:", healthCheckRating)
-  console.log('Entry type input options state:', entryTypeOptions)
-  console.log("Health check input options state:", healthCheckOptions)
+  //console.log("Entry input state: Entry type: ", entryType, "Description: ", description, "Date:", date, "Specialist:", specialist, "diagnosisCodes:", diagnosisCodes, "discharge: ", discharge, "employerName:", employerName, "sickLeave:", sickLeave, "healthCheckRating:", healthCheckRating)
+  //console.log('Entry type input options state:', entryTypeOptions)
+  //console.log("Health check input options state:", healthCheckOptions)
   
   return (
     <div>

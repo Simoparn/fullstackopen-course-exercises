@@ -22,13 +22,18 @@ const addPatient = (newPatient) => {
     return Object.assign({ id: newId }, newPatient);
     //return null;
 };
+const addEntry = (newEntry) => {
+    const newId = (0, uuid_1.v1)();
+    return Object.assign({ id: newId }, newEntry);
+};
 const findById = (id) => {
-    const entry = patients_1.default.find(p => p.id === id);
-    return entry;
+    const patient = patients_1.default.find(p => p.id === id);
+    return patient;
 };
 exports.default = {
     getPatients,
     getNonSensitivePatientData,
     addPatient,
+    addEntry,
     findById
 };

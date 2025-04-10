@@ -65,11 +65,18 @@ const App = () => {
         }
       
       }catch (e: unknown) {
+        console.log('fetchSinglePatientData, error:', e.response)
         if (axios.isAxiosError(e)) {
           if (e?.response?.data && typeof e?.response?.data === "string") {
-            const message = e.response.data.replace('Something went wrong. Error: ', '');
+            console.log('recognized axios error with response data as string:', e.response.data)
+            const message = e.response.data.replace('Something went wrong.', e.response.data);
             console.error(message);
             //setError(message);
+          }
+          else if(e?.response?.status && e?.response?.statusText  && typeof e?.response.statusText === "string"){
+            console.log('recognized axios error without response data, but only status codes:', e.response.status)
+            const message = e.response.status + " " + e.response.statusText;
+            console.error(message);
           } else {
             console.log('unrecognized axios error:', e)
             setPatientData({id:'', name:'', gender:Gender.Other, dateOfBirth:'', occupation:'', ssn:'', entries:[]  })
@@ -114,7 +121,7 @@ const App = () => {
           </Button>
           <Divider hidden />
           <Routes>
-            <Route path="/" element={<PatientListPage patients={patients} allDiagnoses={allDiagnoses} setPatients={setPatients} /*setCurrentPatient={setCurrentPatient}*/ setPatientData={setPatientData} />} />
+            <Route path="/" element={<PatientListPage patients={patients} /*allDiagnoses={allDiagnoses}*/ setPatients={setPatients} /*setCurrentPatient={setCurrentPatient}*/ setPatientData={setPatientData} />} />
             <Route path="/patients/:id" element={<PatientPage patient={patientData} allDiagnoses={allDiagnoses} setPatientData={setPatientData} />} />
           </Routes>
         </Container>

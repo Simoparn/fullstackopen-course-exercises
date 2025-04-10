@@ -15,28 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const constants_1 = require("../constants");
 const getAll = () => __awaiter(void 0, void 0, void 0, function* () {
-    const { data } = yield axios_1.default.get(`${constants_1.apiBaseUrl}/patients`);
+    const { data } = yield axios_1.default.get(`${constants_1.apiBaseUrl}/diagnoses`);
     return data;
 });
-const findById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    //console.log(`axios, requested patients id: ${apiBaseUrl}/patients/${id}`)
-    try {
-        const { data } = yield axios_1.default.get(`${constants_1.apiBaseUrl}/patients/${id}`);
-        console.log('axios, retrieved patient:', data);
-        return data;
-    }
-    catch (error) {
-        console.log('error in axios:', error);
-    }
-});
-const createPatient = (object) => __awaiter(void 0, void 0, void 0, function* () {
-    const { data } = yield axios_1.default.post(`${constants_1.apiBaseUrl}/patients`, object);
-    return data;
-});
-const createEntry = (id, object) => __awaiter(void 0, void 0, void 0, function* () {
-    const { data } = yield axios_1.default.post(`${constants_1.apiBaseUrl}/patients/${id}/entries`, object);
-    return data;
-});
-exports.default = {
-    getAll, findById, createPatient, createEntry
-};
+exports.default = { getAll };

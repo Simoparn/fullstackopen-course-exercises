@@ -138,8 +138,8 @@ const PatientPage = ({patient, allDiagnoses, setPatientData}:Props, /*{allDiagno
     
 
 
-    console.log('PatientPage, current patient data:', patient )
-    console.log('PatientPage, allDiagnoses:', allDiagnoses)
+    //console.log('PatientPage, current patient data:', patient )
+    //console.log('PatientPage, allDiagnoses:', allDiagnoses)
     
     if((patient.id.length === 0 )){
         return (

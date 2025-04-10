@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
+    "tsc-backend": "tsc --project ./tsconfig.json",
+    "tsc-react": "tsc --jsx preserve --moduleResolution bundler --noEmit",
+    "build": "tsc -b && vite build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev index.ts",
     "lint": "eslint .",
